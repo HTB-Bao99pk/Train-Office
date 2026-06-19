@@ -1,4 +1,4 @@
 package com.hsf302.trainoffice.entity;
 
-public class Seat {
+public class Seat  {
 }
