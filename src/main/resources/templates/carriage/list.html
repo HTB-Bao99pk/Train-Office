@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/_admin_layout}">
+
+<head>
+    <title>Quản Lý Toa Tàu</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <h2>Quản Lý Toa Tàu</h2>
+
+    <h4 th:if="${selectedTrain != null}"
+        th:text="|Tàu: ${selectedTrain.code} - ${selectedTrain.name}|">
+    </h4>
+
+    <div th:if="${successMessage}" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+    <div>
+        <a th:href="@{/carriages/new(trainId=${selectedTrainId})}"
+           th:classappend="${selectedTrainId == null} ? 'disabled' : ''">
+            Thêm Toa Mới
+        </a>
+
+        <small th:if="${selectedTrainId == null}">
+            (Vui lòng lọc theo Tàu để thêm Toa)
+        </small>
+    </div>
+
+    <br>
+
+    <form th:action="@{/carriages}" method="GET">
+
+        <label for="trainId">Lọc theo Tàu</label>
+
+        <select name="trainId" id="trainId">
+            <option value="">-- Hiển thị tất cả --</option>
+
+            <option th:each="train : ${allTrains}"
+                    th:value="${train.id}"
+                    th:text="|${train.code} - ${train.name}|"
+                    th:selected="${train.id == selectedTrainId}">
+            </option>
+        </select>
+
+        <button type="submit">Lọc</button>
+
+    </form>
+
+    <br>
+
+    <table border="1">
+
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tên Toa</th>
+            <th>Loại Ghế</th>
+            <th>Tàu Thuộc</th>
+            <th>Vị Trí</th>
+            <th>Sức Chứa</th>
+            <th>Thao Tác</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr th:each="carriage : ${carriages}">
+
+            <td th:text="${carriage.carriageId}"></td>
+
+            <td th:text="${carriage.name}"></td>
+
+            <td th:text="${carriage.seatType != null ? carriage.seatType.name : 'Chưa gán'}"></td>
+
+            <td th:text="${carriage.train.code}"></td>
+
+            <td th:text="${carriage.position}"></td>
+
+            <td th:text="${carriage.getCapacity() + ' ghế'}"></td>
+
+            <td>
+
+                <a th:href="@{/seats(carriageId=${carriage.carriageId})}">
+                    Quản lý Ghế
+                </a>
+
+                |
+
+                <a th:href="@{/carriages/edit/{id}(id=${carriage.carriageId})}">
+                    Sửa Toa
+                </a>
+
+                |
+
+                <a th:href="@{/carriages/delete/{id}(id=${carriage.carriageId}, trainId=${selectedTrainId})}"
+                   onclick="return confirm('Bạn có chắc chắn muốn xóa không?')">
+                    Xóa Toa
+                </a>
+
+            </td>
+
+        </tr>
+
+        <tr th:if="${#lists.isEmpty(carriages)}">
+            <td colspan="7">
+                Không tìm thấy toa tàu nào (Hoặc bạn chưa lọc).
+            </td>
+        </tr>
+
+        </tbody>
+
+    </table>
+
+    <br>
+
+    <a th:href="@{/trains}">
+        Quay Lại Danh Sách Tàu
+    </a>
+
+</div>
+</body>
+</html>

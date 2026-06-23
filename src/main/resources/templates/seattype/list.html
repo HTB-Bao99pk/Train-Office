@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/_admin_layout}">
+
+<head>
+    <title>Quản Lý Loại Ghế</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <h2>Quản Lý Loại Ghế (Giá vé)</h2>
+
+    <div th:if="${successMessage}"
+         th:text="${successMessage}">
+    </div>
+
+    <div th:if="${errorMessage}"
+         th:text="${errorMessage}">
+    </div>
+
+    <div>
+        <a th:href="@{/seat-types/new}">
+            Thêm Loại Ghế Mới
+        </a>
+    </div>
+
+    <br>
+
+    <table border="1">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tên Loại Ghế</th>
+            <th>Đơn Giá (VND / KM)</th>
+            <th>Hành Động</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="st : ${seatTypes}">
+
+            <td th:text="${st.id}"></td>
+
+            <td th:text="${st.name}"></td>
+
+            <td th:text="${#numbers.formatDecimal(st.pricePerKm, 0, 'COMMA', 0, 'POINT') + ' đ/km'}">
+            </td>
+
+            <td>
+                <a th:href="@{/seat-types/edit/{id}(id=${st.id})}">
+                    Chỉnh Sửa
+                </a>
+
+                <a th:href="@{/seat-types/delete/{id}(id=${st.id})}"
+                   onclick="return confirm('Bạn có chắc chắn muốn xóa? Nếu có Toa đang dùng loại này, hệ thống sẽ báo lỗi.')">
+                    Xóa
+                </a>
+            </td>
+
+        </tr>
+
+        <tr th:if="${#lists.isEmpty(seatTypes)}">
+            <td colspan="4">
+                Chưa có loại ghế nào.
+            </td>
+        </tr>
+
+        </tbody>
+    </table>
+
+    <br>
+
+    <a th:href="@{/admin/dashboard}">
+        Quay Lại Dashboard
+    </a>
+
+</div>
+</body>
+</html>
