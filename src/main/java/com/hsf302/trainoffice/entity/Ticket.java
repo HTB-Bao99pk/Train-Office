@@ -2,7 +2,8 @@ package com.hsf302.trainoffice.entity;
 
 
 
-import com.example.trainticketoffice.common.TicketStatus;
+
+import com.hsf302.trainoffice.common.TicketStatus;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import jakarta.persistence.*;
