@@ -1,65 +1,42 @@
 package com.hsf302.trainoffice.entity;
-
-
-
-
-import com.hsf302.trainoffice.common.TicketStatus;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import com.hsf302.trainoffice.common.enums.TicketStatus;
 import jakarta.persistence.*;
-
+import lombok.*;
 import java.math.BigDecimal;
-import java.time.LocalDate; // THÊM
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-
+import java.util.ArrayList;
+import java.util.List;
+// Ticket.java
 @Entity
-@Table(name = "tickets")
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class Ticket extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Ticket {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long ticketId;
 
-    @Column(unique = true, nullable = false, columnDefinition = "nvarchar(255)")
-    private String code;
+    @Column(unique = true, nullable = false)
+    private String ticketCode;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "booking_id", nullable = false)
     private Booking booking;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "trip_id", nullable = false)
-    private Trip trip;
+    @ManyToOne
+    @JoinColumn(name = "passenger_id", nullable = false)
+    private Passenger passenger;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seat_id")
+    @ManyToOne
+    @JoinColumn(name = "seat_id", nullable = false)
     private Seat seat;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "from_station_id", nullable = false)
-    private Station fromStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "to_station_id", nullable = false)
-    private Station toStation;
-
-    @Column(columnDefinition = "nvarchar(255)")
-    private String passengerName;
-    @Column(columnDefinition = "nvarchar(50)")
-    private String passengerPhone;
-    @Column(columnDefinition = "nvarchar(50)")
-    private String passengerIdCard;
-    @Column(name = "date_of_birth")
-    private LocalDate dob;
-
-
-    private BigDecimal totalPrice;
+    private BigDecimal ticketPrice;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private TicketStatus status;
-    private LocalDateTime bookedAt;
+    private TicketStatus ticketStatus;
 
-    private LocalDateTime checkedInAt;
+    @OneToMany(mappedBy = "ticket")
+    private List<Refund> refunds = new ArrayList<>();
 }

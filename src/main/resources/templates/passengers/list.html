@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin-layout}">
+<head>
+    <title>Passenger Management</title>
+</head>
+<body>
+<section layout:fragment="content" class="content-wrapper p-3">
+
+    <div th:replace="~{fragments/toast :: toast}"></div>
+
+    <div class="content-header">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <div>
+                <h1>Passengers / Hành khách</h1>
+                <small class="text-muted">Manage passenger profiles</small>
+            </div>
+            <a th:href="@{/admin/passengers/create}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Passenger
+            </a>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+
+            <div class="card card-outline card-primary">
+                <div class="card-header">
+                    <form th:action="@{/admin/passengers}" method="get" class="row g-2">
+                        <div class="col-md-10">
+                            <input type="text"
+                                   name="keyword"
+                                   th:value="${keyword}"
+                                   class="form-control"
+                                   placeholder="Search full name, identity number...">
+                        </div>
+                        <div class="col-md-2 d-grid">
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Identity Number</th>
+                            <th>Date of Birth</th>
+                            <th>Gender</th>
+                            <th>User</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr th:each="passenger : ${passengers}">
+                            <td th:text="${passenger.passengerId}">1</td>
+                            <td class="fw-semibold" th:text="${passenger.fullName}">Nguyen Van A</td>
+                            <td th:text="${passenger.identityNumber}">012345678901</td>
+                            <td th:text="${#temporals.format(passenger.dateOfBirth, 'dd/MM/yyyy')}">01/01/2000</td>
+
+                            <td>
+                                <span class="badge bg-info" th:text="${passenger.gender}">MALE</span>
+                            </td>
+
+                            <td th:text="${passenger.user != null ? passenger.user.username : 'N/A'}">customer01</td>
+
+                            <td class="text-end">
+                                <a th:href="@{/admin/passengers/{id}(id=${passenger.passengerId})}"
+                                   class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+
+                                <a th:href="@{/admin/passengers/{id}/edit(id=${passenger.passengerId})}"
+                                   class="btn btn-sm btn-warning">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+
+                                <button type="button"
+                                        class="btn btn-sm btn-danger"
+                                        data-bs-toggle="modal"
+                                        th:data-bs-target="'#deletePassengerModal' + ${passenger.passengerId}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+
+                                <div class="modal fade"
+                                     th:id="'deletePassengerModal' + ${passenger.passengerId}"
+                                     tabindex="-1">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content text-start">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Delete Passenger</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+
+                                            <div class="modal-body">
+                                                Delete passenger
+                                                <strong th:text="${passenger.fullName}">Nguyen Van A</strong>?
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button"
+                                                        class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">
+                                                    Cancel
+                                                </button>
+
+                                                <form th:action="@{/admin/passengers/{id}/delete(id=${passenger.passengerId})}"
+                                                      method="post">
+                                                    <button type="submit" class="btn btn-danger">
+                                                        Delete
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr th:if="${#lists.isEmpty(passengers)}">
+                            <td colspan="7" class="text-center text-muted py-4">
+                                No passengers found.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card-footer">
+                    <div th:replace="~{fragments/pagination :: pagination(${page})}"></div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+</section>
+</body>
+</html>

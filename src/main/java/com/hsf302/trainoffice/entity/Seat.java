@@ -1,37 +1,30 @@
 package com.hsf302.trainoffice.entity;
 
-
-import com.hsf302.trainoffice.common.SeatStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import java.math.BigDecimal;
-
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+// Seat.java
 @Entity
-@Table(name = "seats")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-public class Seat extends BaseEntity {
-
-    @Id
-    @Column(name = "seat_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+@Builder
+public class Seat {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long seatId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "carriage_id", nullable = false)
-    private Carriage carriage;
+    @ManyToOne
+    @JoinColumn(name = "coach_id", nullable = false)
+    private Coach coach;
 
-    @NotBlank(message = "Seat number is mandatory")
-    @Column(name = "seat_number", nullable = false, columnDefinition = "nvarchar(10)")
     private String seatNumber;
+    private String seatType;
+    private BigDecimal extraPrice;
 
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status")
-    private SeatStatus status;
-
-    private Boolean isActive = true;
+    @OneToMany(mappedBy = "seat")
+    private List<Ticket> tickets = new ArrayList<>();
 }

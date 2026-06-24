@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/admin-layout :: layout('Occupancy Report / Báo cáo lấp đầy', ~{::section}, 'reports')}">
+<section>
+    <form th:action="@{/admin/reports/occupancy}" method="get" class="card card-body mb-3">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-4"><label class="form-label">From / Từ ngày</label><input type="date" name="fromDate" th:value="${fromDate}" class="form-control"></div>
+            <div class="col-md-4"><label class="form-label">To / Đến ngày</label><input type="date" name="toDate" th:value="${toDate}" class="form-control"></div>
+            <div class="col-md-4"><button class="btn btn-primary w-100">Filter / Lọc</button></div>
+        </div>
+    </form>
+    <div class="row">
+        <div th:replace="~{fragments/stat-card :: statCard('Occupancy rate', ${occupancyRate}, 'fas fa-chair', ' bg-success', 'Average')}"></div>
+        <div th:replace="~{fragments/stat-card :: statCard('Seats sold', ${soldSeats}, 'fas fa-ticket-alt', ' bg-info', 'Sold')}"></div>
+        <div th:replace="~{fragments/stat-card :: statCard('Available seats', ${availableSeats}, 'fas fa-couch', ' bg-warning', 'Available')}"></div>
+        <div th:replace="~{fragments/stat-card :: statCard('Trips', ${totalTrips}, 'fas fa-train', ' bg-danger', 'Filtered')}"></div>
+    </div>
+    <div class="card mb-3">
+        <div class="card-header">Occupancy chart / Biểu đồ lấp đầy</div>
+        <div class="card-body"><canvas id="occupancyChart" height="110"></canvas></div>
+    </div>
+    <div class="card">
+        <div class="card-header">Top routes / Tuyến có tỷ lệ cao</div>
+        <div class="card-body table-responsive p-0">
+            <table class="table mb-0">
+                <thead><tr><th>Route</th><th>Trips</th><th>Occupancy</th></tr></thead>
+                <tbody>
+                <tr th:each="route : ${topRoutes}"><td th:text="${route.name}">Route</td><td th:text="${route.trips}">10</td><td th:text="${route.occupancyRate} + '%'">80%</td></tr>
+                <tr th:if="${#lists.isEmpty(topRoutes)}"><td colspan="3" class="text-center text-muted">No data</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:inline="javascript">
+        new Chart(document.getElementById('occupancyChart'), {type:'line', data:{labels:/*[[${labels}]]*/[], datasets:[{label:'Occupancy %', data:/*[[${data}]]*/[], borderColor:'#2563EB', fill:false}]}, options:{responsive:true}});
+    </script>
+</section>
+</html>

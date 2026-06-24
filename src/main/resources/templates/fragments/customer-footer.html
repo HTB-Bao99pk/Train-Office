@@ -1,0 +1,24 @@
+<!-- templates/fragments/customer-footer.html -->
+<footer class="customer-footer" xmlns:th="http://www.thymeleaf.org" th:fragment="customerFooter">
+    <div class="container">
+        <div class="row gy-4">
+            <div class="col-md-4">
+                <h5><i class="bi bi-train-front-fill me-2"></i>RailJet</h5>
+                <p>Fast booking, smart railway travel. Đặt vé tàu nhanh chóng, an toàn và hiện đại.</p>
+            </div>
+            <div class="col-md-4">
+                <h6>Quick Links</h6>
+                <a th:href="@{/trips/search}">Search Trip</a>
+                <a th:href="@{/bookings}">My Bookings</a>
+                <a th:href="@{/support}">Support</a>
+            </div>
+            <div class="col-md-4">
+                <h6>Contact</h6>
+                <p>Email: support@railjet.vn</p>
+                <p>Hotline: 1900 9999</p>
+            </div>
+        </div>
+        <hr>
+        <p class="text-center mb-0">© 2026 RailJet. All rights reserved.</p>
+    </div>
+</footer>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/admin-layout :: layout('Dashboard / Bảng điều khiển', ~{::section}, 'dashboard')}">
+<section>
+    <div class="row">
+        <div th:replace="~{fragments/stat-card :: statCard('Revenue / Doanh thu', ${totalRevenue}, 'fas fa-dollar-sign', ' bg-success', 'Today / Hôm nay')}"></div>
+        <div th:replace="~{fragments/stat-card :: statCard('Bookings / Đặt vé', ${totalBookings}, 'fas fa-ticket-alt', ' bg-info', 'All bookings')}"></div>
+        <div th:replace="~{fragments/stat-card :: statCard('Occupancy / Lấp đầy', ${occupancyRate}, 'fas fa-chair', ' bg-warning', 'Seat usage')}"></div>
+        <div th:replace="~{fragments/stat-card :: statCard('Refunds / Hoàn tiền', ${pendingRefunds}, 'fas fa-undo', ' bg-danger', 'Pending')}"></div>
+    </div>
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">Revenue chart / Biểu đồ doanh thu</div>
+                <div class="card-body"><canvas id="revenueChart" height="120"></canvas></div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">Top routes / Tuyến phổ biến</div>
+                <div class="card-body table-responsive p-0">
+                    <table class="table mb-0">
+                        <thead><tr><th>Route</th><th>Bookings</th></tr></thead>
+                        <tbody>
+                        <tr th:each="route : ${topRoutes}"><td th:text="${route.name}">Ha Noi - Sai Gon</td><td th:text="${route.count}">120</td></tr>
+                        <tr th:if="${#lists.isEmpty(topRoutes)}"><td colspan="2" class="text-center text-muted">No data</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">Recent bookings / Đặt vé gần đây</div>
+        <div class="card-body table-responsive p-0">
+            <table class="table mb-0">
+                <thead><tr><th>Code</th><th>Customer</th><th>Route</th><th>Total</th><th>Status</th></tr></thead>
+                <tbody>
+                <tr th:each="booking : ${recentBookings}">
+                    <td th:text="${booking.bookingCode}">RJ0001</td>
+                    <td th:text="${booking.user.fullName}">Customer</td>
+                    <td th:text="${booking.trip.route.routeName}">Route</td>
+                    <td th:text="${#numbers.formatDecimal(booking.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</td>
+                    <td><span th:replace="~{fragments/status-badge :: statusBadge(${booking.status})}"></span></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(recentBookings)}"><td colspan="5" class="text-center text-muted">No data</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:inline="javascript">
+        const revenueLabels = /*[[${revenueLabels}]]*/ ['Mon','Tue','Wed','Thu','Fri'];
+        const revenueData = /*[[${revenueData}]]*/ [12,19,8,15,22];
+        new Chart(document.getElementById('revenueChart'), {type:'line', data:{labels:revenueLabels, datasets:[{label:'Revenue', data:revenueData, borderColor:'#2563EB', tension:.35}]}, options:{responsive:true}});
+    </script>
+</section>
+</html>

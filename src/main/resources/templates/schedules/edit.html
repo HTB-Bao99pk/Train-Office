@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin-layout}">
+<head><title>Edit Schedule</title></head>
+<body>
+<section layout:fragment="content" class="content-wrapper p-3">
+    <div th:replace="~{fragments/toast :: toast}"></div>
+
+    <div class="content-header">
+        <div class="container-fluid">
+            <h1>Edit Schedule</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/admin/schedules}">Schedules</a></li>
+                <li class="breadcrumb-item active">Edit</li>
+            </ol>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="card card-warning card-outline">
+                <form th:action="@{/admin/schedules/{id}/edit(id=${scheduleForm.scheduleId})}"
+                      method="post"
+                      th:object="${scheduleForm}">
+
+                    <input type="hidden" th:field="*{scheduleId}">
+
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="trainId" class="form-label">Train / Tàu</label>
+                            <select id="trainId" th:field="*{trainId}" class="form-select">
+                                <option value="">-- Select Train --</option>
+                                <option th:each="train : ${trains}"
+                                        th:value="${train.trainId}"
+                                        th:text="${train.trainCode + ' - ' + train.trainName}">
+                                    SE1 - Express
+                                </option>
+                            </select>
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('trainId')}" th:errors="*{trainId}">
+                                Train error
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="routeId" class="form-label">Route / Tuyến</label>
+                            <select id="routeId" th:field="*{routeId}" class="form-select">
+                                <option value="">-- Select Route --</option>
+                                <option th:each="route : ${routes}"
+                                        th:value="${route.routeId}"
+                                        th:text="${route.routeCode + ' - ' + route.routeName}">
+                                    HNO-SGN
+                                </option>
+                            </select>
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('routeId')}" th:errors="*{routeId}">
+                                Route error
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="runDays" class="form-label">Run Days / Ngày chạy</label>
+                            <input id="runDays" type="text" th:field="*{runDays}" class="form-control">
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('runDays')}" th:errors="*{runDays}">
+                                Run days error
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="departureTime" class="form-label">Departure Time / Giờ khởi hành</label>
+                            <input id="departureTime" type="time" th:field="*{departureTime}" class="form-control">
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('departureTime')}" th:errors="*{departureTime}">
+                                Departure time error
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="startDate" class="form-label">Start Date / Ngày bắt đầu</label>
+                            <input id="startDate" type="date" th:field="*{startDate}" class="form-control">
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}">
+                                Start date error
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="endDate" class="form-label">End Date / Ngày kết thúc</label>
+                            <input id="endDate" type="date" th:field="*{endDate}" class="form-control">
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}">
+                                End date error
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status / Trạng thái</label>
+                            <select id="status" th:field="*{status}" class="form-select">
+                                <option value="">-- Select Status --</option>
+                                <option value="ACTIVE">ACTIVE</option>
+                                <option value="INACTIVE">INACTIVE</option>
+                            </select>
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('status')}" th:errors="*{status}">
+                                Status error
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer d-flex justify-content-between">
+                        <a th:href="@{/admin/schedules}" class="btn btn-secondary">Cancel</a>
+                        <button class="btn btn-warning">
+                            <i class="fas fa-save"></i> Update Schedule
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</section>
+</body>
+</html>

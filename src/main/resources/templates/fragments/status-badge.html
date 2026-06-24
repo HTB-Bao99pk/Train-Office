@@ -1,0 +1,9 @@
+<!-- templates/fragments/status-badge.html -->
+<span xmlns:th="http://www.thymeleaf.org"
+      th:fragment="statusBadge(status)"
+      class="badge"
+      th:classappend="${status == null} ? ' bg-secondary' :
+          (${#strings.equalsIgnoreCase(status.toString(), 'PAID') or #strings.equalsIgnoreCase(status.toString(), 'SUCCESS') or #strings.equalsIgnoreCase(status.toString(), 'CONFIRMED') or #strings.equalsIgnoreCase(status.toString(), 'APPROVED')} ? ' bg-success' :
+          (${#strings.equalsIgnoreCase(status.toString(), 'PENDING') or #strings.equalsIgnoreCase(status.toString(), 'PROCESSING')} ? ' bg-warning text-dark' :
+          (${#strings.equalsIgnoreCase(status.toString(), 'FAILED') or #strings.equalsIgnoreCase(status.toString(), 'CANCELLED') or #strings.equalsIgnoreCase(status.toString(), 'REJECTED')} ? ' bg-danger' : ' bg-secondary')))"
+      th:text="${status ?: 'UNKNOWN'}">STATUS</span>

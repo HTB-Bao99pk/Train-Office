@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: layout('Confirmation / Xác nhận', ~{::section}, 'booking')}">
+<section class="container">
+    <div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div>
+    <div class="railjet-card card">
+        <div class="card-header">Booking confirmation / Xác nhận đặt vé</div>
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-lg-7">
+                    <h5>Trip / Chuyến tàu</h5>
+                    <p class="mb-1" th:text="${booking.trip.train.trainCode + ' - ' + booking.trip.route.routeName}">SE1 - Ha Noi</p>
+                    <p class="text-muted" th:text="${#temporals.format(booking.trip.departureTime, 'HH:mm dd/MM/yyyy')}">08:00</p>
+                    <h5>Passengers / Hành khách</h5>
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between" th:each="ticket : ${booking.tickets}">
+                            <span th:text="${ticket.passenger.fullName}">Nguyen Van A</span>
+                            <span th:text="${ticket.seat.seatNumber}">A1</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-5">
+                    <div class="border rounded-3 p-3">
+                        <div class="d-flex justify-content-between"><span>Subtotal / Tạm tính</span><strong th:text="${#numbers.formatDecimal(booking.subtotal, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</strong></div>
+                        <div class="d-flex justify-content-between"><span>Fee / Phí</span><strong th:text="${#numbers.formatDecimal(booking.fee ?: 0, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</strong></div>
+                        <hr>
+                        <div class="d-flex justify-content-between h5"><span>Total / Tổng</span><strong class="text-primary" th:text="${#numbers.formatDecimal(booking.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</strong></div>
+                        <form th:action="@{/booking/confirm}" method="post" class="mt-3">
+                            <input type="hidden" name="bookingId" th:value="${booking.bookingId}">
+                            <button class="btn btn-primary w-100">Confirm & Pay / Xác nhận và thanh toán</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</html>

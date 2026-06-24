@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/admin-layout :: layout('Booking Report / Báo cáo đặt vé', ~{::section}, 'reports')}">
+<section>
+    <form th:action="@{/admin/reports/bookings}" method="get" class="card card-body mb-3">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-4"><label class="form-label">From / Từ ngày</label><input type="date" name="fromDate" th:value="${fromDate}" class="form-control"></div>
+            <div class="col-md-4"><label class="form-label">To / Đến ngày</label><input type="date" name="toDate" th:value="${toDate}" class="form-control"></div>
+            <div class="col-md-4"><button class="btn btn-primary w-100">Filter / Lọc</button></div>
+        </div>
+    </form>
+    <div class="row">
+        <div th:replace="~{fragments/stat-card :: statCard('Total bookings', ${totalBookings}, 'fas fa-ticket-alt', ' bg-info', 'All')}"></div>
+        <div th:replace="~{fragments/stat-card :: statCard('Confirmed', ${confirmedBookings}, 'fas fa-check', ' bg-success', 'Confirmed')}"></div>
+        <div th:replace="~{fragments/stat-card :: statCard('Pending', ${pendingBookings}, 'fas fa-clock', ' bg-warning', 'Pending')}"></div>
+        <div th:replace="~{fragments/stat-card :: statCard('Cancelled', ${cancelledBookings}, 'fas fa-ban', ' bg-danger', 'Cancelled')}"></div>
+    </div>
+    <div class="card mb-3">
+        <div class="card-header">Booking analytics / Phân tích đặt vé</div>
+        <div class="card-body"><canvas id="bookingChart" height="110"></canvas></div>
+    </div>
+    <div class="card">
+        <div class="card-header">Recent bookings / Đặt vé gần đây</div>
+        <div class="card-body table-responsive p-0">
+            <table class="table mb-0">
+                <thead><tr><th>Code</th><th>Customer</th><th>Date</th><th>Status</th></tr></thead>
+                <tbody>
+                <tr th:each="booking : ${bookings}"><td th:text="${booking.bookingCode}">RJ0001</td><td th:text="${booking.user.fullName}">User</td><td th:text="${#temporals.format(booking.createdAt, 'dd/MM/yyyy')}">Date</td><td><span th:replace="~{fragments/status-badge :: statusBadge(${booking.status})}"></span></td></tr>
+                <tr th:if="${#lists.isEmpty(bookings)}"><td colspan="4" class="text-center text-muted">No data</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:inline="javascript">
+        new Chart(document.getElementById('bookingChart'), {type:'doughnut', data:{labels:/*[[${labels}]]*/['Confirmed','Pending','Cancelled'], datasets:[{data:/*[[${data}]]*/[10,2,1], backgroundColor:['#10B981','#F59E0B','#EF4444']}]}, options:{responsive:true}});
+    </script>
+</section>
+</html>

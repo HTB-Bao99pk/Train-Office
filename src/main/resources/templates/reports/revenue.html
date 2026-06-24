@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/admin-layout :: layout('Revenue Report / Báo cáo doanh thu', ~{::section}, 'reports')}">
+<section>
+    <form th:action="@{/admin/reports/revenue}" method="get" class="card card-body mb-3">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-4"><label class="form-label">From / Từ ngày</label><input type="date" name="fromDate" th:value="${fromDate}" class="form-control"></div>
+            <div class="col-md-4"><label class="form-label">To / Đến ngày</label><input type="date" name="toDate" th:value="${toDate}" class="form-control"></div>
+            <div class="col-md-4"><button class="btn btn-primary w-100">Filter / Lọc</button></div>
+        </div>
+    </form>
+    <div class="row">
+        <div th:replace="~{fragments/stat-card :: statCard('Total revenue', ${totalRevenue}, 'fas fa-dollar-sign', ' bg-success', 'Filtered range')}"></div>
+        <div th:replace="~{fragments/stat-card :: statCard('Paid invoices', ${paidInvoices}, 'fas fa-file-invoice', ' bg-info', 'Success payments')}"></div>
+        <div th:replace="~{fragments/stat-card :: statCard('Average order', ${averageOrder}, 'fas fa-chart-line', ' bg-warning', 'AOV')}"></div>
+        <div th:replace="~{fragments/stat-card :: statCard('Refund amount', ${refundAmount}, 'fas fa-undo', ' bg-danger', 'Refunded')}"></div>
+    </div>
+    <div class="card">
+        <div class="card-header">Revenue chart / Biểu đồ doanh thu</div>
+        <div class="card-body"><canvas id="revenueReportChart" height="110"></canvas></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:inline="javascript">
+        new Chart(document.getElementById('revenueReportChart'), {type:'bar', data:{labels:/*[[${labels}]]*/[], datasets:[{label:'Revenue', data:/*[[${data}]]*/[], backgroundColor:'#10B981'}]}, options:{responsive:true}});
+    </script>
+</section>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: layout('Search Trip / Tìm chuyến', ~{::section}, 'booking')}">
+<section class="container">
+    <div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div>
+    <div class="railjet-card card">
+        <div class="card-body p-4 p-lg-5">
+            <h1 class="fw-bold mb-2">Tìm vé tàu / Search Train Tickets</h1>
+            <p class="text-muted mb-4">Chọn ga đi, ga đến và ngày khởi hành để bắt đầu booking.</p>
+            <form th:action="@{/booking/trips}" method="get" th:object="${bookingSearch}" class="row g-3">
+                <div class="col-md-6 col-lg-3">
+                    <label class="form-label" for="departureStationId">Ga đi / Departure</label>
+                    <select id="departureStationId" class="form-select" th:field="*{departureStationId}">
+                        <option value="">Select station</option>
+                        <option th:each="station : ${stations}" th:value="${station.stationId}" th:text="${station.stationName}">Ha Noi</option>
+                    </select>
+                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('departureStationId')}" th:errors="*{departureStationId}">Error</div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <label class="form-label" for="arrivalStationId">Ga đến / Arrival</label>
+                    <select id="arrivalStationId" class="form-select" th:field="*{arrivalStationId}">
+                        <option value="">Select station</option>
+                        <option th:each="station : ${stations}" th:value="${station.stationId}" th:text="${station.stationName}">Sai Gon</option>
+                    </select>
+                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('arrivalStationId')}" th:errors="*{arrivalStationId}">Error</div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <label class="form-label" for="departureDate">Ngày đi / Date</label>
+                    <input id="departureDate" type="date" class="form-control" th:field="*{departureDate}">
+                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('departureDate')}" th:errors="*{departureDate}">Error</div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <label class="form-label" for="passengerCount">Số khách / Passengers</label>
+                    <input id="passengerCount" type="number" min="1" max="10" class="form-control" th:field="*{passengerCount}">
+                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('passengerCount')}" th:errors="*{passengerCount}">Error</div>
+                </div>
+                <div class="col-12 d-grid d-md-flex justify-content-md-end">
+                    <button class="btn btn-primary btn-lg"><i class="bi bi-search"></i> Search / Tìm chuyến</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+</html>

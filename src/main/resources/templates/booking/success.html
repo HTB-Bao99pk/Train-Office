@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: layout('Booking Success / Đặt vé thành công', ~{::section}, 'booking')}">
+<section class="container">
+    <div class="railjet-card card text-center">
+        <div class="card-body py-5">
+            <i class="bi bi-check-circle-fill text-success display-3"></i>
+            <h1 class="fw-bold mt-3">Đặt vé thành công / Booking successful</h1>
+            <p class="text-muted">Mã đặt vé / Booking code: <strong th:text="${booking.bookingCode}">RJ0001</strong></p>
+            <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
+                <a class="btn btn-primary" th:href="@{/payments/{id}(id=${booking.bookingId})}">Pay now / Thanh toán</a>
+                <a class="btn btn-outline-primary" th:href="@{/booking/history}">Booking history / Lịch sử</a>
+            </div>
+        </div>
+    </div>
+</section>
+</html>

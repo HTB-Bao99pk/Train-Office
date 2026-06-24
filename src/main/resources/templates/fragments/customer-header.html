@@ -1,0 +1,49 @@
+<!-- templates/fragments/customer-header.html -->
+<nav class="navbar navbar-expand-lg customer-navbar" xmlns:th="http://www.thymeleaf.org"
+     th:fragment="customerHeader(activeMenu)">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/static}">
+            <i class="bi bi-train-front-fill me-2"></i>RailJet
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#customerNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div id="customerNav" class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeMenu == 'home'} ? 'active'" th:href="@{/static}">
+                        Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeMenu == 'search'} ? 'active'"
+                       th:href="@{/trips/search}">
+                        Search Trip
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeMenu == 'bookings'} ? 'active'" th:href="@{/bookings}">
+                        My Bookings
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeMenu == 'tickets'} ? 'active'" th:href="@{/tickets}">
+                        Tickets
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeMenu == 'profile'} ? 'active'" th:href="@{/profile}">
+                        Profile
+                    </a>
+                </li>
+                <li class="nav-item ms-lg-3">
+                    <a class="btn btn-primary btn-sm rounded-pill px-3" th:href="@{/login}">
+                        Login/Register
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

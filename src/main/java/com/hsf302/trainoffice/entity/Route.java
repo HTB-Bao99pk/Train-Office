@@ -1,39 +1,30 @@
 package com.hsf302.trainoffice.entity;
-
-
-
-import com.hsf302.trainoffice.common.RouteStatus;
 import jakarta.persistence.*;
 import lombok.*;
-
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+// Route.java
 @Entity
-@Getter
-@Setter
-@Table(name = "routes")
-public class Route extends BaseEntity {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Route {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long routeId;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @Column(unique = true, nullable = false)
+    private String routeCode;
 
-    @Column(name = "code", unique = true, nullable = false, length = 20, columnDefinition = "NVARCHAR(20)")
-    private String code;
+    private String routeName;
+    private Double distanceKm;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "start_station_id", nullable = false)
-    private Station startStation;
+    @OneToMany(mappedBy = "route")
+    private List<RouteStation> routeStations = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "end_station_id", nullable = false)
-    private Station endStation;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private RouteStatus status = RouteStatus.ACTIVE;
-
-
+    @OneToMany(mappedBy = "route")
+    private List<TrainTrip> trainTrips = new ArrayList<>();
 }
-

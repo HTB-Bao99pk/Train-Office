@@ -1,44 +1,44 @@
 package com.hsf302.trainoffice.entity;
 
-
-import com.hsf302.trainoffice.common.Role;
+import com.hsf302.trainoffice.common.enums.UserRole;
+import com.hsf302.trainoffice.common.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
-
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+// User.java
 @Entity
-@Getter
-@Setter
 @Table(name = "users")
-public class User implements Serializable {
-
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long userId;
 
-    @Column(name = "email", nullable = false, columnDefinition = "NVARCHAR(255)")
-    private String email;
+    @Column(nullable = false, unique = true)
+    private String username;
 
-    @Column(name = "password", nullable = false, columnDefinition = "NVARCHAR(255)")
-    private String password;
-
-    @Column(name = "full_name", nullable = false, columnDefinition = "NVARCHAR(100)")
-    private String fullName;
-
-    @Column(name = "phone", nullable = false, columnDefinition = "NVARCHAR(20)")
-    private String phone;
-
-    @Column(name = "create_date")
-    private LocalDate createDate;
+    @Column(nullable = false)
+    private String passwordHash;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
-    private Role role;
+    private UserRole role;
 
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;
 
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "user")
+    private List<Passenger> passengers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<Booking> bookings = new ArrayList<>();
 }

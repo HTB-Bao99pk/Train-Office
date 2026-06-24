@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin-layout}">
+<head><title>Edit Trip</title></head>
+<body>
+<section layout:fragment="content" class="content-wrapper p-3">
+    <div th:replace="~{fragments/toast :: toast}"></div>
+
+    <div class="content-header">
+        <div class="container-fluid">
+            <h1>Edit Trip</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/admin/trips}">Trips</a></li>
+                <li class="breadcrumb-item active">Edit</li>
+            </ol>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+
+            <div class="card card-warning card-outline">
+                <form th:action="@{/admin/trips/{id}/edit(id=${tripForm.tripId})}"
+                      method="post"
+                      th:object="${tripForm}">
+
+                    <input type="hidden" th:field="*{tripId}">
+
+                    <div class="card-body">
+
+                        <div class="mb-3">
+                            <label for="trainId" class="form-label">Train / Tàu</label>
+                            <select id="trainId" th:field="*{trainId}" class="form-select">
+                                <option value="">-- Select Train --</option>
+                                <option th:each="train : ${trains}"
+                                        th:value="${train.trainId}"
+                                        th:text="${train.trainCode + ' - ' + train.trainName}">
+                                    SE1 - Express
+                                </option>
+                            </select>
+                            <div class="text-danger small mt-1"
+                                 th:if="${#fields.hasErrors('trainId')}"
+                                 th:errors="*{trainId}">Train error</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="routeId" class="form-label">Route / Tuyến</label>
+                            <select id="routeId" th:field="*{routeId}" class="form-select">
+                                <option value="">-- Select Route --</option>
+                                <option th:each="route : ${routes}"
+                                        th:value="${route.routeId}"
+                                        th:text="${route.routeCode + ' - ' + route.routeName}">
+                                    HNO-SGN
+                                </option>
+                            </select>
+                            <div class="text-danger small mt-1"
+                                 th:if="${#fields.hasErrors('routeId')}"
+                                 th:errors="*{routeId}">Route error</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="departureTime" class="form-label">Departure Time / Giờ khởi hành</label>
+                            <input id="departureTime" type="datetime-local"
+                                   th:field="*{departureTime}" class="form-control">
+                            <div class="text-danger small mt-1"
+                                 th:if="${#fields.hasErrors('departureTime')}"
+                                 th:errors="*{departureTime}">Departure error</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="arrivalTime" class="form-label">Arrival Time / Giờ đến</label>
+                            <input id="arrivalTime" type="datetime-local"
+                                   th:field="*{arrivalTime}" class="form-control">
+                            <div class="text-danger small mt-1"
+                                 th:if="${#fields.hasErrors('arrivalTime')}"
+                                 th:errors="*{arrivalTime}">Arrival error</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status / Trạng thái</label>
+                            <select id="status" th:field="*{status}" class="form-select">
+                                <option value="">-- Select Status --</option>
+                                <option value="SCHEDULED">SCHEDULED</option>
+                                <option value="RUNNING">RUNNING</option>
+                                <option value="COMPLETED">COMPLETED</option>
+                                <option value="CANCELLED">CANCELLED</option>
+                            </select>
+                            <div class="text-danger small mt-1"
+                                 th:if="${#fields.hasErrors('status')}"
+                                 th:errors="*{status}">Status error</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="basePrice" class="form-label">Base Price / Giá cơ bản</label>
+                            <input id="basePrice" type="number" min="0" step="1000"
+                                   th:field="*{basePrice}" class="form-control">
+                            <div class="text-danger small mt-1"
+                                 th:if="${#fields.hasErrors('basePrice')}"
+                                 th:errors="*{basePrice}">Price error</div>
+                        </div>
+
+                    </div>
+
+                    <div class="card-footer d-flex justify-content-between">
+                        <a th:href="@{/admin/trips}" class="btn btn-secondary">Cancel</a>
+                        <button class="btn btn-warning">
+                            <i class="fas fa-save"></i> Update Trip
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </section>
+</section>
+</body>
+</html>

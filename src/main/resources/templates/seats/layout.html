@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin-layout}">
+<head>
+    <title>Seat Layout</title>
+
+    <style>
+        .seat-map-wrapper {
+            overflow-x: auto;
+        }
+
+        .seat-map {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(64px, 1fr));
+            gap: 14px;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .seat-item {
+            border: 0;
+            border-radius: 14px;
+            min-height: 58px;
+            color: #fff;
+            font-weight: 700;
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+
+        .seat-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, .16);
+        }
+
+        .seat-available {
+            background: #28a745;
+        }
+
+        .seat-selected {
+            background: #0d6efd;
+        }
+
+        .seat-booked {
+            background: #dc3545;
+            cursor: not-allowed;
+            opacity: .85;
+        }
+
+        .seat-maintenance {
+            background: #6c757d;
+            cursor: not-allowed;
+            opacity: .85;
+        }
+
+        .seat-aisle {
+            visibility: hidden;
+        }
+
+        .legend-dot {
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        @media (max-width: 576px) {
+            .seat-map {
+                grid-template-columns: repeat(2, minmax(70px, 1fr));
+                max-width: 100%;
+            }
+
+            .seat-item {
+                min-height: 52px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+<section layout:fragment="content" class="content-wrapper p-3">
+    <div th:replace="~{fragments/toast :: toast}"></div>
+
+    <div class="content-header">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <div>
+                <h1>Seat Map / Sơ đồ ghế</h1>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/admin/seats}">Seats</a></li>
+                    <li class="breadcrumb-item active">Seat Map</li>
+                </ol>
+            </div>
+            <a th:href="@{/admin/seats}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+
+            <div class="card card-outline card-primary mb-3">
+                <div class="card-header">
+                    <form th:action="@{/admin/seats/layout}" method="get" class="row g-2">
+                        <div class="col-md-8">
+                            <select name="coachId" class="form-select">
+                                <option value="">-- Select Coach --</option>
+                                <option th:each="coach : ${coaches}"
+                                        th:value="${coach.coachId}"
+                                        th:selected="${coachId == coach.coachId}"
+                                        th:text="${coach.train.trainCode + ' - ' + coach.coachNumber + ' (' + coach.coachType + ')'}">
+                                    SE1 - C01
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2 d-grid">
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-search"></i> View Map
+                            </button>
+                        </div>
+
+                        <div class="col-md-2 d-grid">
+                            <a th:href="@{/admin/seats/create}" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Add Seat
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-3 mb-4">
+                        <span><i class="legend-dot bg-success"></i> Available</span>
+                        <span><i class="legend-dot bg-primary"></i> Selected</span>
+                        <span><i class="legend-dot bg-danger"></i> Booked</span>
+                        <span><i class="legend-dot bg-secondary"></i> Maintenance</span>
+                    </div>
+
+                    <div class="text-center mb-4">
+                        <div class="badge bg-dark px-4 py-2">
+                            <i class="fas fa-train"></i>
+                            FRONT / Đầu tàu
+                        </div>
+                    </div>
+
+                    <div class="seat-map-wrapper">
+                        <div class="seat-map">
+
+                            <button th:each="seat : ${seats}"
+                                    type="button"
+                                    class="seat-item"
+                                    th:classappend="${seat.status == 'AVAILABLE'} ? ' seat-available' :
+                                                    (${seat.status == 'SELECTED'} ? ' seat-selected' :
+                                                    (${seat.status == 'BOOKED'} ? ' seat-booked' : ' seat-maintenance'))"
+                                    th:disabled="${seat.status == 'BOOKED' || seat.status == 'MAINTENANCE'}"
+                                    data-bs-toggle="modal"
+                                    th:data-bs-target="'#seatModal' + ${seat.seatId}">
+                                <i class="fas fa-chair d-block mb-1"></i>
+                                <span th:text="${seat.seatNumber}">A01</span>
+                            </button>
+
+                        </div>
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(seats)}" class="text-center text-muted py-5">
+                        No seats to display. Please select a coach.
+                    </div>
+                </div>
+            </div>
+
+            <div th:each="seat : ${seats}"
+                 class="modal fade"
+                 th:id="'seatModal' + ${seat.seatId}"
+                 tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                Seat <span th:text="${seat.seatNumber}">A01</span>
+                            </h5>
+                            <button class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-4">Seat Type</dt>
+                                <dd class="col-sm-8" th:text="${seat.seatType}">NORMAL</dd>
+
+                                <dt class="col-sm-4">Extra Price</dt>
+                                <dd class="col-sm-8"
+                                    th:text="${#numbers.formatDecimal(seat.extraPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'">
+                                    0 VND
+                                </dd>
+
+                                <dt class="col-sm-4">Status</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge"
+                                          th:classappend="${seat.status == 'AVAILABLE'} ? ' bg-success' :
+                                                          (${seat.status == 'SELECTED'} ? ' bg-primary' :
+                                                          (${seat.status == 'BOOKED'} ? ' bg-danger' : ' bg-secondary'))"
+                                          th:text="${seat.status}">
+                                        AVAILABLE
+                                    </span>
+                                </dd>
+                            </dl>
+                        </div>
+
+                        <div class="modal-footer">
+                            <a th:href="@{/admin/seats/{id}(id=${seat.seatId})}" class="btn btn-info">
+                                Detail
+                            </a>
+                            <a th:href="@{/admin/seats/{id}/edit(id=${seat.seatId})}" class="btn btn-warning">
+                                Edit
+                            </a>
+                            <button class="btn btn-secondary" data-bs-dismiss="modal">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+</section>
+</body>
+</html>

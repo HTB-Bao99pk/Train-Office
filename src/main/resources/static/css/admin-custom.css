@@ -1,0 +1,144 @@
+/* static/css/admin-custom.css */
+:root {
+    --navy-dark: #0D1B2A;
+    --dark-slate: #1B263B;
+    --primary-blue: #2563EB;
+    --sky-blue: #38BDF8;
+    --success-green: #10B981;
+    --warning-amber: #F59E0B;
+    --danger-red: #EF4444;
+    --light-gray: #F1F5F9;
+    --white: #FFFFFF;
+}
+
+* {
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background: var(--light-gray);
+}
+
+.main-sidebar {
+    background: var(--navy-dark) !important;
+}
+
+.brand-link {
+    background: var(--dark-slate);
+    color: var(--white) !important;
+    border-bottom: none !important;
+}
+
+.brand-text {
+    color: var(--white);
+}
+
+.nav-sidebar .nav-link {
+    border-radius: 12px;
+    margin: 3px 10px;
+    color: #cbd5e1;
+}
+
+.nav-sidebar .nav-link.active {
+    background: var(--primary-blue) !important;
+    color: var(--white) !important;
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.35);
+}
+
+.nav-sidebar .nav-link:hover {
+    background: rgba(56, 189, 248, 0.12);
+    color: var(--white);
+}
+
+.content-wrapper {
+    background: var(--light-gray);
+}
+
+.content-header h1 {
+    font-weight: 800;
+    color: var(--navy-dark);
+}
+
+.card {
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 8px 28px rgba(13, 27, 42, 0.08);
+}
+
+.card-header {
+    background: var(--white);
+    border-bottom: 1px solid #e5e7eb;
+    border-radius: 18px 18px 0 0 !important;
+    font-weight: 700;
+}
+
+.small-box {
+    border-radius: 18px;
+    box-shadow: 0 8px 24px rgba(13, 27, 42, 0.1);
+}
+
+.btn-primary {
+    background: var(--primary-blue);
+    border-color: var(--primary-blue);
+}
+
+.btn-success {
+    background: var(--success-green);
+    border-color: var(--success-green);
+}
+
+.btn-warning {
+    background: var(--warning-amber);
+    border-color: var(--warning-amber);
+}
+
+.btn-danger {
+    background: var(--danger-red);
+    border-color: var(--danger-red);
+}
+
+.table {
+    background: var(--white);
+}
+
+.table thead th {
+    background: var(--navy-dark);
+    color: var(--white);
+    border: none;
+}
+
+.form-control,
+.custom-select {
+    border-radius: 10px;
+    border-color: #dbe3ef;
+}
+
+.form-control:focus,
+.custom-select:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.15);
+}
+
+.badge-success {
+    background: var(--success-green);
+}
+
+.badge-warning {
+    background: var(--warning-amber);
+}
+
+.badge-danger {
+    background: var(--danger-red);
+}
+
+.main-footer {
+    border-top: none;
+    color: #64748b;
+}
+
+.railjet-toast,
+.railjet-modal {
+    border-radius: 18px;
+    border: none;
+    box-shadow: 0 20px 50px rgba(13, 27, 42, 0.18);
+}

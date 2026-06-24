@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin-layout}">
+<head><title>Edit Route</title></head>
+<body>
+<section layout:fragment="content" class="content-wrapper p-3">
+    <div th:replace="~{fragments/toast :: toast}"></div>
+
+    <div class="content-header">
+        <div class="container-fluid">
+            <h1>Edit Route</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/admin/routes}">Routes</a></li>
+                <li class="breadcrumb-item active">Edit</li>
+            </ol>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="card card-warning card-outline">
+                <form th:action="@{/admin/routes/{id}/edit(id=${routeForm.routeId})}"
+                      method="post" th:object="${routeForm}">
+
+                    <input type="hidden" th:field="*{routeId}">
+
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="routeCode" class="form-label">Route Code / Mã tuyến</label>
+                            <input id="routeCode" type="text" th:field="*{routeCode}" class="form-control">
+                            <div class="text-danger small mt-1"
+                                 th:if="${#fields.hasErrors('routeCode')}"
+                                 th:errors="*{routeCode}">Route code error</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="routeName" class="form-label">Route Name / Tên tuyến</label>
+                            <input id="routeName" type="text" th:field="*{routeName}" class="form-control">
+                            <div class="text-danger small mt-1"
+                                 th:if="${#fields.hasErrors('routeName')}"
+                                 th:errors="*{routeName}">Route name error</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="distanceKm" class="form-label">Distance KM / Khoảng cách</label>
+                            <input id="distanceKm" type="number" step="0.01" min="0"
+                                   th:field="*{distanceKm}" class="form-control">
+                            <div class="text-danger small mt-1"
+                                 th:if="${#fields.hasErrors('distanceKm')}"
+                                 th:errors="*{distanceKm}">Distance error</div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer d-flex justify-content-between">
+                        <a th:href="@{/admin/routes}" class="btn btn-secondary">Cancel</a>
+                        <button class="btn btn-warning">
+                            <i class="fas fa-save"></i> Update Route
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</section>
+</body>
+</html>

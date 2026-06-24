@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: layout('Refund Detail / Chi tiết hoàn tiền', ~{::section}, 'refunds')}">
+<section class="container">
+    <div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div>
+    <div class="railjet-card card">
+        <div class="card-header">Refund detail / Chi tiết hoàn tiền</div>
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <p>Refund code: <strong th:text="${refund.refundCode}">RF0001</strong></p>
+                    <p>Booking: <strong th:text="${refund.booking.bookingCode}">RJ0001</strong></p>
+                    <p>Status: <span th:replace="~{fragments/status-badge :: statusBadge(${refund.status})}"></span></p>
+                </div>
+                <div class="col-md-6">
+                    <p>Amount / Số tiền</p>
+                    <h3 class="text-primary" th:text="${#numbers.formatDecimal(refund.amount, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</h3>
+                </div>
+                <div class="col-12">
+                    <h6>Reason / Lý do</h6>
+                    <p class="text-muted" th:text="${refund.reason}">Reason text</p>
+                    <h6>Admin note / Ghi chú xử lý</h6>
+                    <p class="text-muted" th:text="${refund.adminNote ?: 'Waiting for review / Đang chờ duyệt'}">Waiting</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</html>

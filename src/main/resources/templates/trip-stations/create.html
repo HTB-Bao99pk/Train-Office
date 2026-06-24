@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin-layout}">
+<head><title>Create Trip Station</title></head>
+<body>
+<section layout:fragment="content" class="content-wrapper p-3">
+    <div th:replace="~{fragments/toast :: toast}"></div>
+
+    <div class="content-header">
+        <div class="container-fluid">
+            <h1>Create Trip Station</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/admin/trip-stations}">Trip Stations</a></li>
+                <li class="breadcrumb-item active">Create</li>
+            </ol>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="card card-primary card-outline">
+                <form th:action="@{/admin/trip-stations/create}" method="post" th:object="${tripStationForm}">
+                    <div class="card-body">
+
+                        <div class="mb-3">
+                            <label for="tripId" class="form-label">Trip / Chuyến tàu</label>
+                            <select id="tripId" th:field="*{tripId}" class="form-select">
+                                <option value="">-- Select Trip --</option>
+                                <option th:each="trip : ${trips}"
+                                        th:value="${trip.tripId}"
+                                        th:text="${trip.train.trainCode + ' - ' + trip.route.routeName}">
+                                    SE1 - Hà Nội - Sài Gòn
+                                </option>
+                            </select>
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('tripId')}" th:errors="*{tripId}">
+                                Trip error
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="stationId" class="form-label">Station / Nhà ga</label>
+                            <select id="stationId" th:field="*{stationId}" class="form-select">
+                                <option value="">-- Select Station --</option>
+                                <option th:each="station : ${stations}"
+                                        th:value="${station.stationId}"
+                                        th:text="${station.stationCode + ' - ' + station.stationName}">
+                                    HNO - Hà Nội
+                                </option>
+                            </select>
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('stationId')}" th:errors="*{stationId}">
+                                Station error
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="stationOrder" class="form-label">Station Order / Thứ tự ga</label>
+                            <input id="stationOrder" type="number" min="1" th:field="*{stationOrder}" class="form-control">
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('stationOrder')}" th:errors="*{stationOrder}">
+                                Order error
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="arrivalTime" class="form-label">Arrival Time / Giờ đến</label>
+                            <input id="arrivalTime" type="datetime-local" th:field="*{arrivalTime}" class="form-control">
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('arrivalTime')}" th:errors="*{arrivalTime}">
+                                Arrival error
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="departureTime" class="form-label">Departure Time / Giờ đi</label>
+                            <input id="departureTime" type="datetime-local" th:field="*{departureTime}" class="form-control">
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('departureTime')}" th:errors="*{departureTime}">
+                                Departure error
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="stopMinutes" class="form-label">Stop Minutes / Thời gian dừng</label>
+                            <input id="stopMinutes" type="number" min="0" th:field="*{stopMinutes}" class="form-control">
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('stopMinutes')}" th:errors="*{stopMinutes}">
+                                Stop minutes error
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="card-footer d-flex justify-content-between">
+                        <a th:href="@{/admin/trip-stations}" class="btn btn-secondary">Cancel</a>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-save"></i> Create Stop
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</section>
+</body>
+</html>

@@ -1,0 +1,16 @@
+<!-- templates/fragments/toast.html -->
+<div class="toast-container position-fixed top-0 end-0 p-3" xmlns:th="http://www.thymeleaf.org" th:fragment="toast">
+    <div id="appToast" class="toast railjet-toast"
+         th:classappend="${toastMessage != null or successMessage != null or errorMessage != null} ? ' show'"
+         role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto" th:text="${toastTitle ?: (errorMessage != null ? 'Error / Lỗi' : 'RailJet')}">RailJet</strong>
+            <small>Now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body"
+             th:text="${toastMessage ?: (successMessage ?: (errorMessage ?: 'Action completed successfully.'))}">
+            Action completed successfully.
+        </div>
+    </div>
+</div>

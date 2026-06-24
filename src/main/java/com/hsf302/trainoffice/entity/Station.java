@@ -1,41 +1,31 @@
 package com.hsf302.trainoffice.entity;
 
-
-import com.hsf302.trainoffice.common.StationStatus;
 import jakarta.persistence.*;
 import lombok.*;
-
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+// Station.java
 @Entity
-@Getter
-@Setter
-@Table(name = "stations")
-public class Station extends BaseEntity {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Station {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long stationId;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @Column(unique = true, nullable = false)
+    private String stationCode;
 
-    @Column(name = "code", unique = true, nullable = false, length = 10, columnDefinition = "nvarchar(10)") // SỬA
-    private String code;
-
-    @Column(name = "name", nullable = false, length = 100, columnDefinition = "nvarchar(100)") // SỬA
-    private String name;
-
-    @Column(name = "city", nullable = false, length = 50, columnDefinition = "nvarchar(50)") // SỬA
+    private String stationName;
     private String city;
 
-    @Column(name = "province", nullable = false, length = 50, columnDefinition = "nvarchar(50)") // SỬA
-    private String province;
+    @OneToMany(mappedBy = "station")
+    private List<RouteStation> routeStations = new ArrayList<>();
 
-    @Column(name = "distance_km")
-    private Integer distanceKm;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private StationStatus status;
-
-
+    @OneToMany(mappedBy = "station")
+    private List<TripStation> tripStations = new ArrayList<>();
 }

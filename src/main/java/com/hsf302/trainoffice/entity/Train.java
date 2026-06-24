@@ -1,52 +1,32 @@
 package com.hsf302.trainoffice.entity;
 
-
-import com.hsf302.trainoffice.common.TrainStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.*;
-
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
+// Station.java
+// Train.java
 @Entity
-@Table(name = "trains")
-@Getter
-@Setter
-@AllArgsConstructor
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Train {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long trainId;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(unique = true, nullable = false)
+    private String trainCode;
 
-    @NotBlank(message = "Train code is mandatory")
-    @Size(min = 2, max = 10, message = "Code must be between 2 and 10 characters")
-    @Column(unique = true, nullable = false, length = 10, columnDefinition = "nvarchar(10)")
-    private String code;
+    private String trainName;
+    private String trainType;
 
-    @NotBlank(message = "Train name is mandatory")
-    @Column(nullable = false, columnDefinition = "nvarchar(255)")
-    private String name;
+    @OneToMany(mappedBy = "train")
+    private List<Coach> coaches = new ArrayList<>();
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private TrainStatus status = TrainStatus.AVAILABLE;
-
-    @OneToMany(mappedBy = "train", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @ToString.Exclude
-    private List<Carriage> carriages = new ArrayList<>();
-
-    @Transient
-    public int getTotalCapacity() {
-        if (this.carriages == null) {
-            return 0;
-        }
-        return this.carriages.stream()
-                .mapToInt(Carriage::getCapacity)
-                .sum();
-    }
+    @OneToMany(mappedBy = "train")
+    private List<TrainTrip> trainTrips = new ArrayList<>();
 }

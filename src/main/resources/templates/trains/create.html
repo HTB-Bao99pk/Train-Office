@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin-layout}">
+<head><title>Create Train</title></head>
+<body>
+<section layout:fragment="content" class="content-wrapper p-3">
+    <div th:replace="~{fragments/toast :: toast}"></div>
+
+    <div class="content-header">
+        <div class="container-fluid">
+            <h1>Create Train</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/admin/trains}">Trains</a></li>
+                <li class="breadcrumb-item active">Create</li>
+            </ol>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="card card-primary card-outline">
+                <form th:action="@{/admin/trains/create}" method="post" th:object="${trainForm}">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="trainCode" class="form-label">Train Code / Mã tàu</label>
+                            <input id="trainCode" type="text" th:field="*{trainCode}"
+                                   class="form-control" placeholder="VD: SE1">
+                            <div class="text-danger small mt-1"
+                                 th:if="${#fields.hasErrors('trainCode')}"
+                                 th:errors="*{trainCode}">Train code error</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="trainName" class="form-label">Train Name / Tên tàu</label>
+                            <input id="trainName" type="text" th:field="*{trainName}"
+                                   class="form-control" placeholder="VD: SE1 Express">
+                            <div class="text-danger small mt-1"
+                                 th:if="${#fields.hasErrors('trainName')}"
+                                 th:errors="*{trainName}">Train name error</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="trainType" class="form-label">Train Type / Loại tàu</label>
+                            <select id="trainType" th:field="*{trainType}" class="form-select">
+                                <option value="">-- Select Train Type --</option>
+                                <option value="EXPRESS">EXPRESS</option>
+                                <option value="LOCAL">LOCAL</option>
+                                <option value="HIGH_SPEED">HIGH_SPEED</option>
+                            </select>
+                            <div class="text-danger small mt-1"
+                                 th:if="${#fields.hasErrors('trainType')}"
+                                 th:errors="*{trainType}">Train type error</div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer d-flex justify-content-between">
+                        <a th:href="@{/admin/trains}" class="btn btn-secondary">Cancel</a>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-save"></i> Create Train
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</section>
+</body>
+</html>

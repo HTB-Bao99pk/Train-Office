@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin-layout}">
+<head><title>Create Seat</title></head>
+<body>
+<section layout:fragment="content" class="content-wrapper p-3">
+    <div th:replace="~{fragments/toast :: toast}"></div>
+
+    <div class="content-header">
+        <div class="container-fluid">
+            <h1>Create Seat</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/admin/seats}">Seats</a></li>
+                <li class="breadcrumb-item active">Create</li>
+            </ol>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+
+            <div class="card card-primary card-outline">
+                <form th:action="@{/admin/seats/create}" method="post" th:object="${seatForm}">
+                    <div class="card-body">
+
+                        <div class="mb-3">
+                            <label for="coachId" class="form-label">Coach / Toa tàu</label>
+                            <select id="coachId" th:field="*{coachId}" class="form-select">
+                                <option value="">-- Select Coach --</option>
+                                <option th:each="coach : ${coaches}"
+                                        th:value="${coach.coachId}"
+                                        th:text="${coach.train.trainCode + ' - ' + coach.coachNumber + ' (' + coach.coachType + ')'}">
+                                    SE1 - C01
+                                </option>
+                            </select>
+                            <div class="text-danger small mt-1"
+                                 th:if="${#fields.hasErrors('coachId')}"
+                                 th:errors="*{coachId}">Coach error</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="seatNumber" class="form-label">Seat Number / Số ghế</label>
+                            <input id="seatNumber" type="text" th:field="*{seatNumber}"
+                                   class="form-control" placeholder="VD: A01">
+                            <div class="text-danger small mt-1"
+                                 th:if="${#fields.hasErrors('seatNumber')}"
+                                 th:errors="*{seatNumber}">Seat number error</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="seatType" class="form-label">Seat Type / Loại ghế</label>
+                            <select id="seatType" th:field="*{seatType}" class="form-select">
+                                <option value="">-- Select Seat Type --</option>
+                                <option value="NORMAL">NORMAL</option>
+                                <option value="VIP">VIP</option>
+                                <option value="SLEEPER">SLEEPER</option>
+                            </select>
+                            <div class="text-danger small mt-1"
+                                 th:if="${#fields.hasErrors('seatType')}"
+                                 th:errors="*{seatType}">Seat type error</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="extraPrice" class="form-label">Extra Price / Phụ phí</label>
+                            <input id="extraPrice" type="number" min="0" step="1000"
+                                   th:field="*{extraPrice}" class="form-control"
+                                   placeholder="Enter extra price">
+                            <div class="text-danger small mt-1"
+                                 th:if="${#fields.hasErrors('extraPrice')}"
+                                 th:errors="*{extraPrice}">Extra price error</div>
+                        </div>
+
+                    </div>
+
+                    <div class="card-footer d-flex justify-content-between">
+                        <a th:href="@{/admin/seats}" class="btn btn-secondary">Cancel</a>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-save"></i> Create Seat
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </section>
+</section>
+</body>
+</html>

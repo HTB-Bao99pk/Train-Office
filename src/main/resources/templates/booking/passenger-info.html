@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: layout('Passenger Info / Thông tin khách', ~{::section}, 'booking')}">
+<section class="container">
+    <div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div>
+    <div class="progress mb-4" style="height:8px"><div class="progress-bar" style="width:75%"></div></div>
+    <form th:action="@{/booking/confirmation}" method="post" th:object="${booking}">
+        <div class="railjet-card card">
+            <div class="card-header">Passenger information / Thông tin hành khách</div>
+            <div class="card-body">
+                <div class="row g-3" th:each="passenger, stat : *{passengers}">
+                    <div class="col-12"><h5 th:text="'Passenger / Hành khách ' + ${stat.count}">Passenger 1</h5></div>
+                    <div class="col-md-4">
+                        <label class="form-label">Full name / Họ tên</label>
+                        <input class="form-control" th:field="*{passengers[__${stat.index}__].fullName}">
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('passengers[' + stat.index + '].fullName')}" th:errors="*{passengers[__${stat.index}__].fullName}">Error</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">ID card / CCCD</label>
+                        <input class="form-control" th:field="*{passengers[__${stat.index}__].identityNumber}">
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('passengers[' + stat.index + '].identityNumber')}" th:errors="*{passengers[__${stat.index}__].identityNumber}">Error</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Phone / Điện thoại</label>
+                        <input class="form-control" th:field="*{passengers[__${stat.index}__].phone}">
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('passengers[' + stat.index + '].phone')}" th:errors="*{passengers[__${stat.index}__].phone}">Error</div>
+                    </div>
+                    <hr class="my-3">
+                </div>
+                <div class="d-grid d-md-flex justify-content-md-end">
+                    <button class="btn btn-primary btn-lg">Review booking / Xem lại</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+</html>

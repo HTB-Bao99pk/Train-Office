@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin-layout}">
+<head>
+    <title>Station Management</title>
+</head>
+<body>
+<section layout:fragment="content" class="content-wrapper p-3">
+
+    <div th:replace="~{fragments/toast :: toast}"></div>
+
+    <div class="content-header">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <div>
+                <h1>Stations / Nhà ga</h1>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Stations</li>
+                </ol>
+            </div>
+            <a th:href="@{/admin/stations/create}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Station
+            </a>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <div class="small-box bg-info">
+                        <div class="inner">
+                            <h3 th:text="${totalStations ?: 0}">0</h3>
+                            <p>Total Stations</p>
+                        </div>
+                        <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="small-box bg-success">
+                        <div class="inner">
+                            <h3 th:text="${totalCities ?: 0}">0</h3>
+                            <p>Cities</p>
+                        </div>
+                        <div class="icon"><i class="fas fa-city"></i></div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="small-box bg-warning">
+                        <div class="inner">
+                            <h3 th:text="${newStations ?: 0}">0</h3>
+                            <p>New Stations</p>
+                        </div>
+                        <div class="icon"><i class="fas fa-train"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-outline card-primary">
+                <div class="card-header">
+                    <form th:action="@{/admin/stations}" method="get" class="row g-2">
+                        <div class="col-md-10">
+                            <input type="text"
+                                   name="keyword"
+                                   th:value="${keyword}"
+                                   class="form-control"
+                                   placeholder="Search station code, station name, city...">
+                        </div>
+
+                        <div class="col-md-2 d-grid">
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Station Code</th>
+                            <th>Station Name</th>
+                            <th>City</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr th:each="station : ${stations}">
+                            <td th:text="${station.stationId}">1</td>
+                            <td>
+                                <span class="badge bg-primary" th:text="${station.stationCode}">SGN</span>
+                            </td>
+                            <td class="fw-semibold" th:text="${station.stationName}">Sài Gòn Station</td>
+                            <td th:text="${station.city}">Ho Chi Minh City</td>
+
+                            <td class="text-end">
+                                <a th:href="@{/admin/stations/{id}(id=${station.stationId})}"
+                                   class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+
+                                <a th:href="@{/admin/stations/{id}/edit(id=${station.stationId})}"
+                                   class="btn btn-sm btn-warning">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+
+                                <button type="button"
+                                        class="btn btn-sm btn-danger"
+                                        data-bs-toggle="modal"
+                                        th:data-bs-target="'#deleteStationModal' + ${station.stationId}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+
+                                <div class="modal fade"
+                                     th:id="'deleteStationModal' + ${station.stationId}"
+                                     tabindex="-1">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content text-start">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Delete Station</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+
+                                            <div class="modal-body">
+                                                Delete station
+                                                <strong th:text="${station.stationName}">Sài Gòn Station</strong>?
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button"
+                                                        class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">
+                                                    Cancel
+                                                </button>
+
+                                                <form th:action="@{/admin/stations/{id}/delete(id=${station.stationId})}"
+                                                      method="post">
+                                                    <button type="submit" class="btn btn-danger">
+                                                        Delete
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr th:if="${#lists.isEmpty(stations)}">
+                            <td colspan="5" class="text-center text-muted py-4">
+                                No stations found.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card-footer">
+                    <div th:replace="~{fragments/pagination :: pagination(${page})}"></div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+</section>
+</body>
+</html>

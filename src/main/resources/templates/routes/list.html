@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin-layout}">
+<head><title>Route Management</title></head>
+<body>
+<section layout:fragment="content" class="content-wrapper p-3">
+    <div th:replace="~{fragments/toast :: toast}"></div>
+
+    <div class="content-header">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <div>
+                <h1>Routes / Tuyến đường</h1>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Routes</li>
+                </ol>
+            </div>
+            <a th:href="@{/admin/routes/create}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Route
+            </a>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <div class="small-box bg-info">
+                        <div class="inner"><h3 th:text="${totalRoutes ?: 0}">0</h3><p>Total Routes</p></div>
+                        <div class="icon"><i class="fas fa-route"></i></div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="small-box bg-success">
+                        <div class="inner"><h3 th:text="${activeRoutes ?: 0}">0</h3><p>Active Routes</p></div>
+                        <div class="icon"><i class="fas fa-check-circle"></i></div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="small-box bg-warning">
+                        <div class="inner"><h3 th:text="${totalDistance ?: 0}">0</h3><p>Total KM</p></div>
+                        <div class="icon"><i class="fas fa-road"></i></div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="small-box bg-danger">
+                        <div class="inner"><h3 th:text="${totalRouteStations ?: 0}">0</h3><p>Route Stations</p></div>
+                        <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-outline card-primary">
+                <div class="card-header">
+                    <form th:action="@{/admin/routes}" method="get" class="row g-2">
+                        <div class="col-md-10">
+                            <input type="text" name="keyword" th:value="${keyword}"
+                                   class="form-control"
+                                   placeholder="Search route code, route name...">
+                        </div>
+                        <div class="col-md-2 d-grid">
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Route Code</th>
+                            <th>Route Name</th>
+                            <th>Distance</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="route : ${routes}">
+                            <td th:text="${route.routeId}">1</td>
+                            <td><span class="badge bg-primary" th:text="${route.routeCode}">HNO-SGN</span></td>
+                            <td class="fw-semibold" th:text="${route.routeName}">Hà Nội - Sài Gòn</td>
+                            <td><span th:text="${route.distanceKm}">1726</span> km</td>
+                            <td class="text-end">
+                                <a th:href="@{/admin/routes/{id}(id=${route.routeId})}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a th:href="@{/admin/routes/{id}/stations(id=${route.routeId})}" class="btn btn-sm btn-success">
+                                    <i class="fas fa-map-marked-alt"></i>
+                                </a>
+                                <a th:href="@{/admin/routes/{id}/edit(id=${route.routeId})}" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-danger"
+                                        data-bs-toggle="modal"
+                                        th:data-bs-target="'#deleteRouteModal' + ${route.routeId}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+
+                                <div class="modal fade" th:id="'deleteRouteModal' + ${route.routeId}" tabindex="-1">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content text-start">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Delete Route</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Delete route <strong th:text="${route.routeName}">Route</strong>?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <form th:action="@{/admin/routes/{id}/delete(id=${route.routeId})}" method="post">
+                                                    <button class="btn btn-danger">Delete</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr th:if="${#lists.isEmpty(routes)}">
+                            <td colspan="5" class="text-center text-muted py-4">No routes found.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card-footer">
+                    <div th:replace="~{fragments/pagination :: pagination(${page})}"></div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+</section>
+</body>
+</html>

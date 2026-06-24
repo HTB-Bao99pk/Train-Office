@@ -1,64 +1,39 @@
 package com.hsf302.trainoffice.entity;
-
-
-import com.hsf302.trainoffice.common.PaymentStatus;
+import com.hsf302.trainoffice.common.enums.PaymentMethod;
+import com.hsf302.trainoffice.common.enums.PaymentStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.math.BigDecimal; // <-- THÊM
+import lombok.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+// Payment.java
 @Entity
-@Table(name = "payments")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
-public class Payment extends BaseEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "payment_id")
+@AllArgsConstructor
+@Builder
+public class Payment {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long paymentId;
 
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "order_id", nullable = false)
-    private Order order;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal amount;
+    @ManyToOne
+    @JoinColumn(name = "booking_id", nullable = false)
+    private Booking booking;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private PaymentStatus status = PaymentStatus.PENDING;
+    private PaymentMethod paymentMethod;
 
-    @Column(name = "transaction_ref", unique = true, length = 64)
-    private String transactionRef;
+    private BigDecimal amount;
+    private String transactionCode;
+    private String otpCode;
 
-    @Column(name = "order_info")
-    private String orderInfo;
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus;
 
-    @Column(name = "bank_code")
-    private String bankCode;
+    private LocalDateTime paidAt;
 
-    @Column(name = "bank_tran_no")
-    private String bankTranNo;
-
-    @Column(name = "vnp_transaction_no")
-    private String vnpTransactionNo;
-
-    @Column(name = "response_code")
-    private String responseCode;
-
-    @Column(name = "pay_date")
-    private LocalDateTime payDate;
-
-    @Column(name = "secure_hash", length = 256)
-    private String secureHash;
+    @OneToOne(mappedBy = "payment")
+    private Invoice invoice;
 }

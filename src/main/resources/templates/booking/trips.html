@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: layout('Trips / Chuyến tàu', ~{::section}, 'booking')}">
+<section class="container">
+    <div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div>
+    <div class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-4">
+        <div>
+            <h1 class="fw-bold mb-1">Chọn chuyến / Select Trip</h1>
+            <p class="text-muted mb-0">Compare time, train and price before seat selection.</p>
+        </div>
+        <a th:href="@{/booking/search}" class="btn btn-outline-primary align-self-md-center">Modify search / Đổi tìm kiếm</a>
+    </div>
+    <div class="row g-3" th:if="${!#lists.isEmpty(trips)}">
+        <div class="col-12" th:each="trip : ${trips}">
+            <div class="railjet-card card">
+                <div class="card-body">
+                    <div class="row align-items-center g-3">
+                        <div class="col-md-3">
+                            <span class="badge text-bg-primary mb-2" th:text="${trip.train.trainCode}">SE1</span>
+                            <h5 class="mb-0" th:text="${trip.train.trainName}">RailJet Express</h5>
+                            <small class="text-muted" th:text="${trip.route.routeName}">Ha Noi - Sai Gon</small>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="fw-semibold" th:text="${#temporals.format(trip.departureTime, 'HH:mm dd/MM/yyyy')}">08:00 24/06/2026</div>
+                            <small class="text-muted">Departure / Khởi hành</small>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="fw-semibold" th:text="${#temporals.format(trip.arrivalTime, 'HH:mm dd/MM/yyyy')}">20:00 24/06/2026</div>
+                            <small class="text-muted">Arrival / Đến nơi</small>
+                        </div>
+                        <div class="col-md-3 text-md-end">
+                            <div class="h5 text-primary mb-2" th:text="${#numbers.formatDecimal(trip.basePrice, 0, 'COMMA', 0, 'POINT')} + ' VND'">450,000 VND</div>
+                            <a class="btn btn-primary" th:href="@{/booking/{id}/seats(id=${trip.tripId})}">Select seats / Chọn ghế</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="railjet-card card" th:if="${#lists.isEmpty(trips)}">
+        <div class="card-body text-center py-5">
+            <h5>No trips found / Không tìm thấy chuyến</h5>
+            <a th:href="@{/booking/search}" class="btn btn-primary mt-2">Search again / Tìm lại</a>
+        </div>
+    </div>
+</section>
+</html>

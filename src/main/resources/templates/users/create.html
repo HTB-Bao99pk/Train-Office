@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin-layout}">
+<head>
+    <title>Create User</title>
+</head>
+<body>
+<section layout:fragment="content" class="content-wrapper p-3">
+
+    <div th:replace="~{fragments/toast :: toast}"></div>
+
+    <div class="content-header">
+        <div class="container-fluid">
+            <h1>Create User</h1>
+            <small class="text-muted">Tạo tài khoản người dùng mới</small>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+
+            <div class="card card-primary card-outline">
+                <form th:action="@{/admin/users/create}" method="post" th:object="${userForm}">
+
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username / Tên đăng nhập</label>
+                            <input type="text"
+                                   id="username"
+                                   th:field="*{username}"
+                                   class="form-control"
+                                   placeholder="Enter username">
+                            <div class="text-danger small mt-1"
+                                 th:if="${#fields.hasErrors('username')}"
+                                 th:errors="*{username}">
+                                Username error
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="passwordHash" class="form-label">Password Hash</label>
+                            <input type="text"
+                                   id="passwordHash"
+                                   th:field="*{passwordHash}"
+                                   class="form-control"
+                                   placeholder="Enter encrypted password/hash">
+                            <div class="text-danger small mt-1"
+                                 th:if="${#fields.hasErrors('passwordHash')}"
+                                 th:errors="*{passwordHash}">
+                                Password hash error
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Role / Vai trò</label>
+                            <select id="role" th:field="*{role}" class="form-select">
+                                <option value="">-- Select Role --</option>
+                                <option value="ADMIN">ADMIN</option>
+                                <option value="CUSTOMER">CUSTOMER</option>
+                            </select>
+                            <div class="text-danger small mt-1"
+                                 th:if="${#fields.hasErrors('role')}"
+                                 th:errors="*{role}">
+                                Role error
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status / Trạng thái</label>
+                            <select id="status" th:field="*{status}" class="form-select">
+                                <option value="">-- Select Status --</option>
+                                <option value="ACTIVE">ACTIVE</option>
+                                <option value="LOCKED">LOCKED</option>
+                                <option value="INACTIVE">INACTIVE</option>
+                            </select>
+                            <div class="text-danger small mt-1"
+                                 th:if="${#fields.hasErrors('status')}"
+                                 th:errors="*{status}">
+                                Status error
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer d-flex justify-content-between">
+                        <a th:href="@{/admin/users}" class="btn btn-secondary">
+                            Cancel
+                        </a>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Create User
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </section>
+</section>
+</body>
+</html>
