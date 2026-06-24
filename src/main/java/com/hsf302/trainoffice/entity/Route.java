@@ -1,30 +1,45 @@
 package com.hsf302.trainoffice.entity;
+
 import jakarta.persistence.*;
 import lombok.*;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.List;
-// Route.java
+
 @Entity
-@Data
+@Table(
+        name = "routes",
+        indexes = @Index(name = "idx_routes_code", columnList = "route_code")
+)
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Route {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "route_id")
+    @EqualsAndHashCode.Include
     private Long routeId;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "route_code", unique = true, nullable = false, length = 30)
     private String routeCode;
 
+    @Column(name = "route_name", nullable = false, length = 120)
     private String routeName;
+
+    @Column(name = "distance_km", nullable = false)
     private Double distanceKm;
 
-    @OneToMany(mappedBy = "route")
+    @Builder.Default
+    @OneToMany(mappedBy = "route", fetch = FetchType.LAZY)
+    @ToString.Exclude
     private List<RouteStation> routeStations = new ArrayList<>();
 
-    @OneToMany(mappedBy = "route")
+    @Builder.Default
+    @OneToMany(mappedBy = "route", fetch = FetchType.LAZY)
+    @ToString.Exclude
     private List<TrainTrip> trainTrips = new ArrayList<>();
 }

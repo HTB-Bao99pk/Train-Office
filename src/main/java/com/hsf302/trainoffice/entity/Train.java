@@ -2,31 +2,44 @@ package com.hsf302.trainoffice.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.List;
-// Station.java
-// Train.java
+
 @Entity
-@Data
+@Table(
+        name = "trains",
+        indexes = @Index(name = "idx_trains_code", columnList = "train_code")
+)
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Train {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "train_id")
+    @EqualsAndHashCode.Include
     private Long trainId;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "train_code", unique = true, nullable = false, length = 30)
     private String trainCode;
 
+    @Column(name = "train_name", nullable = false, length = 100)
     private String trainName;
+
+    @Column(name = "train_type", nullable = false, length = 50)
     private String trainType;
 
-    @OneToMany(mappedBy = "train")
+    @Builder.Default
+    @OneToMany(mappedBy = "train", fetch = FetchType.LAZY)
+    @ToString.Exclude
     private List<Coach> coaches = new ArrayList<>();
 
-    @OneToMany(mappedBy = "train")
+    @Builder.Default
+    @OneToMany(mappedBy = "train", fetch = FetchType.LAZY)
+    @ToString.Exclude
     private List<TrainTrip> trainTrips = new ArrayList<>();
 }

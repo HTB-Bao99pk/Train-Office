@@ -1,42 +1,71 @@
 package com.hsf302.trainoffice.entity;
+
 import com.hsf302.trainoffice.common.enums.TicketStatus;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-// Ticket.java
+
 @Entity
-@Data
+@Table(
+        name = "tickets",
+        indexes = {
+                @Index(name = "idx_tickets_code", columnList = "ticket_code"),
+                @Index(name = "idx_tickets_booking", columnList = "booking_id"),
+                @Index(name = "idx_tickets_passenger", columnList = "passenger_id"),
+                @Index(name = "idx_tickets_seat", columnList = "seat_id"),
+                @Index(name = "idx_tickets_status", columnList = "ticket_status")
+        }
+)
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Ticket {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ticket_id")
+    @EqualsAndHashCode.Include
     private Long ticketId;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "ticket_code", unique = true, nullable = false, length = 30)
     private String ticketCode;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "booking_id", nullable = false)
+    @ToString.Exclude
     private Booking booking;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "passenger_id", nullable = false)
+    @ToString.Exclude
     private Passenger passenger;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "seat_id", nullable = false)
+    @ToString.Exclude
     private Seat seat;
 
+    @Column(name = "ticket_price", nullable = false, precision = 15, scale = 2)
     private BigDecimal ticketPrice;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "ticket_status", nullable = false, length = 20)
     private TicketStatus ticketStatus;
 
-    @OneToMany(mappedBy = "ticket")
+    @Builder.Default
+    @OneToMany(mappedBy = "ticket", fetch = FetchType.LAZY)
+    @ToString.Exclude
     private List<Refund> refunds = new ArrayList<>();
+
+    @PrePersist
+    void onCreate() {
+        if (ticketStatus == null) {
+            ticketStatus = TicketStatus.BOOKED;
+        }
+    }
 }

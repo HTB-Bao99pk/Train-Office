@@ -2,30 +2,47 @@ package com.hsf302.trainoffice.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.List;
-// Station.java
+
 @Entity
-@Data
+@Table(
+        name = "stations",
+        indexes = {
+                @Index(name = "idx_stations_code", columnList = "station_code"),
+                @Index(name = "idx_stations_city", columnList = "city")
+        }
+)
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Station {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "station_id")
+    @EqualsAndHashCode.Include
     private Long stationId;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "station_code", unique = true, nullable = false, length = 30)
     private String stationCode;
 
+    @Column(name = "station_name", nullable = false, length = 120)
     private String stationName;
+
+    @Column(name = "city", nullable = false, length = 80)
     private String city;
 
-    @OneToMany(mappedBy = "station")
+    @Builder.Default
+    @OneToMany(mappedBy = "station", fetch = FetchType.LAZY)
+    @ToString.Exclude
     private List<RouteStation> routeStations = new ArrayList<>();
 
-    @OneToMany(mappedBy = "station")
+    @Builder.Default
+    @OneToMany(mappedBy = "station", fetch = FetchType.LAZY)
+    @ToString.Exclude
     private List<TripStation> tripStations = new ArrayList<>();
 }

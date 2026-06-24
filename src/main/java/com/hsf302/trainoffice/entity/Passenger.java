@@ -3,36 +3,52 @@ package com.hsf302.trainoffice.entity;
 import com.hsf302.trainoffice.common.enums.Gender;
 import jakarta.persistence.*;
 import lombok.*;
-import java.math.BigDecimal;
+
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.time.LocalDate;
-
-// Passenger.java
 @Entity
-@Data
+@Table(
+        name = "passengers",
+        indexes = {
+                @Index(name = "idx_passengers_user", columnList = "user_id"),
+                @Index(name = "idx_passengers_identity", columnList = "identity_number")
+        }
+)
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Passenger {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "passenger_id")
+    @EqualsAndHashCode.Include
     private Long passengerId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @ToString.Exclude
     private User user;
 
+    @Column(name = "full_name", nullable = false, length = 100)
     private String fullName;
+
+    @Column(name = "identity_number", length = 30)
     private String identityNumber;
+
+    @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "gender", length = 20)
     private Gender gender;
 
-    @OneToMany(mappedBy = "passenger")
+    @Builder.Default
+    @OneToMany(mappedBy = "passenger", fetch = FetchType.LAZY)
+    @ToString.Exclude
     private List<Ticket> tickets = new ArrayList<>();
 }

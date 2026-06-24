@@ -1,34 +1,59 @@
 package com.hsf302.trainoffice.entity;
+
 import com.hsf302.trainoffice.common.enums.RefundStatus;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-// Refund.java
+
 @Entity
-@Data
+@Table(
+        name = "refunds",
+        indexes = {
+                @Index(name = "idx_refunds_code", columnList = "refund_code"),
+                @Index(name = "idx_refunds_ticket", columnList = "ticket_id"),
+                @Index(name = "idx_refunds_status", columnList = "refund_status")
+        }
+)
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Refund {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "refund_id")
+    @EqualsAndHashCode.Include
     private Long refundId;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "refund_code", unique = true, nullable = false, length = 30)
     private String refundCode;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "ticket_id", nullable = false)
+    @ToString.Exclude
     private Ticket ticket;
 
+    @Column(name = "refund_amount", nullable = false, precision = 15, scale = 2)
     private BigDecimal refundAmount;
+
+    @Column(name = "refund_reason", nullable = false, length = 500)
     private String refundReason;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "refund_status", nullable = false, length = 20)
     private RefundStatus refundStatus;
 
+    @Column(name = "refunded_at")
     private LocalDateTime refundedAt;
+
+    @PrePersist
+    void onCreate() {
+        if (refundStatus == null) {
+            refundStatus = RefundStatus.PENDING;
+        }
+    }
 }
