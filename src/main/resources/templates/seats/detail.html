@@ -1,104 +1,11 @@
-<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{admin-layout}">
-<head><title>Seat Detail</title></head>
-<body>
-<section layout:fragment="content" class="content-wrapper p-3">
-    <div th:replace="~{fragments/toast :: toast}"></div>
-
-    <div class="content-header">
-        <div class="container-fluid d-flex justify-content-between align-items-center">
-            <div>
-                <h1>Seat Detail</h1>
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a th:href="@{/admin/seats}">Seats</a></li>
-                    <li class="breadcrumb-item active">Detail</li>
-                </ol>
-            </div>
-            <div>
-                <a th:href="@{/admin/seats}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Back
-                </a>
-                <a th:href="@{/admin/seats/{id}/edit(id=${seat.seatId})}" class="btn btn-warning">
-                    <i class="fas fa-edit"></i> Edit
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <section class="content">
-        <div class="container-fluid">
-
-            <div class="card card-primary card-outline">
-                <div class="card-header">
-                    <h3 class="card-title">
-                        <i class="fas fa-chair"></i>
-                        Seat <span th:text="${seat.seatNumber}">A01</span>
-                    </h3>
-                </div>
-
-                <div class="card-body">
-                    <dl class="row mb-0">
-                        <dt class="col-sm-3">Seat ID</dt>
-                        <dd class="col-sm-9" th:text="${seat.seatId}">1</dd>
-
-                        <dt class="col-sm-3">Coach</dt>
-                        <dd class="col-sm-9">
-                            <span class="badge bg-primary"
-                                  th:text="${seat.coach != null ? seat.coach.coachNumber : 'N/A'}">C01</span>
-                            <span th:text="${seat.coach != null ? seat.coach.train.trainCode + ' - ' + seat.coach.train.trainName : ''}">
-                                SE1 - Express
-                            </span>
-                        </dd>
-
-                        <dt class="col-sm-3">Seat Number</dt>
-                        <dd class="col-sm-9" th:text="${seat.seatNumber}">A01</dd>
-
-                        <dt class="col-sm-3">Seat Type</dt>
-                        <dd class="col-sm-9">
-                            <span class="badge bg-info" th:text="${seat.seatType}">NORMAL</span>
-                        </dd>
-
-                        <dt class="col-sm-3">Extra Price</dt>
-                        <dd class="col-sm-9"
-                            th:text="${#numbers.formatDecimal(seat.extraPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'">
-                            0 VND
-                        </dd>
-                    </dl>
-                </div>
-
-                <div class="card-footer text-end">
-                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteSeatModal">
-                        <i class="fas fa-trash"></i> Delete
-                    </button>
-                </div>
-            </div>
-
-            <div class="modal fade" id="deleteSeatModal" tabindex="-1">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Delete Seat</h5>
-                            <button class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            Are you sure you want to delete seat
-                            <strong th:text="${seat.seatNumber}">A01</strong>?
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <form th:action="@{/admin/seats/{id}/delete(id=${seat.seatId})}" method="post">
-                                <button class="btn btn-danger">Delete</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </section>
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Detail Seats / Ghế', ~{::section}, 'seats')}">
+<section>
+<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="card"><div class="card-header d-flex justify-content-between"><span>Seats / Ghế detail / Chi tiết</span><span th:replace="~{fragments/status-badge :: statusBadge(${detail.status})}"></span></div><div class="card-body table-responsive"><table class="table table-bordered"><tr><th>seatId</th><td th:text="${detail.seatId}">seatId</td></tr>
+<tr><th>coach</th><td th:text="${detail.coach}">coach</td></tr>
+<tr><th>seatNumber</th><td th:text="${detail.seatNumber}">seatNumber</td></tr>
+<tr><th>seatType</th><td th:text="${detail.seatType}">seatType</td></tr>
+<tr><th>extraPrice</th><td th:text="${detail.extraPrice}">extraPrice</td></tr></table></div><div class="card-footer"><a class="btn btn-secondary" th:href="@{'/admin/seats'}">Back</a> <a class="btn btn-warning" th:href="@{'/admin/seats/' + ${detail.id} + '/edit'}">Edit</a></div></div>
 </section>
-</body>
 </html>
+

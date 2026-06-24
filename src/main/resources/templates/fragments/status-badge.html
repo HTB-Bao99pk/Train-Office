@@ -1,9 +1,7 @@
-<!-- templates/fragments/status-badge.html -->
-<span xmlns:th="http://www.thymeleaf.org"
+﻿<span xmlns:th="http://www.thymeleaf.org"
       th:fragment="statusBadge(status)"
+      th:with="s=${status == null ? 'UNKNOWN' : #strings.toUpperCase(status.toString())}"
       class="badge"
-      th:classappend="${status == null} ? ' bg-secondary' :
-          (${#strings.equalsIgnoreCase(status.toString(), 'PAID') or #strings.equalsIgnoreCase(status.toString(), 'SUCCESS') or #strings.equalsIgnoreCase(status.toString(), 'CONFIRMED') or #strings.equalsIgnoreCase(status.toString(), 'APPROVED')} ? ' bg-success' :
-          (${#strings.equalsIgnoreCase(status.toString(), 'PENDING') or #strings.equalsIgnoreCase(status.toString(), 'PROCESSING')} ? ' bg-warning text-dark' :
-          (${#strings.equalsIgnoreCase(status.toString(), 'FAILED') or #strings.equalsIgnoreCase(status.toString(), 'CANCELLED') or #strings.equalsIgnoreCase(status.toString(), 'REJECTED')} ? ' bg-danger' : ' bg-secondary')))"
-      th:text="${status ?: 'UNKNOWN'}">STATUS</span>
+      th:classappend="${s == 'SUCCESS' or s == 'PAID' or s == 'ACTIVE' or s == 'CONFIRMED' or s == 'APPROVED'} ? ' bg-success' : (${s == 'PENDING' or s == 'SCHEDULED' or s == 'PROCESSING'} ? ' bg-warning text-dark' : (${s == 'FAILED' or s == 'CANCELLED' or s == 'REJECTED' or s == 'INACTIVE'} ? ' bg-danger' : ' bg-secondary'))"
+      th:text="${s}">STATUS</span>
+

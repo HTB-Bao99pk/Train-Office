@@ -1,14 +1,7 @@
-<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layouts/customer-layout :: layout('Payment Failed / Thanh toán thất bại', ~{::section}, 'payments')}">
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/customer-layout :: layout('Payment Failed / Thất bại', ~{::section}, 'payments')}">
 <section class="container">
-    <div class="railjet-card card text-center">
-        <div class="card-body py-5">
-            <i class="bi bi-x-circle-fill text-danger display-3"></i>
-            <h1 class="fw-bold mt-3">Thanh toán thất bại / Payment failed</h1>
-            <p class="text-muted" th:text="${errorMessage ?: 'Please try another payment method.'}">Please try again.</p>
-            <a class="btn btn-primary" th:href="@{/payments/{id}(id=${booking.bookingId})}">Try again / Thử lại</a>
-        </div>
-    </div>
+<div class="railjet-card card text-center"><div class="card-body py-5"><i class="bi bi-x-circle-fill display-3 text-danger"></i><h1>Payment failed / Thanh toán thất bại</h1><p>Please try again / Vui lòng thử lại.</p><a class="btn btn-primary" th:href="@{/payments/1}">Try again</a></div></div>
 </section>
 </html>
+

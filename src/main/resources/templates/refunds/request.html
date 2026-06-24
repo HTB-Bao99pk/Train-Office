@@ -1,26 +1,7 @@
-<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layouts/customer-layout :: layout('Refund Request / Yêu cầu hoàn tiền', ~{::section}, 'refunds')}">
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/customer-layout :: layout('Refund Request / Yêu cầu hoàn tiền', ~{::section}, 'payments')}">
 <section class="container">
-    <div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div>
-    <form th:action="@{/refunds/request}" method="post" th:object="${refund}">
-        <input type="hidden" th:field="*{bookingId}">
-        <div class="railjet-card card">
-            <div class="card-header">Refund request / Yêu cầu hoàn tiền</div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <label class="form-label">Reason / Lý do</label>
-                    <textarea class="form-control" rows="4" th:field="*{reason}" placeholder="Tell us why you request a refund"></textarea>
-                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('reason')}" th:errors="*{reason}">Error</div>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Bank account / Tài khoản nhận tiền</label>
-                    <input class="form-control" th:field="*{bankAccount}">
-                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('bankAccount')}" th:errors="*{bankAccount}">Error</div>
-                </div>
-                <button class="btn btn-primary">Submit request / Gửi yêu cầu</button>
-            </div>
-        </div>
-    </form>
+<form th:action="@{/refunds/request}" method="post" th:object="${form}"><div class="railjet-card card"><div class="card-header">Refund request / Yêu cầu hoàn tiền</div><div class="card-body"><label>Reason / Lý do</label><textarea class="form-control" rows="4" th:field="*{refundReason}"></textarea><div class="text-danger small" th:if="${#fields.hasErrors('refundReason')}" th:errors="*{refundReason}">Error</div><button class="btn btn-primary mt-3">Submit / Gửi</button></div></div></form>
 </section>
 </html>
+

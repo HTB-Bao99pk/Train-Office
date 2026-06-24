@@ -1,101 +1,11 @@
-<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{admin-layout}">
-<head><title>Coach Detail</title></head>
-<body>
-<section layout:fragment="content" class="content-wrapper p-3">
-    <div th:replace="~{fragments/toast :: toast}"></div>
-
-    <div class="content-header">
-        <div class="container-fluid d-flex justify-content-between align-items-center">
-            <div>
-                <h1>Coach Detail</h1>
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a th:href="@{/admin/coaches}">Coaches</a></li>
-                    <li class="breadcrumb-item active">Detail</li>
-                </ol>
-            </div>
-            <div>
-                <a th:href="@{/admin/coaches}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Back
-                </a>
-                <a th:href="@{/admin/coaches/{id}/edit(id=${coach.coachId})}" class="btn btn-warning">
-                    <i class="fas fa-edit"></i> Edit
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <section class="content">
-        <div class="container-fluid">
-
-            <div class="card card-primary card-outline">
-                <div class="card-header">
-                    <h3 class="card-title">
-                        <i class="fas fa-subway"></i>
-                        Coach <span th:text="${coach.coachNumber}">C01</span>
-                    </h3>
-                </div>
-
-                <div class="card-body">
-                    <dl class="row mb-0">
-                        <dt class="col-sm-3">Coach ID</dt>
-                        <dd class="col-sm-9" th:text="${coach.coachId}">1</dd>
-
-                        <dt class="col-sm-3">Train</dt>
-                        <dd class="col-sm-9">
-                            <span class="badge bg-primary"
-                                  th:text="${coach.train != null ? coach.train.trainCode : 'N/A'}">SE1</span>
-                            <span th:text="${coach.train != null ? coach.train.trainName : ''}">SE1 Express</span>
-                        </dd>
-
-                        <dt class="col-sm-3">Coach Number</dt>
-                        <dd class="col-sm-9" th:text="${coach.coachNumber}">C01</dd>
-
-                        <dt class="col-sm-3">Coach Type</dt>
-                        <dd class="col-sm-9">
-                            <span class="badge bg-info" th:text="${coach.coachType}">SEAT</span>
-                        </dd>
-
-                        <dt class="col-sm-3">Capacity</dt>
-                        <dd class="col-sm-9">
-                            <span th:text="${coach.capacity}">64</span> seats
-                        </dd>
-                    </dl>
-                </div>
-
-                <div class="card-footer text-end">
-                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteCoachModal">
-                        <i class="fas fa-trash"></i> Delete
-                    </button>
-                </div>
-            </div>
-
-            <div class="modal fade" id="deleteCoachModal" tabindex="-1">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Delete Coach</h5>
-                            <button class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            Are you sure you want to delete coach
-                            <strong th:text="${coach.coachNumber}">C01</strong>?
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <form th:action="@{/admin/coaches/{id}/delete(id=${coach.coachId})}" method="post">
-                                <button class="btn btn-danger">Delete</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </section>
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Detail Coaches / Toa', ~{::section}, 'coaches')}">
+<section>
+<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="card"><div class="card-header d-flex justify-content-between"><span>Coaches / Toa detail / Chi tiết</span><span th:replace="~{fragments/status-badge :: statusBadge(${detail.status})}"></span></div><div class="card-body table-responsive"><table class="table table-bordered"><tr><th>coachId</th><td th:text="${detail.coachId}">coachId</td></tr>
+<tr><th>train</th><td th:text="${detail.train}">train</td></tr>
+<tr><th>coachNumber</th><td th:text="${detail.coachNumber}">coachNumber</td></tr>
+<tr><th>coachType</th><td th:text="${detail.coachType}">coachType</td></tr>
+<tr><th>capacity</th><td th:text="${detail.capacity}">capacity</td></tr></table></div><div class="card-footer"><a class="btn btn-secondary" th:href="@{'/admin/coaches'}">Back</a> <a class="btn btn-warning" th:href="@{'/admin/coaches/' + ${detail.id} + '/edit'}">Edit</a></div></div>
 </section>
-</body>
 </html>
+

@@ -1,97 +1,10 @@
-<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{admin-layout}">
-<head><title>Route Detail</title></head>
-<body>
-<section layout:fragment="content" class="content-wrapper p-3">
-    <div th:replace="~{fragments/toast :: toast}"></div>
-
-    <div class="content-header">
-        <div class="container-fluid d-flex justify-content-between align-items-center">
-            <div>
-                <h1>Route Detail</h1>
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a th:href="@{/admin/routes}">Routes</a></li>
-                    <li class="breadcrumb-item active">Detail</li>
-                </ol>
-            </div>
-            <div>
-                <a th:href="@{/admin/routes}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Back
-                </a>
-                <a th:href="@{/admin/routes/{id}/stations(id=${route.routeId})}" class="btn btn-success">
-                    <i class="fas fa-map-marked-alt"></i> Stations
-                </a>
-                <a th:href="@{/admin/routes/{id}/edit(id=${route.routeId})}" class="btn btn-warning">
-                    <i class="fas fa-edit"></i> Edit
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <section class="content">
-        <div class="container-fluid">
-
-            <div class="card card-primary card-outline">
-                <div class="card-header">
-                    <h3 class="card-title">
-                        <i class="fas fa-route"></i>
-                        <span th:text="${route.routeName}">Hà Nội - Sài Gòn</span>
-                    </h3>
-                </div>
-
-                <div class="card-body">
-                    <dl class="row mb-0">
-                        <dt class="col-sm-3">Route ID</dt>
-                        <dd class="col-sm-9" th:text="${route.routeId}">1</dd>
-
-                        <dt class="col-sm-3">Route Code</dt>
-                        <dd class="col-sm-9">
-                            <span class="badge bg-primary" th:text="${route.routeCode}">HNO-SGN</span>
-                        </dd>
-
-                        <dt class="col-sm-3">Route Name</dt>
-                        <dd class="col-sm-9" th:text="${route.routeName}">Hà Nội - Sài Gòn</dd>
-
-                        <dt class="col-sm-3">Distance</dt>
-                        <dd class="col-sm-9">
-                            <span th:text="${route.distanceKm}">1726</span> km
-                        </dd>
-                    </dl>
-                </div>
-
-                <div class="card-footer text-end">
-                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteRouteModal">
-                        <i class="fas fa-trash"></i> Delete
-                    </button>
-                </div>
-            </div>
-
-            <div class="modal fade" id="deleteRouteModal" tabindex="-1">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Delete Route</h5>
-                            <button class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            Are you sure you want to delete
-                            <strong th:text="${route.routeName}">Route</strong>?
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <form th:action="@{/admin/routes/{id}/delete(id=${route.routeId})}" method="post">
-                                <button class="btn btn-danger">Delete</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </section>
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Detail Routes / Tuyến', ~{::section}, 'routes')}">
+<section>
+<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="card"><div class="card-header d-flex justify-content-between"><span>Routes / Tuyến detail / Chi tiết</span><span th:replace="~{fragments/status-badge :: statusBadge(${detail.status})}"></span></div><div class="card-body table-responsive"><table class="table table-bordered"><tr><th>routeId</th><td th:text="${detail.routeId}">routeId</td></tr>
+<tr><th>routeCode</th><td th:text="${detail.routeCode}">routeCode</td></tr>
+<tr><th>routeName</th><td th:text="${detail.routeName}">routeName</td></tr>
+<tr><th>distanceKm</th><td th:text="${detail.distanceKm}">distanceKm</td></tr></table></div><div class="card-footer"><a class="btn btn-secondary" th:href="@{'/admin/routes'}">Back</a> <a class="btn btn-warning" th:href="@{'/admin/routes/' + ${detail.id} + '/edit'}">Edit</a></div></div>
 </section>
-</body>
 </html>
+

@@ -1,42 +1,7 @@
-<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layouts/customer-layout :: layout('Booking Detail / Chi tiết đặt vé', ~{::section}, 'booking')}">
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/customer-layout :: layout('Booking Detail / Chi tiết', ~{::section}, 'booking')}">
 <section class="container">
-    <div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div>
-    <div class="row g-4">
-        <div class="col-lg-8">
-            <div class="railjet-card card">
-                <div class="card-header">Tickets / Vé</div>
-                <div class="card-body">
-                    <h4 th:text="${booking.bookingCode}">RJ0001</h4>
-                    <p><span th:replace="~{fragments/status-badge :: statusBadge(${booking.status})}"></span></p>
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead><tr><th>Passenger</th><th>Seat</th><th>Coach</th><th>Status</th></tr></thead>
-                            <tbody>
-                            <tr th:each="ticket : ${booking.tickets}">
-                                <td th:text="${ticket.passenger.fullName}">Nguyen Van A</td>
-                                <td th:text="${ticket.seat.seatNumber}">A1</td>
-                                <td th:text="${ticket.seat.coach.coachCode}">C1</td>
-                                <td><span th:replace="~{fragments/status-badge :: statusBadge(${ticket.status})}"></span></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4">
-            <div class="railjet-card card">
-                <div class="card-header">Summary / Tóm tắt</div>
-                <div class="card-body">
-                    <p class="mb-1" th:text="${booking.trip.route.routeName}">Ha Noi - Sai Gon</p>
-                    <p class="text-muted" th:text="${#temporals.format(booking.trip.departureTime, 'HH:mm dd/MM/yyyy')}">08:00</p>
-                    <div class="d-flex justify-content-between h5"><span>Total</span><strong th:text="${#numbers.formatDecimal(booking.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</strong></div>
-                    <a class="btn btn-outline-primary w-100 mt-2" th:href="@{/invoices/{id}(id=${booking.invoice.invoiceId})}">Invoice / Hóa đơn</a>
-                </div>
-            </div>
-        </div>
-    </div>
+<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="railjet-card card"><div class="card-header">Booking detail / Chi tiết booking</div><div class="card-body"><h4>RJ0001 <span th:replace="~{fragments/status-badge :: statusBadge('CONFIRMED')}"></span></h4><p>SE1 - Ha Noi to Sai Gon</p><div class="table-responsive"><table class="table"><thead><tr><th>Ticket</th><th>Passenger</th><th>Seat</th><th>Status</th></tr></thead><tbody><tr th:each="ticket : ${tickets}"><td th:text="${ticket.ticketCode}">T</td><td th:text="${ticket.passenger}">Name</td><td th:text="${ticket.seat}">A1</td><td><span th:replace="~{fragments/status-badge :: statusBadge(${ticket.status})}"></span></td></tr></tbody></table></div></div></div>
 </section>
 </html>
+

@@ -1,0 +1,12 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Detail Trip Stations / Ga dừng', ~{::section}, 'trip-stations')}">
+<section>
+<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="card"><div class="card-header d-flex justify-content-between"><span>Trip Stations / Ga dừng detail / Chi tiết</span><span th:replace="~{fragments/status-badge :: statusBadge(${detail.status})}"></span></div><div class="card-body table-responsive"><table class="table table-bordered"><tr><th>tripStationId</th><td th:text="${detail.tripStationId}">tripStationId</td></tr>
+<tr><th>trainTrip</th><td th:text="${detail.trainTrip}">trainTrip</td></tr>
+<tr><th>station</th><td th:text="${detail.station}">station</td></tr>
+<tr><th>stationOrder</th><td th:text="${detail.stationOrder}">stationOrder</td></tr>
+<tr><th>arrivalTime</th><td th:text="${detail.arrivalTime}">arrivalTime</td></tr>
+<tr><th>departureTime</th><td th:text="${detail.departureTime}">departureTime</td></tr></table></div><div class="card-footer"><a class="btn btn-secondary" th:href="@{'/admin/trip-stations'}">Back</a> <a class="btn btn-warning" th:href="@{'/admin/trip-stations/' + ${detail.id} + '/edit'}">Edit</a></div></div>
+</section>
+</html>
+

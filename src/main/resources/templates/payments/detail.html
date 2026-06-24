@@ -1,0 +1,14 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Detail Payments / Thanh toán', ~{::section}, 'payments')}">
+<section>
+<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="card"><div class="card-header d-flex justify-content-between"><span>Payments / Thanh toán detail / Chi tiết</span><span th:replace="~{fragments/status-badge :: statusBadge(${detail.status})}"></span></div><div class="card-body table-responsive"><table class="table table-bordered"><tr><th>paymentId</th><td th:text="${detail.paymentId}">paymentId</td></tr>
+<tr><th>booking</th><td th:text="${detail.booking}">booking</td></tr>
+<tr><th>paymentMethod</th><td th:text="${detail.paymentMethod}">paymentMethod</td></tr>
+<tr><th>amount</th><td th:text="${detail.amount}">amount</td></tr>
+<tr><th>transactionCode</th><td th:text="${detail.transactionCode}">transactionCode</td></tr>
+<tr><th>otpCode</th><td th:text="${detail.otpCode}">otpCode</td></tr>
+<tr><th>paymentStatus</th><td th:text="${detail.paymentStatus}">paymentStatus</td></tr>
+<tr><th>paidAt</th><td th:text="${detail.paidAt}">paidAt</td></tr></table></div><div class="card-footer"><a class="btn btn-secondary" th:href="@{'/admin/payments'}">Back</a> <a class="btn btn-warning" th:href="@{'/admin/payments/' + ${detail.id} + '/edit'}">Edit</a></div></div>
+</section>
+</html>
+

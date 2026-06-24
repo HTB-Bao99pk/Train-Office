@@ -1,114 +1,13 @@
-<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{admin-layout}">
-<head><title>Create Trip</title></head>
-<body>
-<section layout:fragment="content" class="content-wrapper p-3">
-    <div th:replace="~{fragments/toast :: toast}"></div>
-
-    <div class="content-header">
-        <div class="container-fluid">
-            <h1>Create Trip</h1>
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
-                <li class="breadcrumb-item"><a th:href="@{/admin/trips}">Trips</a></li>
-                <li class="breadcrumb-item active">Create</li>
-            </ol>
-        </div>
-    </div>
-
-    <section class="content">
-        <div class="container-fluid">
-
-            <div class="card card-primary card-outline">
-                <form th:action="@{/admin/trips/create}" method="post" th:object="${tripForm}">
-                    <div class="card-body">
-
-                        <div class="mb-3">
-                            <label for="trainId" class="form-label">Train / Tàu</label>
-                            <select id="trainId" th:field="*{trainId}" class="form-select">
-                                <option value="">-- Select Train --</option>
-                                <option th:each="train : ${trains}"
-                                        th:value="${train.trainId}"
-                                        th:text="${train.trainCode + ' - ' + train.trainName}">
-                                    SE1 - Express
-                                </option>
-                            </select>
-                            <div class="text-danger small mt-1"
-                                 th:if="${#fields.hasErrors('trainId')}"
-                                 th:errors="*{trainId}">Train error</div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="routeId" class="form-label">Route / Tuyến</label>
-                            <select id="routeId" th:field="*{routeId}" class="form-select">
-                                <option value="">-- Select Route --</option>
-                                <option th:each="route : ${routes}"
-                                        th:value="${route.routeId}"
-                                        th:text="${route.routeCode + ' - ' + route.routeName}">
-                                    HNO-SGN
-                                </option>
-                            </select>
-                            <div class="text-danger small mt-1"
-                                 th:if="${#fields.hasErrors('routeId')}"
-                                 th:errors="*{routeId}">Route error</div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="departureTime" class="form-label">Departure Time / Giờ khởi hành</label>
-                            <input id="departureTime" type="datetime-local"
-                                   th:field="*{departureTime}" class="form-control">
-                            <div class="text-danger small mt-1"
-                                 th:if="${#fields.hasErrors('departureTime')}"
-                                 th:errors="*{departureTime}">Departure error</div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="arrivalTime" class="form-label">Arrival Time / Giờ đến</label>
-                            <input id="arrivalTime" type="datetime-local"
-                                   th:field="*{arrivalTime}" class="form-control">
-                            <div class="text-danger small mt-1"
-                                 th:if="${#fields.hasErrors('arrivalTime')}"
-                                 th:errors="*{arrivalTime}">Arrival error</div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="status" class="form-label">Status / Trạng thái</label>
-                            <select id="status" th:field="*{status}" class="form-select">
-                                <option value="">-- Select Status --</option>
-                                <option value="SCHEDULED">SCHEDULED</option>
-                                <option value="RUNNING">RUNNING</option>
-                                <option value="COMPLETED">COMPLETED</option>
-                                <option value="CANCELLED">CANCELLED</option>
-                            </select>
-                            <div class="text-danger small mt-1"
-                                 th:if="${#fields.hasErrors('status')}"
-                                 th:errors="*{status}">Status error</div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="basePrice" class="form-label">Base Price / Giá cơ bản</label>
-                            <input id="basePrice" type="number" min="0" step="1000"
-                                   th:field="*{basePrice}" class="form-control">
-                            <div class="text-danger small mt-1"
-                                 th:if="${#fields.hasErrors('basePrice')}"
-                                 th:errors="*{basePrice}">Price error</div>
-                        </div>
-
-                    </div>
-
-                    <div class="card-footer d-flex justify-content-between">
-                        <a th:href="@{/admin/trips}" class="btn btn-secondary">Cancel</a>
-                        <button class="btn btn-primary">
-                            <i class="fas fa-save"></i> Create Trip
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-        </div>
-    </section>
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Create Trips / Chuyến tàu', ~{::section}, 'trips')}">
+<section>
+<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="card"><div class="card-header">Create / Tạo Trips / Chuyến tàu</div><form th:action="@{'/admin/trips/save'}" method="post" th:object="${form}"><div class="card-body"><div th:replace="~{fragments/form-errors :: globalErrors}"></div><div class="row g-3"><div class="col-md-6"><label class="form-label">tripId</label><input class="form-control" th:field="*{tripId}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('tripId')}" th:errors="*{tripId}">Error</div></div>
+<div class="col-md-6"><label class="form-label">train</label><input class="form-control" th:field="*{train}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('train')}" th:errors="*{train}">Error</div></div>
+<div class="col-md-6"><label class="form-label">route</label><input class="form-control" th:field="*{route}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('route')}" th:errors="*{route}">Error</div></div>
+<div class="col-md-6"><label class="form-label">departureTime</label><input class="form-control" th:field="*{departureTime}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('departureTime')}" th:errors="*{departureTime}">Error</div></div>
+<div class="col-md-6"><label class="form-label">arrivalTime</label><input class="form-control" th:field="*{arrivalTime}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('arrivalTime')}" th:errors="*{arrivalTime}">Error</div></div>
+<div class="col-md-6"><label class="form-label">basePrice</label><input class="form-control" th:field="*{basePrice}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('basePrice')}" th:errors="*{basePrice}">Error</div></div>
+<div class="col-md-6"><label class="form-label">status</label><input class="form-control" th:field="*{status}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('status')}" th:errors="*{status}">Error</div></div></div></div><div class="card-footer d-flex justify-content-between"><a class="btn btn-secondary" th:href="@{'/admin/trips'}">Back / Quay lại</a><button class="btn btn-primary">Save / Lưu</button></div></form></div>
 </section>
-</body>
 </html>
+

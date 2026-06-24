@@ -1,38 +1,7 @@
-<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layouts/customer-layout :: layout('Invoice / Hóa đơn', ~{::section}, 'invoices')}">
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/customer-layout :: layout('Invoice / Hóa đơn', ~{::section}, 'payments')}">
 <section class="container">
-    <div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div>
-    <div class="railjet-card card">
-        <div class="card-header d-flex justify-content-between">
-            <span>Invoice detail / Chi tiết hóa đơn</span>
-            <a class="btn btn-sm btn-outline-primary" th:href="@{/invoices/{id}/print(id=${invoice.invoiceId})}">Print / In</a>
-        </div>
-        <div class="card-body">
-            <div class="row g-4">
-                <div class="col-md-6">
-                    <h4 th:text="${invoice.invoiceCode}">INV0001</h4>
-                    <p>Status: <span th:replace="~{fragments/status-badge :: statusBadge(${invoice.status})}"></span></p>
-                    <p th:text="${#temporals.format(invoice.createdAt, 'dd/MM/yyyy HH:mm')}">24/06/2026</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <p>Booking / Đặt vé: <strong th:text="${invoice.booking.bookingCode}">RJ0001</strong></p>
-                    <h3 class="text-primary" th:text="${#numbers.formatDecimal(invoice.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</h3>
-                </div>
-            </div>
-            <div class="table-responsive mt-4">
-                <table class="table">
-                    <thead><tr><th>Description</th><th>Qty</th><th class="text-end">Amount</th></tr></thead>
-                    <tbody>
-                    <tr th:each="ticket : ${invoice.booking.tickets}">
-                        <td th:text="${ticket.passenger.fullName + ' - Seat ' + ticket.seat.seatNumber}">Ticket A1</td>
-                        <td>1</td>
-                        <td class="text-end" th:text="${#numbers.formatDecimal(ticket.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+<div class="railjet-card card"><div class="card-header d-flex justify-content-between"><span>Invoice detail / Chi tiết hóa đơn</span><a class="btn btn-sm btn-primary" th:href="@{/invoices/1/print}">Print</a></div><div class="card-body"><h3>INV0001</h3><p>Total: <strong>900,000 VND</strong></p><p>Status: <span th:replace="~{fragments/status-badge :: statusBadge('PAID')}"></span></p></div></div>
 </section>
 </html>
+

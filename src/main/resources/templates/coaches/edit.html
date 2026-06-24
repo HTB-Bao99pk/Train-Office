@@ -1,89 +1,11 @@
-<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{admin-layout}">
-<head><title>Edit Coach</title></head>
-<body>
-<section layout:fragment="content" class="content-wrapper p-3">
-    <div th:replace="~{fragments/toast :: toast}"></div>
-
-    <div class="content-header">
-        <div class="container-fluid">
-            <h1>Edit Coach</h1>
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
-                <li class="breadcrumb-item"><a th:href="@{/admin/coaches}">Coaches</a></li>
-                <li class="breadcrumb-item active">Edit</li>
-            </ol>
-        </div>
-    </div>
-
-    <section class="content">
-        <div class="container-fluid">
-            <div class="card card-warning card-outline">
-                <form th:action="@{/admin/coaches/{id}/edit(id=${coachForm.coachId})}"
-                      method="post" th:object="${coachForm}">
-
-                    <input type="hidden" th:field="*{coachId}">
-
-                    <div class="card-body">
-
-                        <div class="mb-3">
-                            <label for="trainId" class="form-label">Train / Tàu</label>
-                            <select id="trainId" th:field="*{trainId}" class="form-select">
-                                <option value="">-- Select Train --</option>
-                                <option th:each="train : ${trains}"
-                                        th:value="${train.trainId}"
-                                        th:text="${train.trainCode + ' - ' + train.trainName}">
-                                    SE1 - Express
-                                </option>
-                            </select>
-                            <div class="text-danger small mt-1"
-                                 th:if="${#fields.hasErrors('trainId')}"
-                                 th:errors="*{trainId}">Train error</div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="coachNumber" class="form-label">Coach Number / Số toa</label>
-                            <input id="coachNumber" type="text" th:field="*{coachNumber}" class="form-control">
-                            <div class="text-danger small mt-1"
-                                 th:if="${#fields.hasErrors('coachNumber')}"
-                                 th:errors="*{coachNumber}">Coach number error</div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="coachType" class="form-label">Coach Type / Loại toa</label>
-                            <select id="coachType" th:field="*{coachType}" class="form-select">
-                                <option value="">-- Select Coach Type --</option>
-                                <option value="SEAT">SEAT</option>
-                                <option value="SLEEPER">SLEEPER</option>
-                                <option value="VIP">VIP</option>
-                            </select>
-                            <div class="text-danger small mt-1"
-                                 th:if="${#fields.hasErrors('coachType')}"
-                                 th:errors="*{coachType}">Coach type error</div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="capacity" class="form-label">Capacity / Sức chứa</label>
-                            <input id="capacity" type="number" min="1" th:field="*{capacity}" class="form-control">
-                            <div class="text-danger small mt-1"
-                                 th:if="${#fields.hasErrors('capacity')}"
-                                 th:errors="*{capacity}">Capacity error</div>
-                        </div>
-
-                    </div>
-
-                    <div class="card-footer d-flex justify-content-between">
-                        <a th:href="@{/admin/coaches}" class="btn btn-secondary">Cancel</a>
-                        <button class="btn btn-warning">
-                            <i class="fas fa-save"></i> Update Coach
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </section>
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Edit Coaches / Toa', ~{::section}, 'coaches')}">
+<section>
+<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="card"><div class="card-header">Edit / Sửa Coaches / Toa</div><form th:action="@{'/admin/coaches/save'}" method="post" th:object="${form}"><div class="card-body"><div th:replace="~{fragments/form-errors :: globalErrors}"></div><div class="row g-3"><div class="col-md-6"><label class="form-label">coachId</label><input class="form-control" th:field="*{coachId}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('coachId')}" th:errors="*{coachId}">Error</div></div>
+<div class="col-md-6"><label class="form-label">train</label><input class="form-control" th:field="*{train}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('train')}" th:errors="*{train}">Error</div></div>
+<div class="col-md-6"><label class="form-label">coachNumber</label><input class="form-control" th:field="*{coachNumber}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('coachNumber')}" th:errors="*{coachNumber}">Error</div></div>
+<div class="col-md-6"><label class="form-label">coachType</label><input class="form-control" th:field="*{coachType}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('coachType')}" th:errors="*{coachType}">Error</div></div>
+<div class="col-md-6"><label class="form-label">capacity</label><input class="form-control" th:field="*{capacity}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('capacity')}" th:errors="*{capacity}">Error</div></div></div></div><div class="card-footer d-flex justify-content-between"><a class="btn btn-secondary" th:href="@{'/admin/coaches'}">Back / Quay lại</a><button class="btn btn-primary">Save / Lưu</button></div></form></div>
 </section>
-</body>
 </html>
+

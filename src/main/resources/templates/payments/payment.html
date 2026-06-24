@@ -1,64 +1,7 @@
-<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layouts/customer-layout :: layout('Payment / Thanh toán', ~{::section}, 'payments')}">
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/customer-layout :: layout('Payment / Thanh toán', ~{::section}, 'payments')}">
 <section class="container">
-    <div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div>
-    <form th:action="@{/payments/process}" method="post" th:object="${payment}">
-        <input type="hidden" th:field="*{bookingId}">
-        <div class="row g-4">
-            <div class="col-lg-8">
-                <div class="railjet-card card">
-                    <div class="card-header">Payment method / Phương thức thanh toán</div>
-                    <div class="card-body">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <input class="btn-check" type="radio" th:field="*{paymentMethod}" value="VNPAY" id="method-vnpay">
-                                <label class="border rounded-3 p-3 w-100 h-100" for="method-vnpay">
-                                    <span class="fw-bold d-block">VNPAY</span>
-                                    <small class="text-muted">Online gateway / Cổng thanh toán</small>
-                                </label>
-                            </div>
-                            <div class="col-md-6">
-                                <input class="btn-check" type="radio" th:field="*{paymentMethod}" value="MOMO" id="method-momo">
-                                <label class="border rounded-3 p-3 w-100 h-100" for="method-momo">
-                                    <span class="fw-bold d-block">MOMO</span>
-                                    <small class="text-muted">E-wallet / Ví điện tử</small>
-                                </label>
-                            </div>
-                            <div class="col-md-6">
-                                <input class="btn-check" type="radio" th:field="*{paymentMethod}" value="BANK_TRANSFER" id="method-bank">
-                                <label class="border rounded-3 p-3 w-100 h-100" for="method-bank">
-                                    <span class="fw-bold d-block">BANK_TRANSFER</span>
-                                    <small class="text-muted">Bank transfer / Chuyển khoản</small>
-                                </label>
-                            </div>
-                            <div class="col-md-6">
-                                <input class="btn-check" type="radio" th:field="*{paymentMethod}" value="CASH" id="method-cash">
-                                <label class="border rounded-3 p-3 w-100 h-100" for="method-cash">
-                                    <span class="fw-bold d-block">CASH</span>
-                                    <small class="text-muted">Pay at counter / Trả tại quầy</small>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="text-danger small mt-2" th:if="${#fields.hasErrors('paymentMethod')}" th:errors="*{paymentMethod}">Error</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="railjet-card card">
-                    <div class="card-header">Payment summary / Tóm tắt</div>
-                    <div class="card-body">
-                        <p class="mb-1">Booking: <strong th:text="${booking.bookingCode}">RJ0001</strong></p>
-                        <p class="text-muted" th:text="${booking.trip.route.routeName}">Ha Noi - Sai Gon</p>
-                        <div class="d-flex justify-content-between h5">
-                            <span>Total / Tổng</span>
-                            <strong class="text-primary" th:text="${#numbers.formatDecimal(booking.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</strong>
-                        </div>
-                        <button class="btn btn-primary w-100 mt-3">Pay now / Thanh toán</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
+<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><form th:action="@{/payments/process}" method="post" th:object="${form}"><div class="row g-4"><div class="col-lg-8"><div class="railjet-card card"><div class="card-header">Payment method / Phương thức</div><div class="card-body row g-3"><div class="col-md-6" th:each="method : ${paymentMethods}"><input class="btn-check" type="radio" th:field="*{paymentMethod}" th:value="${method}" th:id="${'method-' + method}"><label class="border rounded-3 p-3 w-100" th:for="${'method-' + method}"><strong th:text="${method}">VNPAY</strong><br><small>Secure payment / Thanh toán an toàn</small></label></div><div class="text-danger small" th:if="${#fields.hasErrors('paymentMethod')}" th:errors="*{paymentMethod}">Error</div></div></div></div><div class="col-lg-4"><div class="railjet-card card"><div class="card-header">Summary / Tóm tắt</div><div class="card-body"><h4>900,000 VND</h4><button class="btn btn-primary w-100">Pay now / Thanh toán</button></div></div></div></div></form>
 </section>
 </html>
+

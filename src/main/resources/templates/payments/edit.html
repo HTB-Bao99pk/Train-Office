@@ -1,0 +1,14 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Edit Payments / Thanh toán', ~{::section}, 'payments')}">
+<section>
+<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="card"><div class="card-header">Edit / Sửa Payments / Thanh toán</div><form th:action="@{'/admin/payments/save'}" method="post" th:object="${form}"><div class="card-body"><div th:replace="~{fragments/form-errors :: globalErrors}"></div><div class="row g-3"><div class="col-md-6"><label class="form-label">paymentId</label><input class="form-control" th:field="*{paymentId}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('paymentId')}" th:errors="*{paymentId}">Error</div></div>
+<div class="col-md-6"><label class="form-label">booking</label><input class="form-control" th:field="*{booking}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('booking')}" th:errors="*{booking}">Error</div></div>
+<div class="col-md-6"><label class="form-label">paymentMethod</label><input class="form-control" th:field="*{paymentMethod}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('paymentMethod')}" th:errors="*{paymentMethod}">Error</div></div>
+<div class="col-md-6"><label class="form-label">amount</label><input class="form-control" th:field="*{amount}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}">Error</div></div>
+<div class="col-md-6"><label class="form-label">transactionCode</label><input class="form-control" th:field="*{transactionCode}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('transactionCode')}" th:errors="*{transactionCode}">Error</div></div>
+<div class="col-md-6"><label class="form-label">otpCode</label><input class="form-control" th:field="*{otpCode}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('otpCode')}" th:errors="*{otpCode}">Error</div></div>
+<div class="col-md-6"><label class="form-label">paymentStatus</label><input class="form-control" th:field="*{paymentStatus}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('paymentStatus')}" th:errors="*{paymentStatus}">Error</div></div>
+<div class="col-md-6"><label class="form-label">paidAt</label><input class="form-control" th:field="*{paidAt}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('paidAt')}" th:errors="*{paidAt}">Error</div></div></div></div><div class="card-footer d-flex justify-content-between"><a class="btn btn-secondary" th:href="@{'/admin/payments'}">Back / Quay lại</a><button class="btn btn-primary">Save / Lưu</button></div></form></div>
+</section>
+</html>
+

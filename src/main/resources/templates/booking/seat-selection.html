@@ -1,48 +1,7 @@
-<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layouts/customer-layout :: layout('Seat Selection / Chọn ghế', ~{::section}, 'booking')}">
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/customer-layout :: layout('Seat Selection / Chọn ghế', ~{::section}, 'booking')}">
 <section class="container">
-    <div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div>
-    <div class="mb-4">
-        <div class="progress" style="height:8px"><div class="progress-bar" style="width:50%"></div></div>
-        <div class="d-flex justify-content-between small mt-2 text-muted"><span>Trip</span><span class="fw-semibold text-primary">Seats / Ghế</span><span>Passengers</span><span>Confirm</span></div>
-    </div>
-    <form th:action="@{/booking/passenger-info}" method="post" th:object="${seatSelection}">
-        <input type="hidden" th:field="*{tripId}">
-        <div class="row g-4">
-            <div class="col-lg-8">
-                <div class="railjet-card card">
-                    <div class="card-header">Seat map / Sơ đồ ghế</div>
-                    <div class="card-body">
-                        <div class="d-flex gap-3 flex-wrap mb-3 small">
-                            <span><span class="badge bg-success">&nbsp;</span> Available</span>
-                            <span><span class="badge bg-primary">&nbsp;</span> Selected</span>
-                            <span><span class="badge bg-secondary">&nbsp;</span> Booked</span>
-                        </div>
-                        <div class="row row-cols-4 row-cols-sm-6 row-cols-md-8 g-2">
-                            <div class="col" th:each="seat : ${seats}">
-                                <input class="btn-check" type="checkbox" th:id="'seat-' + ${seat.seatId}" name="seatIds"
-                                       th:value="${seat.seatId}" th:disabled="${seat.status != null and seat.status.toString() == 'BOOKED'}">
-                                <label class="btn w-100"
-                                       th:classappend="${seat.status != null and seat.status.toString() == 'BOOKED'} ? ' btn-secondary disabled' : ' btn-outline-primary'"
-                                       th:for="'seat-' + ${seat.seatId}" th:text="${seat.seatNumber}">A1</label>
-                            </div>
-                        </div>
-                        <div class="text-danger small mt-3" th:if="${#fields.hasErrors('seatIds')}" th:errors="*{seatIds}">Seat error</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="railjet-card card">
-                    <div class="card-header">Trip summary / Tóm tắt</div>
-                    <div class="card-body">
-                        <p class="mb-1 fw-semibold" th:text="${trip.train.trainCode + ' - ' + trip.route.routeName}">SE1 - Ha Noi</p>
-                        <p class="text-muted" th:text="${#temporals.format(trip.departureTime, 'HH:mm dd/MM/yyyy')}">08:00 24/06/2026</p>
-                        <button class="btn btn-primary w-100">Continue / Tiếp tục</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
+<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><form th:action="@{/booking/passenger-info}" method="post" th:object="${form}"><div class="row g-4"><div class="col-lg-8"><div class="railjet-card card"><div class="card-header">Seat map / Sơ đồ ghế</div><div class="card-body"><div class="d-flex gap-3 small mb-3"><span><span class="badge bg-success"> </span> Available</span><span><span class="badge bg-primary"> </span> Selected</span><span><span class="badge bg-secondary"> </span> Booked</span></div><div class="seat-map-grid"><label class="seat available" th:each="seat : ${seats}"><input type="checkbox" class="d-none" th:field="*{seatIds}" th:value="${seat.seatId}"><span th:text="${seat.seatNumber}">A1</span></label></div><div class="text-danger small" th:if="${#fields.hasErrors('seatIds')}" th:errors="*{seatIds}">Error</div></div></div></div><div class="col-lg-4"><div class="railjet-card card"><div class="card-header">Summary / Tóm tắt</div><div class="card-body"><p>SE1 - Ha Noi to Sai Gon</p><button class="btn btn-primary w-100">Continue / Tiếp tục</button></div></div></div></div></form>
 </section>
 </html>
+

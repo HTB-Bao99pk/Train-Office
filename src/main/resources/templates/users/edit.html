@@ -1,105 +1,13 @@
-<!DOCTYPE html>
-<html lang="vi"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{admin-layout}">
-<head>
-    <title>Edit User</title>
-</head>
-<body>
-<section layout:fragment="content" class="content-wrapper p-3">
-
-    <div th:replace="~{fragments/toast :: toast}"></div>
-
-    <div class="content-header">
-        <div class="container-fluid">
-            <h1>Edit User</h1>
-            <small class="text-muted">Cập nhật thông tin người dùng</small>
-        </div>
-    </div>
-
-    <section class="content">
-        <div class="container-fluid">
-
-            <div class="card card-warning card-outline">
-                <form th:action="@{/admin/users/{id}/edit(id=${userForm.userId})}"
-                      method="post"
-                      th:object="${userForm}">
-
-                    <input type="hidden" th:field="*{userId}">
-
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Username / Tên đăng nhập</label>
-                            <input type="text"
-                                   id="username"
-                                   th:field="*{username}"
-                                   class="form-control">
-                            <div class="text-danger small mt-1"
-                                 th:if="${#fields.hasErrors('username')}"
-                                 th:errors="*{username}">
-                                Username error
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="passwordHash" class="form-label">Password Hash</label>
-                            <input type="text"
-                                   id="passwordHash"
-                                   th:field="*{passwordHash}"
-                                   class="form-control">
-                            <div class="text-danger small mt-1"
-                                 th:if="${#fields.hasErrors('passwordHash')}"
-                                 th:errors="*{passwordHash}">
-                                Password hash error
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="role" class="form-label">Role / Vai trò</label>
-                            <select id="role" th:field="*{role}" class="form-select">
-                                <option value="">-- Select Role --</option>
-                                <option value="ADMIN">ADMIN</option>
-                                <option value="CUSTOMER">CUSTOMER</option>
-                            </select>
-                            <div class="text-danger small mt-1"
-                                 th:if="${#fields.hasErrors('role')}"
-                                 th:errors="*{role}">
-                                Role error
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="status" class="form-label">Status / Trạng thái</label>
-                            <select id="status" th:field="*{status}" class="form-select">
-                                <option value="">-- Select Status --</option>
-                                <option value="ACTIVE">ACTIVE</option>
-                                <option value="LOCKED">LOCKED</option>
-                                <option value="INACTIVE">INACTIVE</option>
-                            </select>
-                            <div class="text-danger small mt-1"
-                                 th:if="${#fields.hasErrors('status')}"
-                                 th:errors="*{status}">
-                                Status error
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card-footer d-flex justify-content-between">
-                        <a th:href="@{/admin/users}" class="btn btn-secondary">
-                            Cancel
-                        </a>
-
-                        <button type="submit" class="btn btn-warning">
-                            <i class="fas fa-save"></i> Update User
-                        </button>
-                    </div>
-
-                </form>
-            </div>
-
-        </div>
-    </section>
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Edit Users / Người dùng', ~{::section}, 'users')}">
+<section>
+<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="card"><div class="card-header">Edit / Sửa Users / Người dùng</div><form th:action="@{'/admin/users/save'}" method="post" th:object="${form}"><div class="card-body"><div th:replace="~{fragments/form-errors :: globalErrors}"></div><div class="row g-3"><div class="col-md-6"><label class="form-label">userId</label><input class="form-control" th:field="*{userId}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('userId')}" th:errors="*{userId}">Error</div></div>
+<div class="col-md-6"><label class="form-label">username</label><input class="form-control" th:field="*{username}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Error</div></div>
+<div class="col-md-6"><label class="form-label">passwordHash</label><input class="form-control" th:field="*{passwordHash}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('passwordHash')}" th:errors="*{passwordHash}">Error</div></div>
+<div class="col-md-6"><label class="form-label">role</label><input class="form-control" th:field="*{role}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('role')}" th:errors="*{role}">Error</div></div>
+<div class="col-md-6"><label class="form-label">status</label><input class="form-control" th:field="*{status}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('status')}" th:errors="*{status}">Error</div></div>
+<div class="col-md-6"><label class="form-label">createdAt</label><input class="form-control" th:field="*{createdAt}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('createdAt')}" th:errors="*{createdAt}">Error</div></div>
+<div class="col-md-6"><label class="form-label">updatedAt</label><input class="form-control" th:field="*{updatedAt}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('updatedAt')}" th:errors="*{updatedAt}">Error</div></div></div></div><div class="card-footer d-flex justify-content-between"><a class="btn btn-secondary" th:href="@{'/admin/users'}">Back / Quay lại</a><button class="btn btn-primary">Save / Lưu</button></div></form></div>
 </section>
-</body>
 </html>
+

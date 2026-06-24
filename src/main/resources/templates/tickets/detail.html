@@ -1,0 +1,7 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/customer-layout :: layout('Ticket Detail / Chi tiết vé', ~{::section}, 'tickets')}">
+<section class="container">
+<div class="railjet-card card"><div class="card-body"><h1>Ticket / Vé RJ-T001</h1><p>Passenger: Nguyen Van A</p><p>Seat: A1</p><p>Status: <span th:replace="~{fragments/status-badge :: statusBadge('CONFIRMED')}"></span></p><a class="btn btn-primary" th:href="@{/tickets/1/print}">Print / In vé</a></div></div>
+</section>
+</html>
+
