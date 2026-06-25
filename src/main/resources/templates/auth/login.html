@@ -1,29 +1,279 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>RailJet Login</title>
+
+    <link rel="stylesheet" th:href="@{css/bootstrap.css}">
+
+    <style>
+
+        body{
+            background:#f8f9ff;
+            min-height:100vh;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        .brand{
+            font-size:40px;
+            font-weight:700;
+            color:#0d1b2a;
+        }
+
+        .login-card{
+            background:white;
+            border-radius:18px;
+            padding:40px;
+            box-shadow:0 5px 25px rgba(0,0,0,.08);
+            border-top:4px solid #0ea5e9;
+        }
+
+        .train-icon{
+            width:90px;
+            height:90px;
+            background:#10233d;
+            border-radius:18px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            margin:auto;
+            font-size:42px;
+            color:white;
+        }
+
+        .form-control{
+            height:55px;
+        }
+
+        .btn-login{
+            height:55px;
+            background:#081a33;
+            color:white;
+            font-weight:600;
+            border:none;
+        }
+
+        .btn-login:hover{
+            background:#10233d;
+            color:white;
+        }
+
+        .social-btn{
+            height:48px;
+        }
+
+        .version-badge{
+            display:inline-block;
+            background:#39bdf8;
+            color:white;
+            padding:8px 18px;
+            border-radius:30px;
+            font-size:14px;
+            font-weight:600;
+        }
+
+        .hero-title{
+            font-size:64px;
+            font-weight:800;
+            line-height:1.1;
+            color:#081a33;
+        }
+
+        .hero-desc{
+            font-size:22px;
+            color:#495057;
+        }
+
+        .train-image{
+            width:100%;
+            height:350px;
+            object-fit:cover;
+            border-radius:18px;
+            box-shadow:0 10px 25px rgba(0,0,0,.1);
+        }
+
+        @media(max-width:992px){
+
+            .hero-title{
+                font-size:42px;
+            }
+
+            .login-card{
+                margin-bottom:40px;
+            }
+        }
+
+    </style>
 </head>
+
 <body>
-<h1>Login</h1>
 
-<form th:action="@{/login}" method="post">
-    <div>
-        <label for="username">Username</label>
-        <input id="username" name="username" type="text">
+<div class="container-fluid py-4 px-lg-5">
+
+    <!-- Logo -->
+    <div class="mb-4">
+        <span class="brand">RailJet</span>
     </div>
 
-    <div>
-        <label for="password">Password</label>
-        <input id="password" name="password" type="password">
+    <div class="row align-items-center g-5">
+
+        <!-- Login Form -->
+        <div class="col-lg-5">
+
+            <div class="login-card">
+
+                <div class="text-center mb-4">
+
+                    <div class="train-icon mb-4">
+                        🚆
+                    </div>
+
+                    <h1 class="fw-bold">
+                        Đăng nhập - RailJet
+                    </h1>
+
+                    <p class="text-muted">
+                        Chào mừng trở lại! Hãy nhập thông tin để tiếp tục.
+                    </p>
+
+                </div>
+
+                <form th:action="@{/login}" method="post">
+
+                    <!-- Error -->
+                    <div th:if="${error}"
+                         class="alert alert-danger"
+                         th:text="${error}">
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">
+                            EMAIL
+                        </label>
+
+                        <input type="text"
+                               name="username"
+                               class="form-control"
+                               placeholder="email@example.com">
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <div class="d-flex justify-content-between">
+
+                            <label class="form-label fw-semibold">
+                                MẬT KHẨU
+                            </label>
+
+                            <a href="#"
+                               class="text-decoration-none">
+                                Quên mật khẩu?
+                            </a>
+
+                        </div>
+
+                        <input type="password"
+                               name="password"
+                               class="form-control"
+                               placeholder="••••••••">
+
+                    </div>
+
+                    <div class="form-check mb-4">
+
+                        <input class="form-check-input"
+                               type="checkbox"
+                               id="remember">
+
+                        <label class="form-check-label"
+                               for="remember">
+                            Ghi nhớ đăng nhập
+                        </label>
+
+                    </div>
+
+                    <button class="btn btn-login w-100 mb-4"
+                            type="submit">
+                        Đăng nhập
+                    </button>
+
+                    <div class="d-flex align-items-center mb-4">
+                        <hr class="flex-grow-1">
+                        <span class="px-3 text-muted">
+                            HOẶC TIẾP TỤC VỚI
+                        </span>
+                        <hr class="flex-grow-1">
+                    </div>
+
+                    <div class="row g-3">
+
+                        <div class="col-6">
+                            <button type="button"
+                                    class="btn btn-outline-secondary w-100 social-btn">
+                                Google
+                            </button>
+                        </div>
+
+                        <div class="col-6">
+                            <button type="button"
+                                    class="btn btn-outline-secondary w-100 social-btn">
+                                Facebook
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <div class="text-center mt-5">
+
+                        Chưa có tài khoản?
+
+                        <a th:href="@{/register}"
+                           class="fw-bold text-decoration-none">
+                            Đăng ký ngay
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+        <!-- Right Side -->
+        <div class="col-lg-7">
+
+            <span class="version-badge">
+                PHIÊN BẢN 2.0
+            </span>
+
+            <h2 class="hero-title mt-3">
+                Vận tốc tối ưu.<br>
+                Hành trình hoàn hảo.
+            </h2>
+
+            <p class="hero-desc mt-4">
+                Hệ thống quản lý hành trình RailJet giúp bạn tiết kiệm
+                thời gian và tối ưu hóa mọi chuyến đi trên khắp
+                mạng lưới đường sắt hiện đại.
+            </p>
+
+            <!-- Ảnh -->
+            <img th:src="@{/images/train.jpg}"
+                 src="/images/train.jpg"
+                 class="train-image mt-4"
+                 alt="Train">
+
+        </div>
+
     </div>
 
-    <button type="submit">Login</button>
-</form>
+</div>
 
-<p>
-    Do not have an account?
-    <a th:href="@{/register}">Register</a>
-</p>
 </body>
 </html>
