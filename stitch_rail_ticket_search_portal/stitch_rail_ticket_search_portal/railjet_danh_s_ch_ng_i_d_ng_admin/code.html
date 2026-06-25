@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Danh sách người dùng - Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-low": "#eff4ff",
+                    "on-background": "#0b1c30",
+                    "surface-container": "#e5eeff",
+                    "primary": "#041627",
+                    "outline-variant": "#c4c6cd",
+                    "surface-container-highest": "#d3e4fe",
+                    "tertiary-fixed": "#e0e3e5",
+                    "secondary-fixed": "#c6e7ff",
+                    "on-secondary": "#ffffff",
+                    "primary-container": "#1a2b3c",
+                    "on-secondary-container": "#004a69",
+                    "on-tertiary-fixed": "#181c1e",
+                    "on-secondary-fixed-variant": "#004c6b",
+                    "surface-dim": "#cbdbf5",
+                    "inverse-surface": "#213145",
+                    "tertiary-fixed-dim": "#c4c7c9",
+                    "on-tertiary-fixed-variant": "#434749",
+                    "secondary-fixed-dim": "#83cfff",
+                    "on-tertiary-container": "#8d9193",
+                    "primary-fixed-dim": "#b7c8de",
+                    "outline": "#74777d",
+                    "tertiary-container": "#262a2c",
+                    "inverse-primary": "#b7c8de",
+                    "on-primary-fixed": "#0b1d2d",
+                    "inverse-on-surface": "#eaf1ff",
+                    "surface-bright": "#f8f9ff",
+                    "surface-tint": "#4f6073",
+                    "on-error": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-tertiary": "#ffffff",
+                    "background": "#f8f9ff",
+                    "surface": "#f8f9ff",
+                    "on-primary-fixed-variant": "#38485a",
+                    "on-secondary-fixed": "#001e2d",
+                    "on-surface": "#0b1c30",
+                    "error-container": "#ffdad6",
+                    "secondary": "#00658d",
+                    "tertiary": "#121617",
+                    "primary-fixed": "#d2e4fb",
+                    "on-surface-variant": "#44474c",
+                    "surface-container-high": "#dce9ff",
+                    "error": "#ba1a1a",
+                    "on-primary-container": "#8192a7",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-variant": "#d3e4fe",
+                    "on-primary": "#ffffff",
+                    "secondary-container": "#3dbeff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "stack-sm": "8px",
+                    "gutter": "24px",
+                    "base": "4px",
+                    "stack-lg": "32px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "48px",
+                    "stack-md": "16px",
+                    "container-max": "1280px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "price-display": ["Inter"],
+                    "headline-sm": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["32px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "price-display": ["28px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-nav-item {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface flex min-h-screen">
+<!-- SideNavBar (Authority: JSON) -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container-lowest border-r border-outline-variant flex flex-col py-stack-lg z-50">
+<div class="px-gutter mb-stack-lg">
+<h1 class="text-headline-md font-headline-md font-bold text-primary tracking-tight">RailJet Admin</h1>
+<p class="text-label-md font-label-md text-on-surface-variant opacity-70">Management Console</p>
+</div>
+<nav class="flex-1 px-stack-md space-y-1 overflow-y-auto">
+<!-- Active: Users (Người dùng) - Mapping logic applied -->
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-semibold transition-all duration-150 active:scale-95" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="text-label-md font-label-md">Users</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">location_on</span>
+<span class="text-label-md font-label-md">Stations</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">train</span>
+<span class="text-label-md font-label-md">Trains</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">alt_route</span>
+<span class="text-label-md font-label-md">Routes</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">confirmation_number</span>
+<span class="text-label-md font-label-md">Trips</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-label-md font-label-md">Refunds</span>
+</a>
+</nav>
+<div class="px-gutter mt-auto pt-stack-md border-t border-outline-variant">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center overflow-hidden border border-outline-variant">
+<img alt="Admin Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgLe8fFLbxD7j5sY6PZuXRDkVGqFkQKn7G55A7oBrGSoy3SZqDq-pIdWyjZg0DLi2j3rSaJVkQEraacl868pwGl21Fd41tRm5SIIpzmhppAtchx2H6b1-7DXZWef_3a_LAS8bj6-dfAzUgHfj9m1TzJ6ZONdIJPJGVIpPF64L-zMsLTrMvJp2iqT8RZ8Qk5N9IYDKgeBx0N7xzaIE2WAJagIEGvNbSExuKBdrUXj9r4XV8icw6D8vAQlGyFYO0Z4UNKlr95usqG1g"/>
+</div>
+<div>
+<p class="text-label-md font-label-md font-bold">Admin Manager</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Superuser</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="ml-64 flex-1 p-margin-desktop bg-surface">
+<!-- Header & Action Bar -->
+<header class="flex flex-col md:flex-row md:items-center justify-between gap-stack-md mb-stack-lg">
+<div>
+<h2 class="text-headline-lg font-headline-lg text-primary">Quản lý người dùng</h2>
+<nav class="flex items-center text-label-md font-label-md text-on-surface-variant gap-2 mt-1">
+<span>Admin</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-secondary font-bold">Người dùng</span>
+</nav>
+</div>
+<button class="bg-primary text-on-primary px-gutter py-3 rounded-xl flex items-center gap-2 font-bold shadow-sm hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined">person_add</span>
+<span class="text-label-md font-label-md">Thêm người dùng mới</span>
+</button>
+</header>
+<!-- Stats Overview (Asymmetric Layout) -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-stack-lg">
+<div class="md:col-span-1 bg-surface-container-lowest p-stack-md rounded-xl border border-outline-variant">
+<div class="flex items-center gap-3 text-secondary mb-2">
+<span class="material-symbols-outlined">group</span>
+<p class="text-label-md font-label-md">Tổng người dùng</p>
+</div>
+<p class="text-headline-md font-headline-md">1,284</p>
+<p class="text-body-sm font-body-sm text-green-600 mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">trending_up</span> +12% tháng này
+                </p>
+</div>
+<div class="md:col-span-1 bg-surface-container-lowest p-stack-md rounded-xl border border-outline-variant">
+<div class="flex items-center gap-3 text-primary mb-2">
+<span class="material-symbols-outlined">verified_user</span>
+<p class="text-label-md font-label-md">Quản trị viên</p>
+</div>
+<p class="text-headline-md font-headline-md">12</p>
+</div>
+<div class="md:col-span-2 relative overflow-hidden bg-primary-container text-on-primary-container p-stack-md rounded-xl border border-primary">
+<div class="relative z-10 flex h-full flex-col justify-between">
+<div>
+<p class="text-label-md font-label-md opacity-80 uppercase tracking-widest">Hiệu suất hệ thống</p>
+<p class="text-headline-sm font-headline-sm mt-1">Hệ thống RailJet đang hoạt động ổn định</p>
+</div>
+<div class="flex items-center gap-2 mt-4">
+<div class="h-2 w-full bg-surface-container-lowest/20 rounded-full overflow-hidden">
+<div class="h-full bg-secondary-container w-[94%]"></div>
+</div>
+<span class="text-label-md font-label-md">94%</span>
+</div>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-10">
+<span class="material-symbols-outlined text-[120px]">speed</span>
+</div>
+</div>
+</div>
+<!-- Filter & Search Section -->
+<div class="bg-surface-container-lowest p-stack-md rounded-xl border border-outline-variant mb-stack-md flex flex-wrap gap-stack-md items-center shadow-sm">
+<div class="flex-1 min-w-[300px] relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-bright border border-outline-variant rounded-lg text-body-md focus:ring-2 focus:ring-secondary focus:border-secondary outline-none transition-all" placeholder="Tìm kiếm người dùng theo tên hoặc email..." type="text"/>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg text-label-md font-label-md hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                    Bộ lọc
+                </button>
+<button class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg text-label-md font-label-md hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                    Xuất CSV
+                </button>
+</div>
+</div>
+<!-- Data Table -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-high border-b border-outline-variant">
+<tr>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Người dùng</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Email</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Vai trò</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Trạng thái</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider text-right">Thao tác</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/50">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img alt="Avatar" class="w-10 h-10 rounded-full border border-outline-variant" data-alt="A professional business headshot for a corporate digital profile. The person has a friendly expression, set against a clean, minimalist studio background with soft directional lighting. The overall color palette is professional, featuring muted blues and crisp whites consistent with a high-end management console design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-84K8tBUU0oskVC8qgICfhy0rl0eXKImfSCk6Gzq7hipx3-e27uy7CbXJq6tp5WAZzdhgTlHDFqac-9dCrh_0dnUlo0Ls5OkNy05ZD7rWyH6N3g6l_PyylT--enfIbjfsVUJvCmVB3p7ugIw8z5AaGEXTVwrxRar7R6OZDqfyOrtifZqjhA3onLg_CdrIpod_TDyog77nKlpKNJG5yTSyZwFQJCM2dOcpFtXWwOGIaaiuiXAMTxRZG44IoAbzmt9VH7DXfUh8AbY"/>
+<div>
+<p class="font-bold text-body-md text-primary">Nguyễn Văn An</p>
+<p class="text-body-sm text-on-surface-variant">ID: RJ-2024-001</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-body-md">an.nguyen@railjet.vn</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-primary-container text-white text-[11px] font-bold rounded-full uppercase tracking-tighter">Admin</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-green-600 font-semibold text-body-sm">
+<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                                Hoạt động
+                            </div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="p-2 text-on-surface-variant hover:text-secondary hover:bg-secondary-container/20 rounded-lg transition-all" title="Chỉnh sửa">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded-lg transition-all" title="Xóa">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img alt="Avatar" class="w-10 h-10 rounded-full border border-outline-variant" data-alt="A high-quality profile photograph for a user management interface. The subject is a professional woman with a confident posture, wearing modern business attire. The lighting is bright and even, casting subtle shadows to create depth. The aesthetic is clean and modern, fitting for a premium digital service." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5EzEaLt66xsrQ9aFKVOWTuaMvh8YyUB1DosFyclL17DETMAo1G5tgQbySU8D7AkfRmUMcYygi07R8yIorxgvAM1MmcGNZCDwSzVZUeJcKgBnWBHK6TaYnf0NquuunLDoeHL2551Nacv3wr-BIDr3XMsyo5TkQjgAQmlOoIs_tKefZRCpekM2sCZsxyZjF6IFAkuK_x32Eo7ddMi7-lbaH9wT-BJjQmCJH584igLZjlzxtJJ2CUAa-jzMtH4tYdd-F9fRVbZXgXUM"/>
+<div>
+<p class="font-bold text-body-md text-primary">Lê Thị Bình</p>
+<p class="text-body-sm text-on-surface-variant">ID: RJ-2024-042</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-body-md">binh.le@gmail.com</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-surface-container text-secondary text-[11px] font-bold rounded-full uppercase tracking-tighter">Customer</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-green-600 font-semibold text-body-sm">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                Hoạt động
+                            </div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="p-2 text-on-surface-variant hover:text-secondary hover:bg-secondary-container/20 rounded-lg transition-all">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded-lg transition-all">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors group bg-surface-container-low/30">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3 opacity-60">
+<img alt="Avatar" class="w-10 h-10 rounded-full border border-outline-variant grayscale" data-alt="A moody, high-contrast profile portrait of a man in casual attire. The image uses a cool-toned color palette, dominated by deep shadows and subtle highlights to convey a serious or inactive status. The background is a soft, out-of-focus urban setting, maintaining a professional yet modern look suitable for a tech dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8jSQhgvWZisN71DdPOpmNZDKY5ntAmm5qHnXDMaLk9CKvzQKWOLmcfPcoOjbIRgU5ltEMxWZa35VmY7P9VBouYzQgyF0067ocZkHUK25ib5gls81bn6jViAGypC8ZifG4Gmgvdd8i6C1BcQ6ecozN_7gZcaCWl8dkh4zrkfwD3fqmMvWS9o98iG-EOKTj856ybaYAynbPWbQ9hFrXdr1DyN0YHTWjGCMAPyMtrOLHLUAoNckSN2vVdag9mdsGIfSuQxb3qQKWuUI"/>
+<div>
+<p class="font-bold text-body-md text-primary">Trần Minh Cường</p>
+<p class="text-body-sm text-on-surface-variant">ID: RJ-2024-089</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-body-md opacity-60">cuong.tran@outlook.com</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-surface-container text-secondary text-[11px] font-bold rounded-full uppercase tracking-tighter opacity-60">Customer</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-error font-semibold text-body-sm">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+                                Đã khóa
+                            </div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="p-2 text-on-surface-variant hover:text-secondary hover:bg-secondary-container/20 rounded-lg transition-all">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded-lg transition-all">
+<span class="material-symbols-outlined text-[20px]">lock_open</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- Pagination -->
+<footer class="px-6 py-4 bg-surface border-t border-outline-variant flex items-center justify-between">
+<p class="text-label-md font-label-md text-on-surface-variant">Hiển thị 1 - 3 trong tổng số 1,284 người dùng</p>
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 flex items-center justify-center rounded-md border border-outline-variant hover:bg-surface-container transition-colors disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-md bg-primary text-on-primary text-label-md font-bold">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-md hover:bg-surface-container text-label-md font-bold">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-md hover:bg-surface-container text-label-md font-bold">3</button>
+<span class="px-2">...</span>
+<button class="w-8 h-8 flex items-center justify-center rounded-md hover:bg-surface-container text-label-md font-bold">42</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-md border border-outline-variant hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</footer>
+</div>
+<!-- System Alerts (Bento-style placement) -->
+<div class="mt-stack-lg grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="bg-surface-container-high/40 border border-outline-variant p-stack-md rounded-xl flex items-start gap-4">
+<div class="p-2 bg-secondary-container/20 text-secondary rounded-lg">
+<span class="material-symbols-outlined">security</span>
+</div>
+<div>
+<p class="text-label-md font-label-md font-bold text-primary">Bảo mật định kỳ</p>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-1">Đã đến lúc kiểm tra quyền truy cập của các tài khoản Admin. Tổng cộng 12 tài khoản cần được xác nhận lại.</p>
+</div>
+</div>
+<div class="bg-surface-container-high/40 border border-outline-variant p-stack-md rounded-xl flex items-start gap-4">
+<div class="p-2 bg-primary-container/10 text-primary rounded-lg">
+<span class="material-symbols-outlined">history</span>
+</div>
+<div>
+<p class="text-label-md font-label-md font-bold text-primary">Lịch sử đăng nhập</p>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-1">Ghi nhận 15 lượt đăng nhập mới trong 30 phút qua từ các địa điểm IP chưa xác định.</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Quick Actions (FAB Support) - Contextual -->
+<div class="fixed bottom-8 right-8 flex flex-col gap-3">
+<button class="w-14 h-14 bg-secondary text-white rounded-full shadow-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-all group relative">
+<span class="material-symbols-outlined">support_agent</span>
+<span class="absolute right-full mr-3 px-3 py-1 bg-primary text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Hỗ trợ kỹ thuật</span>
+</button>
+</div>
+<!-- Micro-interaction Script -->
+<script>
+        document.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('click', function(e) {
+                if (e.target.closest('button')) return;
+                console.log('Viewing user details...');
+                // Logic for opening user modal or detail page
+            });
+        });
+    </script>
+</body></html>

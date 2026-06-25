@@ -147,6 +147,11 @@ public class MockUiController {
         return "booking/history";
     }
 
+    @GetMapping("/profile")
+    String profile() {
+        return "customer/profile";
+    }
+
     @GetMapping("/booking/{id}")
     String bookingDetail() {
         return "booking/detail";

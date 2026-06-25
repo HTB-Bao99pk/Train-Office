@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RailJet Admin - Quản lý Tàu</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#e0e3e5",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-secondary-fixed-variant": "#004c6b",
+                        "secondary-fixed-dim": "#83cfff",
+                        "secondary-fixed": "#c6e7ff",
+                        "outline": "#74777d",
+                        "surface-container-high": "#dce9ff",
+                        "on-tertiary-container": "#8d9193",
+                        "on-primary-container": "#8192a7",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "inverse-primary": "#b7c8de",
+                        "surface-bright": "#f8f9ff",
+                        "primary-fixed-dim": "#b7c8de",
+                        "on-tertiary-fixed-variant": "#434749",
+                        "on-tertiary-fixed": "#181c1e",
+                        "tertiary-container": "#262a2c",
+                        "tertiary": "#121617",
+                        "on-surface": "#0b1c30",
+                        "secondary-container": "#3dbeff",
+                        "error": "#ba1a1a",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed": "#001e2d",
+                        "on-primary-fixed": "#0b1d2d",
+                        "on-primary-fixed-variant": "#38485a",
+                        "surface-tint": "#4f6073",
+                        "inverse-surface": "#213145",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-container": "#004a69",
+                        "on-primary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "surface-variant": "#d3e4fe",
+                        "outline-variant": "#c4c6cd",
+                        "primary-container": "#1a2b3c",
+                        "on-surface-variant": "#44474c",
+                        "surface-container": "#e5eeff",
+                        "surface-container-low": "#eff4ff",
+                        "on-background": "#0b1c30",
+                        "primary-fixed": "#d2e4fb",
+                        "secondary": "#00658d",
+                        "surface": "#f8f9ff",
+                        "error-container": "#ffdad6",
+                        "primary": "#041627",
+                        "surface-dim": "#cbdbf5",
+                        "background": "#f8f9ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "stack-md": "16px",
+                        "stack-sm": "8px",
+                        "margin-mobile": "16px",
+                        "stack-lg": "32px",
+                        "gutter": "24px",
+                        "base": "4px",
+                        "margin-desktop": "48px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Inter"],
+                        "price-display": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["32px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "price-display": ["28px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #F4F7F9; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .train-card-shadow { box-shadow: 0px 10px 15px -3px rgba(26, 43, 60, 0.08); }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- SideNavBar Anchor -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container-lowest border-r border-outline-variant flex flex-col py-stack-lg z-50">
+<div class="px-6 mb-stack-lg">
+<h1 class="text-headline-md font-headline-md font-bold text-primary">RailJet Admin</h1>
+<p class="text-label-md font-label-md text-on-surface-variant opacity-70">Management Console</p>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">person</span>
+<span class="text-label-md font-label-md">Users</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">location_on</span>
+<span class="text-label-md font-label-md">Stations</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg font-semibold shadow-sm transform active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">train</span>
+<span class="text-label-md font-label-md">Trains</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">alt_route</span>
+<span class="text-label-md font-label-md">Routes</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">confirmation_number</span>
+<span class="text-label-md font-label-md">Trips</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">payments</span>
+<span class="text-label-md font-label-md">Refunds</span>
+</a>
+</nav>
+<div class="px-6 mt-auto flex items-center gap-3 border-t border-outline-variant pt-stack-md">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center overflow-hidden">
+<img alt="Admin Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUTsGzrhyUBgJjn-L2hSw8vaaI-EewtB-sb5B6zuWBNKvXVqTFMVwADiQGLPbt-7CzUJQ8UISYezlrn0oj8Hs_BMqI-PoCDNUS8_htSWDecWduUkQq8H_LJCn4T6pR2utdG0FPLIT-8wMT8rMA7oGo0iJJYZD9abX36xDNTZ6gkQpb4M-sw0EFglE0bKUOK4ZtFHYvHyfKB2KIVeRF8vC6nBWuZWJSUqcsPNZ4RBq9BrNoKG1d7tWDd8MYYPA8ub8hW0leQm0QhvQ"/>
+</div>
+<div>
+<p class="text-label-md font-bold text-on-surface">Alex Rivera</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest">Lead Dispatcher</p>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen p-margin-desktop bg-background">
+<!-- Header Actions -->
+<header class="flex justify-between items-end mb-stack-lg">
+<div>
+<h2 class="text-headline-lg font-headline-lg text-primary tracking-tight">Quản lý Đội tàu</h2>
+<p class="text-body-md font-body-md text-on-surface-variant">Theo dõi, điều chỉnh cấu trúc và trạng thái kỹ thuật của các đoàn tàu RailJet.</p>
+</div>
+<button class="bg-primary text-on-primary px-6 py-3 rounded-xl flex items-center gap-2 hover:opacity-90 transition-all shadow-lg active:scale-95" onclick="document.getElementById('addModal').classList.remove('hidden')">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="font-semibold">Thêm Tàu Mới</span>
+</button>
+</header>
+<!-- Stats Overview (Asymmetric Layout Component) -->
+<div class="grid grid-cols-12 gap-gutter mb-stack-lg">
+<div class="col-span-8 bg-surface-container-lowest p-6 rounded-xl border border-outline-variant flex justify-between items-center relative overflow-hidden">
+<div class="z-10">
+<p class="text-label-md font-label-md text-on-surface-variant uppercase mb-1">Hiệu suất Đội tàu</p>
+<h3 class="text-headline-md font-headline-md text-primary">94.2% Hoạt động</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-2 max-w-sm">Dựa trên dữ liệu bảo trì 30 ngày gần nhất. 2 đoàn tàu đang trong kỳ kiểm định định kỳ.</p>
+</div>
+<div class="w-48 h-24 bg-secondary-fixed-dim/20 rounded-full blur-3xl absolute -right-10 -top-10"></div>
+<div class="relative w-32 h-32">
+<svg class="w-full h-full" viewbox="0 0 36 36">
+<path class="text-surface-container-highest" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="100, 100" stroke-width="3"></path>
+<path class="text-secondary-container" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="94, 100" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="text-headline-sm font-bold text-primary">24</span>
+</div>
+</div>
+</div>
+<div class="col-span-4 bg-primary text-on-primary p-6 rounded-xl border border-primary flex flex-col justify-between">
+<div>
+<span class="material-symbols-outlined text-secondary-container">engineering</span>
+<p class="text-label-md font-label-md mt-2 opacity-80 uppercase">Cần Bảo trì</p>
+</div>
+<h3 class="text-headline-lg font-bold">02</h3>
+<p class="text-body-sm opacity-70">Các mã: RJ-004, RJ-012</p>
+</div>
+</div>
+<!-- Train List Table (Corporate Modern Style) -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden train-card-shadow">
+<div class="p-6 border-b border-outline-variant flex justify-between items-center">
+<div class="relative w-72">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-body-sm focus:ring-1 focus:ring-secondary focus:border-secondary outline-none transition-all" placeholder="Tìm kiếm mã tàu, tên..." type="text"/>
+</div>
+<div class="flex gap-2">
+<button class="px-4 py-2 text-label-md font-label-md border border-outline-variant rounded-lg hover:bg-surface-container transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">filter_list</span> Lọc
+                    </button>
+<button class="px-4 py-2 text-label-md font-label-md border border-outline-variant rounded-lg hover:bg-surface-container transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">download</span> Xuất CSV
+                    </button>
+</div>
+</div>
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low border-b border-outline-variant">
+<tr>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant uppercase">Mã Tàu</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant uppercase">Tên Tàu</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant uppercase">Loại</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant uppercase">Tổng Toa</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant uppercase">Trạng Thái</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant uppercase text-right">Thao Tác</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="px-6 py-4 font-bold text-primary">RJ-001</td>
+<td class="px-6 py-4 text-body-md font-medium text-on-surface">Blue Arrow Express</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-secondary-fixed text-on-secondary-fixed rounded-full text-[11px] font-bold uppercase tracking-wider">Cao tốc</span>
+</td>
+<td class="px-6 py-4 text-body-md">12 Toa</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-green-500"></div>
+<span class="text-body-sm font-semibold text-green-700">Hoạt động</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-secondary font-bold text-label-md hover:underline decoration-2 underline-offset-4" onclick="showDetails('RJ-001')">Xem chi tiết</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="px-6 py-4 font-bold text-primary">RJ-004</td>
+<td class="px-6 py-4 text-body-md font-medium text-on-surface">Silver Stream</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-full text-[11px] font-bold uppercase tracking-wider">Thường</span>
+</td>
+<td class="px-6 py-4 text-body-md">08 Toa</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-error animate-pulse"></div>
+<span class="text-body-sm font-semibold text-error">Bảo trì</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-secondary font-bold text-label-md hover:underline decoration-2 underline-offset-4" onclick="showDetails('RJ-004')">Xem chi tiết</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="px-6 py-4 font-bold text-primary">RJ-007</td>
+<td class="px-6 py-4 text-body-md font-medium text-on-surface">Red Velocity</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-secondary-fixed text-on-secondary-fixed rounded-full text-[11px] font-bold uppercase tracking-wider">Cao tốc</span>
+</td>
+<td class="px-6 py-4 text-body-md">10 Toa</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-yellow-500"></div>
+<span class="text-body-sm font-semibold text-yellow-700">Chờ lệnh</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-secondary font-bold text-label-md hover:underline decoration-2 underline-offset-4" onclick="showDetails('RJ-007')">Xem chi tiết</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="px-6 py-4 font-bold text-primary">RJ-012</td>
+<td class="px-6 py-4 text-body-md font-medium text-on-surface">Night Nomad</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-full text-[11px] font-bold uppercase tracking-wider">Thường</span>
+</td>
+<td class="px-6 py-4 text-body-md">14 Toa</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-error"></div>
+<span class="text-body-sm font-semibold text-error">Hỏng hóc</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-secondary font-bold text-label-md hover:underline decoration-2 underline-offset-4" onclick="showDetails('RJ-012')">Xem chi tiết</button>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="p-6 bg-surface-container-low flex justify-between items-center">
+<p class="text-body-sm text-on-surface-variant">Hiển thị 4 trên 24 đoàn tàu</p>
+<div class="flex gap-1">
+<button class="p-2 border border-outline-variant rounded-lg hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button class="px-3 py-1 bg-primary text-on-primary rounded-lg font-bold text-body-sm">1</button>
+<button class="px-3 py-1 border border-outline-variant rounded-lg font-bold text-body-sm hover:bg-surface-container-high transition-all">2</button>
+<button class="px-3 py-1 border border-outline-variant rounded-lg font-bold text-body-sm hover:bg-surface-container-high transition-all">3</button>
+<button class="p-2 border border-outline-variant rounded-lg hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Modal: Xem Chi Tiết Cấu Trúc Toa (Asymmetric Bento) -->
+<div class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4" id="detailModal">
+<div class="absolute inset-0 bg-primary/40 backdrop-blur-sm" onclick="closeModal('detailModal')"></div>
+<div class="relative bg-surface-container-lowest w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[921px]">
+<div class="p-6 border-b border-outline-variant flex justify-between items-center bg-surface-bright">
+<div>
+<h3 class="text-headline-sm font-bold text-primary">Cấu trúc Tàu <span id="targetTrainCode">RJ-001</span></h3>
+<p class="text-body-sm text-on-surface-variant">Cấu hình toa hiện tại và sức chứa</p>
+</div>
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-all" onclick="closeModal('detailModal')">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="p-8 overflow-y-auto custom-scrollbar">
+<!-- Visual Coach Layout -->
+<div class="flex items-center gap-2 mb-stack-lg overflow-x-auto pb-4 custom-scrollbar">
+<div class="flex-shrink-0 w-16 h-20 bg-primary text-on-primary rounded-l-3xl rounded-r-lg flex flex-col items-center justify-center gap-1 shadow-md">
+<span class="material-symbols-outlined">directions_transit</span>
+<span class="text-[10px] font-bold uppercase">Đầu máy</span>
+</div>
+<div class="flex gap-2">
+<!-- Coaches -->
+<div class="coach-unit w-24 h-20 bg-secondary-container/20 border-2 border-secondary-container rounded-lg flex flex-col items-center justify-center p-2 group hover:bg-secondary-container/40 cursor-help transition-all">
+<span class="text-[10px] font-bold text-secondary uppercase">Toa 01</span>
+<span class="text-label-md font-bold text-primary">VIP (20)</span>
+</div>
+<div class="coach-unit w-24 h-20 bg-surface-container-high border-2 border-outline-variant rounded-lg flex flex-col items-center justify-center p-2 group hover:border-secondary transition-all">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase">Toa 02</span>
+<span class="text-label-md font-bold text-on-surface">S.Soft (44)</span>
+</div>
+<div class="coach-unit w-24 h-20 bg-surface-container-high border-2 border-outline-variant rounded-lg flex flex-col items-center justify-center p-2 group hover:border-secondary transition-all">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase">Toa 03</span>
+<span class="text-label-md font-bold text-on-surface">Soft (64)</span>
+</div>
+<div class="coach-unit w-24 h-20 bg-surface-container-high border-2 border-outline-variant rounded-lg flex flex-col items-center justify-center p-2 group hover:border-secondary transition-all">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase">Toa 04</span>
+<span class="text-label-md font-bold text-on-surface">Soft (64)</span>
+</div>
+<div class="coach-unit w-24 h-20 bg-tertiary-container text-on-tertiary-container border-2 border-tertiary rounded-lg flex flex-col items-center justify-center p-2 transition-all">
+<span class="text-[10px] font-bold uppercase">Toa 05</span>
+<span class="text-label-md font-bold">Căng tin</span>
+</div>
+<div class="coach-unit w-24 h-20 bg-surface-container-high border-2 border-outline-variant rounded-lg flex flex-col items-center justify-center p-2 group hover:border-secondary transition-all">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase">Toa 06</span>
+<span class="text-label-md font-bold text-on-surface">Bed (32)</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<div class="bg-surface-container-low p-5 rounded-xl border border-outline-variant">
+<h4 class="text-label-md font-bold uppercase text-on-surface-variant mb-4">Chi tiết Kỹ thuật</h4>
+<div class="space-y-3">
+<div class="flex justify-between border-b border-outline-variant/30 pb-2">
+<span class="text-body-sm text-on-surface-variant">Năm sản xuất</span>
+<span class="text-body-sm font-semibold">2023</span>
+</div>
+<div class="flex justify-between border-b border-outline-variant/30 pb-2">
+<span class="text-body-sm text-on-surface-variant">Tốc độ tối đa</span>
+<span class="text-body-sm font-semibold">250 km/h</span>
+</div>
+<div class="flex justify-between border-b border-outline-variant/30 pb-2">
+<span class="text-body-sm text-on-surface-variant">Ngày bảo trì cuối</span>
+<span class="text-body-sm font-semibold">15/10/2023</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low p-5 rounded-xl border border-outline-variant">
+<h4 class="text-label-md font-bold uppercase text-on-surface-variant mb-4">Ghi chú vận hành</h4>
+<p class="text-body-sm text-on-surface leading-relaxed">Đoàn tàu hoạt động ổn định trên tuyến Bắc-Nam. Điều hòa tại toa 03 cần được kiểm tra cảm biến nhiệt độ vào kỳ bảo trì tới.</p>
+<div class="mt-4 flex gap-2">
+<span class="px-2 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded">TIẾT KIỆM NĂNG LƯỢNG</span>
+<span class="px-2 py-1 bg-blue-100 text-blue-700 text-[10px] font-bold rounded">WI-FI 6 CÀI ĐẶT</span>
+</div>
+</div>
+</div>
+</div>
+<div class="p-6 border-t border-outline-variant bg-surface-bright flex justify-end gap-3">
+<button class="px-6 py-2 border border-outline-variant rounded-lg font-bold text-body-sm hover:bg-surface-container-high transition-all" onclick="closeModal('detailModal')">Đóng</button>
+<button class="px-6 py-2 bg-primary text-on-primary rounded-lg font-bold text-body-sm hover:opacity-90 transition-all">Sửa Cấu Trúc</button>
+</div>
+</div>
+</div>
+<!-- Modal: Thêm Mới Tàu -->
+<div class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4" id="addModal">
+<div class="absolute inset-0 bg-primary/40 backdrop-blur-sm" onclick="closeModal('addModal')"></div>
+<div class="relative bg-surface-container-lowest w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
+<div class="p-6 border-b border-outline-variant bg-primary text-on-primary">
+<h3 class="text-headline-sm font-bold">Khai báo Đoàn tàu Mới</h3>
+<p class="text-body-sm opacity-70">Nhập thông tin cơ bản để khởi tạo mã định danh</p>
+</div>
+<form class="p-6 space-y-4">
+<div>
+<label class="block text-label-md font-bold text-on-surface-variant uppercase mb-1">Mã Tàu (Duy nhất)</label>
+<input class="w-full px-4 py-3 bg-white border border-outline-variant rounded-xl focus:ring-2 focus:ring-secondary/20 focus:border-secondary outline-none transition-all" placeholder="Ví dụ: RJ-025" type="text"/>
+</div>
+<div>
+<label class="block text-label-md font-bold text-on-surface-variant uppercase mb-1">Tên Gọi</label>
+<input class="w-full px-4 py-3 bg-white border border-outline-variant rounded-xl focus:ring-2 focus:ring-secondary/20 focus:border-secondary outline-none transition-all" placeholder="Nhập tên đoàn tàu..." type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-label-md font-bold text-on-surface-variant uppercase mb-1">Loại Tàu</label>
+<select class="w-full px-4 py-3 bg-white border border-outline-variant rounded-xl focus:ring-2 focus:ring-secondary/20 focus:border-secondary outline-none transition-all">
+<option>Cao tốc</option>
+<option>Thường</option>
+<option>Hàng hóa</option>
+</select>
+</div>
+<div>
+<label class="block text-label-md font-bold text-on-surface-variant uppercase mb-1">Số Toa</label>
+<div class="flex items-center bg-white border border-outline-variant rounded-xl overflow-hidden">
+<button class="px-3 py-3 hover:bg-surface-container-low transition-all" type="button"><span class="material-symbols-outlined text-[18px]">remove</span></button>
+<input class="w-full text-center border-none focus:ring-0 text-body-md font-bold" type="number" value="10"/>
+<button class="px-3 py-3 hover:bg-surface-container-low transition-all" type="button"><span class="material-symbols-outlined text-[18px]">add</span></button>
+</div>
+</div>
+</div>
+<div class="pt-4 flex gap-3">
+<button class="flex-1 px-6 py-3 border border-outline-variant rounded-xl font-bold text-on-surface-variant hover:bg-surface-container-low transition-all" onclick="closeModal('addModal')" type="button">Hủy bỏ</button>
+<button class="flex-1 px-6 py-3 bg-secondary text-on-secondary rounded-xl font-bold shadow-lg shadow-secondary/20 active:scale-95 transition-all" type="submit">Tạo Đoàn tàu</button>
+</div>
+</form>
+</div>
+</div>
+<!-- Footer Anchor -->
+<footer class="ml-64 bg-primary text-on-primary">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin-desktop py-stack-lg max-w-container-max mx-auto gap-stack-md">
+<div class="flex flex-col gap-1">
+<span class="text-headline-sm font-headline-sm font-bold text-white tracking-tight">RailJet</span>
+<p class="text-body-sm font-body-sm text-outline-variant">© 2024 RailJet Velocity. All rights reserved. Precision in Motion.</p>
+</div>
+<div class="flex gap-stack-md">
+<a class="text-label-md font-label-md text-outline-variant hover:text-white transition-colors" href="#">Privacy Policy</a>
+<a class="text-label-md font-label-md text-outline-variant hover:text-white transition-colors" href="#">Terms of Service</a>
+<a class="text-label-md font-label-md text-outline-variant hover:text-white transition-colors" href="#">Station Network</a>
+<a class="text-label-md font-label-md text-outline-variant hover:text-white transition-colors" href="#">Support</a>
+</div>
+</div>
+</footer>
+<script>
+        function showDetails(code) {
+            document.getElementById('targetTrainCode').innerText = code;
+            document.getElementById('detailModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Lightweight Micro-interaction: Active Sidebar highlights
+        const navLinks = document.querySelectorAll('aside nav a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                navLinks.forEach(l => {
+                    l.classList.remove('bg-secondary-container', 'text-on-secondary-container', 'font-semibold');
+                    l.classList.add('text-on-surface-variant');
+                    const icon = l.querySelector('.material-symbols-outlined');
+                    if (icon) icon.style.fontVariationSettings = "'FILL' 0";
+                });
+                link.classList.add('bg-secondary-container', 'text-on-secondary-container', 'font-semibold');
+                link.classList.remove('text-on-surface-variant');
+                const activeIcon = link.querySelector('.material-symbols-outlined');
+                if (activeIcon) activeIcon.style.fontVariationSettings = "'FILL' 1";
+            });
+        });
+    </script>
+</body></html>

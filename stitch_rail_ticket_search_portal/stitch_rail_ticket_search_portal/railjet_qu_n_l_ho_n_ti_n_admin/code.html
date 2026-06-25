@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RailJet - Quản lý Hoàn tiền (Admin)</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-container": "#262a2c",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-variant": "#d3e4fe",
+                      "primary-container": "#1a2b3c",
+                      "primary-fixed-dim": "#b7c8de",
+                      "secondary-fixed-dim": "#83cfff",
+                      "outline-variant": "#c4c6cd",
+                      "primary": "#041627",
+                      "on-secondary-container": "#004a69",
+                      "on-background": "#0b1c30",
+                      "surface-dim": "#cbdbf5",
+                      "outline": "#74777d",
+                      "on-primary-container": "#8192a7",
+                      "on-secondary": "#ffffff",
+                      "inverse-primary": "#b7c8de",
+                      "tertiary-fixed": "#e0e3e5",
+                      "tertiary": "#121617",
+                      "inverse-surface": "#213145",
+                      "surface-container": "#e5eeff",
+                      "on-tertiary-fixed": "#181c1e",
+                      "on-surface-variant": "#44474c",
+                      "secondary-fixed": "#c6e7ff",
+                      "on-primary-fixed-variant": "#38485a",
+                      "primary-fixed": "#d2e4fb",
+                      "surface": "#f8f9ff",
+                      "on-surface": "#0b1c30",
+                      "on-tertiary-container": "#8d9193",
+                      "error-container": "#ffdad6",
+                      "surface-container-low": "#eff4ff",
+                      "tertiary-fixed-dim": "#c4c7c9",
+                      "surface-bright": "#f8f9ff",
+                      "secondary-container": "#3dbeff",
+                      "on-tertiary": "#ffffff",
+                      "surface-container-high": "#dce9ff",
+                      "on-primary-fixed": "#0b1d2d",
+                      "background": "#f8f9ff",
+                      "on-secondary-fixed": "#001e2d",
+                      "inverse-on-surface": "#eaf1ff",
+                      "surface-tint": "#4f6073",
+                      "on-error": "#ffffff",
+                      "on-tertiary-fixed-variant": "#434749",
+                      "on-secondary-fixed-variant": "#004c6b",
+                      "surface-container-highest": "#d3e4fe",
+                      "on-error-container": "#93000a",
+                      "error": "#ba1a1a",
+                      "on-primary": "#ffffff",
+                      "secondary": "#00658d"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "stack-sm": "8px",
+                      "container-max": "1280px",
+                      "stack-lg": "32px",
+                      "gutter": "24px",
+                      "margin-mobile": "16px",
+                      "margin-desktop": "48px",
+                      "base": "4px",
+                      "stack-md": "16px"
+              },
+              "fontFamily": {
+                      "body-sm": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "price-display": ["Inter"],
+                      "body-md": ["Inter"],
+                      "label-md": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "body-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["32px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "price-display": ["28px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "headline-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .refund-card-hover:hover {
+            box-shadow: 0px 10px 15px -3px rgba(26, 43, 60, 0.08);
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md overflow-hidden">
+<div class="flex h-screen w-full">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full flex flex-col py-stack-lg z-50 bg-primary dark:bg-tertiary-container text-on-primary dark:text-on-tertiary-container font-label-md text-label-md docked full-height left-0 w-64 shadow-md">
+<div class="px-6 mb-stack-lg">
+<div class="font-headline-sm text-headline-sm font-bold text-white">RailJet Admin</div>
+<div class="text-on-primary-container opacity-80">Fleet Management</div>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Dashboard -->
+<a class="text-on-primary-container hover:bg-on-primary-fixed-variant/20 rounded-lg mx-2 my-1 px-4 py-2 flex items-center gap-3 transition-all scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<!-- Users -->
+<a class="text-on-primary-container hover:bg-on-primary-fixed-variant/20 rounded-lg mx-2 my-1 px-4 py-2 flex items-center gap-3 transition-all scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined">group</span>
+<span>Users</span>
+</a>
+<!-- Stations -->
+<a class="text-on-primary-container hover:bg-on-primary-fixed-variant/20 rounded-lg mx-2 my-1 px-4 py-2 flex items-center gap-3 transition-all scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined">charging_station</span>
+<span>Stations</span>
+</a>
+<!-- Trains -->
+<a class="text-on-primary-container hover:bg-on-primary-fixed-variant/20 rounded-lg mx-2 my-1 px-4 py-2 flex items-center gap-3 transition-all scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined">train</span>
+<span>Trains</span>
+</a>
+<!-- Routes -->
+<a class="text-on-primary-container hover:bg-on-primary-fixed-variant/20 rounded-lg mx-2 my-1 px-4 py-2 flex items-center gap-3 transition-all scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined">map</span>
+<span>Routes</span>
+</a>
+<!-- Trips -->
+<a class="text-on-primary-container hover:bg-on-primary-fixed-variant/20 rounded-lg mx-2 my-1 px-4 py-2 flex items-center gap-3 transition-all scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span>Trips</span>
+</a>
+<!-- Refunds (Active) -->
+<a class="bg-secondary-container text-on-secondary-container rounded-lg mx-2 my-1 px-4 py-2 flex items-center gap-3 scale-95 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span>Refunds</span>
+</a>
+</nav>
+<div class="mt-auto px-2 space-y-1 border-t border-on-primary-fixed-variant/20 pt-4">
+<a class="text-on-primary-container hover:bg-on-primary-fixed-variant/20 rounded-lg mx-2 my-1 px-4 py-2 flex items-center gap-3 transition-all scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+<a class="text-on-primary-container hover:bg-on-primary-fixed-variant/20 rounded-lg mx-2 my-1 px-4 py-2 flex items-center gap-3 transition-all scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined">help</span>
+<span>Support</span>
+</a>
+</div>
+<div class="px-6 mt-stack-md flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center border border-outline-variant overflow-hidden">
+<img alt="Admin User Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a senior rail operations administrator with a confident expression, set against a blurred modern office background. The lighting is crisp and corporate, utilizing a sophisticated blue-toned color palette consistent with a technological professionalism aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyTwBDnzI80K6aBkHVx8nATb6D4jYbOcuAK4djtyeOQAeC7r0A7mnToJzjrug4OkqlcvdzGdXbgEpfMAsLdTY5oVf6csg2u1Ysa79tsXO4ZVBS6qPzGFwiKbLwy1SktCHaWVJ0MHUTzL5w6Y3HuU4QLzBgeun7g6yiCFyJcjfGLylS5I6L-wHq6xDXYmMaeLNUMk9JvCwEFRvbcXTzSCzlCncbloKlgCy2vsNCmh8jSKZEarnyGstZIM93DmTuoshVoacJ8NW0iwE"/>
+</div>
+<div class="flex flex-col">
+<span class="text-label-md font-bold text-white">Alex Rivera</span>
+<span class="text-[10px] text-on-primary-container">Lead Manager</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 flex flex-col bg-surface-container-low min-h-screen overflow-hidden">
+<!-- Top Header for Main Area -->
+<header class="h-16 flex items-center justify-between px-margin-desktop bg-white border-b border-outline-variant">
+<div class="flex items-center gap-stack-md">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Quản lý Hoàn tiền</h1>
+<span class="bg-primary-container text-white text-[10px] px-2 py-0.5 rounded-full font-bold">ADMIN PANEL</span>
+</div>
+<div class="flex items-center gap-gutter">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container border border-outline-variant rounded-lg text-body-sm focus:outline-none focus:border-secondary transition-colors w-64" placeholder="Tìm kiếm mã vé..." type="text"/>
+</div>
+<button class="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg font-label-md hover:opacity-90 transition-all active:scale-95">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                        Xuất báo cáo
+                    </button>
+</div>
+</header>
+<!-- Dashboard Stats Row -->
+<section class="grid grid-cols-4 gap-gutter px-margin-desktop py-stack-md">
+<div class="bg-white p-6 rounded-xl border border-outline-variant refund-card-hover transition-all">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-secondary bg-secondary-fixed p-2 rounded-lg">pending_actions</span>
+<span class="text-on-surface-variant font-label-md">Pending</span>
+</div>
+<div class="text-headline-md font-bold">124</div>
+<div class="text-body-sm text-on-surface-variant mt-1">+12 from yesterday</div>
+</div>
+<div class="bg-white p-6 rounded-xl border border-outline-variant refund-card-hover transition-all">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-green-600 bg-green-100 p-2 rounded-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-on-surface-variant font-label-md">Approved</span>
+</div>
+<div class="text-headline-md font-bold">1,042</div>
+<div class="text-body-sm text-green-600 mt-1">94% resolution rate</div>
+</div>
+<div class="bg-white p-6 rounded-xl border border-outline-variant refund-card-hover transition-all">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-error bg-error-container p-2 rounded-lg">cancel</span>
+<span class="text-on-surface-variant font-label-md">Rejected</span>
+</div>
+<div class="text-headline-md font-bold">86</div>
+<div class="text-body-sm text-on-surface-variant mt-1">Policy non-compliance</div>
+</div>
+<div class="bg-white p-6 rounded-xl border border-outline-variant refund-card-hover transition-all">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-primary bg-primary-fixed p-2 rounded-lg">payments</span>
+<span class="text-on-surface-variant font-label-md">Total Refunded</span>
+</div>
+<div class="text-headline-md font-bold">$42.5k</div>
+<div class="text-body-sm text-on-surface-variant mt-1">Current fiscal month</div>
+</div>
+</section>
+<!-- Main Table Section -->
+<section class="flex-1 px-margin-desktop pb-stack-lg overflow-hidden flex flex-col">
+<div class="bg-white rounded-xl border border-outline-variant flex-1 flex flex-col overflow-hidden shadow-sm">
+<!-- Table Header -->
+<div class="grid grid-cols-[120px_1fr_120px_1fr_150px_130px_180px] gap-4 px-6 py-4 bg-surface-container border-b border-outline-variant text-label-md text-on-surface-variant font-bold uppercase tracking-wider">
+<div>Ticket ID</div>
+<div>Customer Name</div>
+<div>Amount</div>
+<div>Reason</div>
+<div>Request Date</div>
+<div>Status</div>
+<div class="text-right">Actions</div>
+</div>
+<!-- Table Scroll Area -->
+<div class="flex-1 overflow-y-auto custom-scrollbar">
+<!-- Pending Row 1 -->
+<div class="grid grid-cols-[120px_1fr_120px_1fr_150px_130px_180px] gap-4 px-6 py-4 border-b border-outline-variant hover:bg-surface-container-low transition-colors items-center">
+<div class="font-bold text-primary">#RJ-9021</div>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed text-on-secondary-container flex items-center justify-center text-[10px] font-bold">JD</div>
+<span class="font-bold">Jonathan Doe</span>
+</div>
+<div class="font-bold">$124.00</div>
+<div class="text-on-surface-variant line-clamp-1">Train cancellation</div>
+<div class="text-on-surface-variant">Oct 24, 2023</div>
+<div>
+<span class="bg-surface-container-highest text-on-primary-fixed-variant px-3 py-1 rounded-full text-[11px] font-bold">PENDING</span>
+</div>
+<div class="flex justify-end gap-2">
+<button class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-all" title="Approve">
+<span class="material-symbols-outlined">check_circle</span>
+</button>
+<button class="p-2 text-error hover:bg-error-container/20 rounded-lg transition-all" title="Reject">
+<span class="material-symbols-outlined">cancel</span>
+</button>
+<button class="p-2 text-outline hover:bg-surface-container rounded-lg transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Pending Row 2 -->
+<div class="grid grid-cols-[120px_1fr_120px_1fr_150px_130px_180px] gap-4 px-6 py-4 border-b border-outline-variant hover:bg-surface-container-low transition-colors items-center">
+<div class="font-bold text-primary">#RJ-8842</div>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center text-[10px] font-bold">SC</div>
+<span class="font-bold">Sarah Chen</span>
+</div>
+<div class="font-bold">$89.50</div>
+<div class="text-on-surface-variant line-clamp-1">Schedule conflict</div>
+<div class="text-on-surface-variant">Oct 24, 2023</div>
+<div>
+<span class="bg-surface-container-highest text-on-primary-fixed-variant px-3 py-1 rounded-full text-[11px] font-bold">PENDING</span>
+</div>
+<div class="flex justify-end gap-2">
+<button class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-all" title="Approve">
+<span class="material-symbols-outlined">check_circle</span>
+</button>
+<button class="p-2 text-error hover:bg-error-container/20 rounded-lg transition-all" title="Reject">
+<span class="material-symbols-outlined">cancel</span>
+</button>
+<button class="p-2 text-outline hover:bg-surface-container rounded-lg transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Approved Row -->
+<div class="grid grid-cols-[120px_1fr_120px_1fr_150px_130px_180px] gap-4 px-6 py-4 border-b border-outline-variant hover:bg-surface-container-low transition-colors items-center opacity-70">
+<div class="font-bold text-primary">#RJ-7751</div>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-variant text-primary flex items-center justify-center text-[10px] font-bold">MK</div>
+<span class="font-bold text-on-surface-variant">Marcus King</span>
+</div>
+<div class="font-bold">$210.00</div>
+<div class="text-on-surface-variant line-clamp-1">Medical emergency</div>
+<div class="text-on-surface-variant">Oct 22, 2023</div>
+<div>
+<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-[11px] font-bold">APPROVED</span>
+</div>
+<div class="flex justify-end gap-2">
+<button class="p-2 text-outline hover:bg-surface-container rounded-lg transition-all">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+<!-- Rejected Row -->
+<div class="grid grid-cols-[120px_1fr_120px_1fr_150px_130px_180px] gap-4 px-6 py-4 border-b border-outline-variant hover:bg-surface-container-low transition-colors items-center opacity-70">
+<div class="font-bold text-primary">#RJ-7629</div>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed text-on-secondary-container flex items-center justify-center text-[10px] font-bold">ET</div>
+<span class="font-bold text-on-surface-variant">Elena Tsvetkova</span>
+</div>
+<div class="font-bold">$45.00</div>
+<div class="text-on-surface-variant line-clamp-1">Duplicate booking</div>
+<div class="text-on-surface-variant">Oct 21, 2023</div>
+<div>
+<span class="bg-error-container text-error px-3 py-1 rounded-full text-[11px] font-bold">REJECTED</span>
+</div>
+<div class="flex justify-end gap-2">
+<button class="p-2 text-outline hover:bg-surface-container rounded-lg transition-all">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+<!-- Repeat rows for scroll effect -->
+<div class="grid grid-cols-[120px_1fr_120px_1fr_150px_130px_180px] gap-4 px-6 py-4 border-b border-outline-variant hover:bg-surface-container-low transition-colors items-center">
+<div class="font-bold text-primary">#RJ-9102</div>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-fixed text-primary flex items-center justify-center text-[10px] font-bold">BP</div>
+<span class="font-bold">Bob Peterson</span>
+</div>
+<div class="font-bold">$67.00</div>
+<div class="text-on-surface-variant line-clamp-1">Delay > 60 mins</div>
+<div class="text-on-surface-variant">Oct 24, 2023</div>
+<div>
+<span class="bg-surface-container-highest text-on-primary-fixed-variant px-3 py-1 rounded-full text-[11px] font-bold">PENDING</span>
+</div>
+<div class="flex justify-end gap-2">
+<button class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-all" title="Approve">
+<span class="material-symbols-outlined">check_circle</span>
+</button>
+<button class="p-2 text-error hover:bg-error-container/20 rounded-lg transition-all" title="Reject">
+<span class="material-symbols-outlined">cancel</span>
+</button>
+<button class="p-2 text-outline hover:bg-surface-container rounded-lg transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Table Footer / Pagination -->
+<div class="px-6 py-4 bg-surface-container border-t border-outline-variant flex justify-between items-center text-body-sm">
+<div class="text-on-surface-variant">Showing 1 to 5 of 124 entries</div>
+<div class="flex gap-2">
+<button class="px-3 py-1 border border-outline-variant rounded bg-white hover:bg-surface-container-low disabled:opacity-50" disabled="">Previous</button>
+<button class="px-3 py-1 border border-secondary bg-secondary text-white rounded">1</button>
+<button class="px-3 py-1 border border-outline-variant rounded bg-white hover:bg-surface-container-low">2</button>
+<button class="px-3 py-1 border border-outline-variant rounded bg-white hover:bg-surface-container-low">3</button>
+<button class="px-3 py-1 border border-outline-variant rounded bg-white hover:bg-surface-container-low">Next</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Details Overlay (Hidden by Default) -->
+<div class="fixed inset-0 z-[100] hidden" id="details-modal">
+<div class="absolute inset-0 bg-primary/40 backdrop-blur-sm"></div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+<div class="p-6 border-b border-outline-variant flex justify-between items-center bg-surface-container">
+<h3 class="font-headline-sm text-headline-sm text-primary">Refund Request Details</h3>
+<button class="text-outline hover:text-primary transition-colors" onclick="closeModal()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="p-8 space-y-6">
+<div class="grid grid-cols-2 gap-stack-lg">
+<div>
+<div class="text-label-md text-on-surface-variant uppercase font-bold mb-1">Ticket Number</div>
+<div class="text-body-lg font-bold text-primary">#RJ-9021</div>
+</div>
+<div>
+<div class="text-label-md text-on-surface-variant uppercase font-bold mb-1">Status</div>
+<div><span class="bg-surface-container-highest text-on-primary-fixed-variant px-3 py-1 rounded-full text-[11px] font-bold">PENDING</span></div>
+</div>
+</div>
+<div>
+<div class="text-label-md text-on-surface-variant uppercase font-bold mb-1">Reason for Refund</div>
+<div class="text-body-md p-4 bg-surface-container-low rounded-xl border border-outline-variant">
+                        "The train scheduled for 08:30 AM was cancelled due to technical failure. I was not provided with an alternative route that met my schedule requirements."
+                    </div>
+</div>
+<div class="flex justify-between items-center p-4 bg-primary-fixed rounded-xl border border-primary/10">
+<div>
+<div class="text-label-md text-on-primary-fixed-variant uppercase font-bold">Total Refund Amount</div>
+<div class="text-headline-md font-bold text-primary">$124.00</div>
+</div>
+<div class="text-right">
+<div class="text-label-md text-on-primary-fixed-variant uppercase font-bold">Payment Method</div>
+<div class="text-body-md font-bold">Visa ending in **** 4291</div>
+</div>
+</div>
+<div class="flex gap-4 pt-4">
+<button class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 transition-all shadow-lg shadow-green-200">Approve Refund</button>
+<button class="flex-1 border border-error text-error py-3 rounded-xl font-bold hover:bg-error/5 transition-all">Deny Request</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+        function openModal() {
+            document.getElementById('details-modal').classList.remove('hidden');
+        }
+        function closeModal() {
+            document.getElementById('details-modal').classList.add('hidden');
+        }
+
+        // Add event listeners to "more_vert" or visibility buttons for demo
+        document.querySelectorAll('.material-symbols-outlined').forEach(icon => {
+            if (icon.innerText === 'visibility' || icon.innerText === 'more_vert') {
+                icon.parentElement.addEventListener('click', openModal);
+            }
+        });
+    </script>
+</body></html>

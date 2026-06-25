@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile / Ho so | RailJet</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/customer.css" th:href="@{/css/customer.css}">
+    <style>
+        :root{--rail-primary:#041627;--rail-primary-soft:#1a2b3c;--rail-secondary:#00658d;--rail-accent:#3dbeff;--rail-accent-soft:#c6e7ff;--rail-bg:#f8f9ff;--rail-surface:#fff;--rail-surface-soft:#eff4ff;--rail-border:#d7dde8;--rail-border-strong:#c4c6cd;--rail-text:#0b1c30;--rail-muted:#44474c}
+        body.profile-page{margin:0;background:var(--rail-bg);color:var(--rail-text);font-family:Inter,Arial,sans-serif}
+        .profile-page .railjet-main{min-height:72vh;padding:32px 0}
+        .profile-page .container{max-width:1280px;margin:0 auto}
+        .profile-page .profile-velocity-page{padding-left:24px;padding-right:24px}
+        .profile-page .profile-page-header{position:relative;display:flex;justify-content:space-between;align-items:flex-end;gap:24px;overflow:hidden;margin-bottom:24px;padding:40px 48px;background:var(--rail-primary);color:#fff;border:1px solid var(--rail-primary-soft);border-radius:12px;box-shadow:0 10px 15px -3px rgba(26,43,60,.08)}
+        .profile-page .profile-page-header:before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle at 2px 2px,rgba(255,255,255,.08) 1px,transparent 0);background-size:32px 32px;opacity:.55;pointer-events:none}
+        .profile-page .profile-page-header>*{position:relative;z-index:1}
+        .profile-page .profile-eyebrow,.profile-page .profile-label{display:block;font-size:12px;line-height:16px;font-weight:700;letter-spacing:0;text-transform:uppercase;color:var(--rail-muted)}
+        .profile-page .profile-page-header .profile-eyebrow{color:#83cfff}
+        .profile-page .profile-page-title{margin:8px 0 10px;font-size:40px;line-height:48px;font-weight:800;color:#fff;letter-spacing:0}
+        .profile-page .profile-page-subtitle{max-width:620px;margin:0;font-size:18px;line-height:28px;color:#d2e4fb}
+        .profile-page .profile-primary-action,.profile-page .profile-secondary-action,.profile-page .profile-ghost-action{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:800;transition:background .2s ease,color .2s ease,border-color .2s ease}
+        .profile-page .profile-primary-action{min-height:48px;background:var(--rail-accent);border:1px solid var(--rail-accent);color:var(--rail-primary)}
+        .profile-page .profile-primary-action:hover{background:#83cfff;color:var(--rail-primary)}
+        .profile-page .profile-secondary-action{background:var(--rail-primary);border:1px solid var(--rail-primary);color:#fff}
+        .profile-page .profile-secondary-action:hover{background:var(--rail-primary-soft);color:#fff}
+        .profile-page .profile-ghost-action{background:#fff;border:1px solid var(--rail-secondary);color:var(--rail-secondary)}
+        .profile-page .profile-ghost-action:hover{background:var(--rail-accent-soft);color:#004c6b}
+        .profile-page .profile-velocity-grid{display:grid;grid-template-columns:360px minmax(0,1fr);gap:24px;margin-bottom:24px}
+        .profile-page .profile-summary-card,.profile-page .profile-detail-card,.profile-page .profile-ticket-card{position:relative;overflow:hidden;background:#fff;border:1px solid var(--rail-border);border-radius:10px;box-shadow:none;transition:box-shadow .2s ease,border-color .2s ease}
+        .profile-page .profile-summary-card:hover,.profile-page .profile-detail-card:hover,.profile-page .profile-ticket-card:hover{box-shadow:0 10px 15px -3px rgba(26,43,60,.08);border-color:var(--rail-border-strong)}
+        .profile-page .profile-card-accent{position:absolute;left:0;top:0;width:4px;height:100%;background:var(--rail-accent)}
+        .profile-page .profile-summary-card{min-height:100%;padding:28px;display:flex;flex-direction:column;justify-content:space-between;gap:24px}
+        .profile-page .profile-summary-avatar{width:80px;height:80px;border-radius:10px;background:var(--rail-primary);color:var(--rail-accent);display:flex;align-items:center;justify-content:center;font-size:34px}
+        .profile-page .profile-summary-body h2{margin:6px 0 18px;font-size:30px;line-height:36px;font-weight:800;color:var(--rail-primary);word-break:break-word}
+        .profile-page .profile-status-row{display:flex;flex-wrap:wrap;gap:8px}
+        .profile-page .profile-status-pill,.profile-page .profile-role-pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:7px 12px;font-size:12px;font-weight:800;letter-spacing:0;text-transform:uppercase}
+        .profile-page .profile-status-pill{background:var(--rail-accent-soft);color:#004c6b}
+        .profile-page .profile-role-pill{background:var(--rail-surface-soft);color:#38485a}
+        .profile-page .profile-detail-card{padding:28px}
+        .profile-page .profile-detail-header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid #e2e8f0}
+        .profile-page .profile-detail-header h3{margin:4px 0 0;font-size:24px;line-height:32px;font-weight:800;color:var(--rail-primary)}
+        .profile-page .profile-detail-icon{width:48px;height:48px;border-radius:8px;background:var(--rail-surface-soft);border:1px solid #d3e4fe;color:var(--rail-secondary);display:flex;align-items:center;justify-content:center;font-size:24px}
+        .profile-page .profile-detail-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+        .profile-page .profile-detail-row{min-height:86px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px;background:#fff;border:1px solid #e2e8f0;border-radius:8px}
+        .profile-page .profile-detail-row:hover{border-color:#83cfff;background:#f8fbff}
+        .profile-page .profile-detail-row strong{display:block;margin-top:4px;font-size:16px;line-height:24px;color:var(--rail-text);word-break:break-word}
+        .profile-page .profile-detail-row>i{font-size:22px;color:var(--rail-secondary)}
+        .profile-page .profile-ticket-card{margin-top:24px;margin-bottom:8px}
+        .profile-page .profile-ticket-main{min-height:152px;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:24px}
+        .profile-page .profile-ticket-date{min-width:150px;padding-left:8px}
+        .profile-page .profile-ticket-date strong{display:block;margin-top:4px;font-size:24px;line-height:32px;color:var(--rail-primary);word-break:break-word}
+        .profile-page .profile-ticket-date small{display:block;color:var(--rail-muted)}
+        .profile-page .profile-ticket-route{flex:1;display:flex;align-items:center;gap:16px}
+        .profile-page .profile-ticket-station{min-width:110px}
+        .profile-page .profile-ticket-station strong{display:block;font-size:22px;line-height:30px;color:var(--rail-primary)}
+        .profile-page .profile-ticket-station span{display:block;font-size:14px;line-height:20px;color:var(--rail-muted)}
+        .profile-page .profile-route-line{flex:1;display:flex;align-items:center;color:var(--rail-secondary)}
+        .profile-page .profile-route-line span{height:2px;background:#bfc6d1;flex:1;position:relative}
+        .profile-page .profile-route-line span:first-child:before,.profile-page .profile-route-line span:last-child:after{content:"";position:absolute;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--rail-primary)}
+        .profile-page .profile-route-line span:first-child:before{left:0}
+        .profile-page .profile-route-line span:last-child:after{right:0;border:2px solid var(--rail-primary);background:#fff}
+        .profile-page .profile-route-line i{padding:0 10px;color:var(--rail-secondary);font-size:20px}
+        .profile-page .profile-ticket-actions{display:flex;flex-direction:column;gap:10px;min-width:180px}
+        @media(max-width:992px){.profile-page .profile-velocity-grid{grid-template-columns:1fr}.profile-page .profile-summary-card{min-height:auto}}
+        @media(max-width:768px){.profile-page .railjet-main{padding:20px 0}.profile-page .profile-velocity-page{padding-left:16px;padding-right:16px}.profile-page .profile-page-header{flex-direction:column;align-items:flex-start;padding:28px 22px;border-radius:10px}.profile-page .profile-page-title{font-size:32px;line-height:38px}.profile-page .profile-page-subtitle{font-size:16px;line-height:24px}.profile-page .profile-primary-action,.profile-page .profile-secondary-action,.profile-page .profile-ghost-action{width:100%}.profile-page .profile-detail-card,.profile-page .profile-summary-card{padding:20px}.profile-page .profile-detail-list{grid-template-columns:1fr}.profile-page .profile-ticket-main{flex-direction:column;align-items:stretch}.profile-page .profile-ticket-route{width:100%;align-items:center}.profile-page .profile-ticket-actions{min-width:0}}
+        @media(max-width:576px){.profile-page .profile-ticket-route{flex-direction:column;align-items:stretch;gap:12px}.profile-page .profile-ticket-station{text-align:left!important}.profile-page .profile-route-line{min-height:28px}}
+    </style>
+</head>
+<body class="profile-page">
+<div th:replace="~{fragments/customer-header :: customerHeader('profile')}"></div>
+
+<main class="railjet-main">
+    <section class="container profile-velocity-page">
+        <div class="profile-page-header">
+            <div>
+                <div class="profile-eyebrow">RailJet Velocity Account</div>
+                <h1 class="profile-page-title">Ho so tai khoan</h1>
+                <p class="profile-page-subtitle">Quan ly thong tin dang nhap va trang thai tai khoan cua ban.</p>
+            </div>
+            <a class="profile-primary-action" th:href="@{/booking/search}">
+                <i class="bi bi-search"></i>
+                Tim chuyen tau
+            </a>
+        </div>
+
+        <div class="profile-velocity-grid">
+            <aside class="profile-summary-card">
+                <div class="profile-card-accent"></div>
+                <div class="profile-summary-avatar">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <div class="profile-summary-body">
+                    <span class="profile-label">Dang nhap voi</span>
+                    <h2 th:text="${session.currentUser != null ? session.currentUser.username : 'Guest'}">username</h2>
+                    <div class="profile-status-row">
+                        <span class="profile-status-pill">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <span th:text="${session.currentUser != null ? session.currentUser.status : '-'}">ACTIVE</span>
+                        </span>
+                        <span class="profile-role-pill" th:text="${session.currentUser != null ? session.currentUser.role : '-'}">CUSTOMER</span>
+                    </div>
+                </div>
+            </aside>
+
+            <div class="profile-detail-card">
+                <div class="profile-detail-header">
+                    <div>
+                        <span class="profile-label">Thong tin ca nhan</span>
+                        <h3>Account details</h3>
+                    </div>
+                    <span class="profile-detail-icon">
+                        <i class="bi bi-person-vcard"></i>
+                    </span>
+                </div>
+
+                <div class="profile-detail-list">
+                    <div class="profile-detail-row">
+                        <div>
+                            <span class="profile-label">Username</span>
+                            <strong th:text="${session.currentUser != null ? session.currentUser.username : '-'}">username</strong>
+                        </div>
+                        <i class="bi bi-person"></i>
+                    </div>
+                    <div class="profile-detail-row">
+                        <div>
+                            <span class="profile-label">Role</span>
+                            <strong th:text="${session.currentUser != null ? session.currentUser.role : '-'}">role</strong>
+                        </div>
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <div class="profile-detail-row">
+                        <div>
+                            <span class="profile-label">Status</span>
+                            <strong th:text="${session.currentUser != null ? session.currentUser.status : '-'}">status</strong>
+                        </div>
+                        <i class="bi bi-activity"></i>
+                    </div>
+                    <div class="profile-detail-row">
+                        <div>
+                            <span class="profile-label">Created at</span>
+                            <strong th:text="${session.currentUser != null ? session.currentUser.createdAt : '-'}">createdAt</strong>
+                        </div>
+                        <i class="bi bi-calendar3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-ticket-card">
+            <div class="profile-card-accent"></div>
+            <div class="profile-ticket-main">
+                <div class="profile-ticket-date">
+                    <span class="profile-label">Tai khoan</span>
+                    <strong th:text="${session.currentUser != null ? session.currentUser.username : 'Guest'}">username</strong>
+                    <small>RailJet member</small>
+                </div>
+                <div class="profile-ticket-route">
+                    <div class="profile-ticket-station text-end">
+                        <strong>Profile</strong>
+                        <span>Thong tin</span>
+                    </div>
+                    <div class="profile-route-line">
+                        <span></span>
+                        <i class="bi bi-train-front-fill"></i>
+                        <span></span>
+                    </div>
+                    <div class="profile-ticket-station">
+                        <strong>Bookings</strong>
+                        <span>Lich su ve</span>
+                    </div>
+                </div>
+                <div class="profile-ticket-actions">
+                    <a class="profile-secondary-action" th:href="@{/booking/history}">Lich su dat ve</a>
+                    <a class="profile-ghost-action" th:href="@{/logout}">Dang xuat</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div th:replace="~{fragments/customer-footer :: customerFooter}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
