@@ -4,6 +4,7 @@ import com.hsf302.trainoffice.dto.RegisterRequest;
 import com.hsf302.trainoffice.entity.User;
 import com.hsf302.trainoffice.service.UserService;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,27 +39,28 @@ public class AuthController {
         }
 
         if (user.getRole().name().equalsIgnoreCase("CUSTOMER")) {
-            return "redirect:/booking/search";
+            return "redirect:booking/search";
         }
         return "auth/login";
     }
-    // End Login =======================
-    // Register !!!!! ==================
+
     @GetMapping("/register")
-    String showRegister() {
+    public String showRegister(Model model) {
+
+        model.addAttribute(
+                "registerRequest",
+                new RegisterRequest());
+
         return "auth/register";
     }
+
     @PostMapping("/register")
     String register(@ModelAttribute RegisterRequest registerRequest) {
         if (userService.register(registerRequest)) {
             return "auth/login";
         } else {
-            return "auth/register";
+            return "Redirect:auth/register";
         }
-
-
     }
-    // End Register ====================
-
 
 }

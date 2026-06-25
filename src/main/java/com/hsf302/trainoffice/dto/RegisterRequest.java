@@ -1,22 +1,26 @@
 package com.hsf302.trainoffice.dto;
 
-import com.hsf302.trainoffice.common.enums.Gender;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
+import jakarta.validation.constraints.*;
+import lombok.Data;
 
 import java.time.LocalDate;
-@Getter
-@Setter
+
+@Data
 public class RegisterRequest {
-    private String  username;
-    private String password;
+
+    @NotBlank(message = "Họ tên không được để trống")
+    private String fullName;
+
+    @NotBlank(message = "Username không được để trống")
+    @Pattern(
+            regexp = "^[a-zA-Z0-9_]{4,20}$",
+            message = "Username chỉ chứa chữ, số, dấu _ và từ 4-20 ký tự")
+    private String username;
+
+    @NotBlank(message = "Mật khẩu không được để trống")
+    @Size(min = 6, message = "Mật khẩu tối thiểu 6 ký tự")
+    private String password_hash;
+
+    @NotBlank(message = "Xác nhận mật khẩu")
     private String confirmPassword;
-    private String fullname;
-    private String indentityNumber;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate dateOfBirth;
-    private Gender gender;
-
-
 }
