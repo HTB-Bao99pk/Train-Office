@@ -50,25 +50,9 @@ public class MockUiController {
         return "booking/search";
     }
 
-    @GetMapping("/login")
-    String login(Model model) {
-        model.addAttribute("authTitle", "Đăng nhập / Login");
-        model.addAttribute("authAction", "/login");
-        model.addAttribute("authButton", "Login / Đăng nhập");
-        model.addAttribute("showEmail", false);
-        model.addAttribute("showPassword", true);
-        return "auth/login";
-    }
 
-    @GetMapping("/register")
-    String register(Model model) {
-        model.addAttribute("authTitle", "Đăng ký / Register");
-        model.addAttribute("authAction", "/register");
-        model.addAttribute("authButton", "Create account / Tạo tài khoản");
-        model.addAttribute("showEmail", true);
-        model.addAttribute("showPassword", true);
-        return "auth/register";
-    }
+
+
 
     @GetMapping("/forgot-password")
     String forgotPassword(Model model) {
@@ -218,7 +202,7 @@ public class MockUiController {
         return "refunds/detail";
     }
 
-    @PostMapping({"/login", "/register", "/forgot-password", "/booking/passenger-info", "/booking/confirmation",
+    @PostMapping({ "/forgot-password", "/booking/passenger-info", "/booking/confirmation",
             "/payments/process", "/refunds/request", "/admin/{module}/save", "/admin/{module}/delete"})
     String mockSubmit() {
         return "redirect:/";

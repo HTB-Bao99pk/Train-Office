@@ -1,7 +1,63 @@
-﻿<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/customer-layout :: layout('Register / Đăng ký', ~{::section}, 'home')}">
-<section class="container">
-<div class="row justify-content-center"><div class="col-lg-6"><div class="railjet-card card"><div class="card-body p-4 p-lg-5"><span class="badge text-bg-primary mb-3">RailJet Account</span><h1 class="fw-bold mb-3" th:text="${authTitle}">Login / Đăng nhập</h1><form th:action="${authAction}" method="post" th:object="${form}"><div th:replace="~{fragments/form-errors :: globalErrors}"></div><div class="mb-3"><label class="form-label">Username / Tên đăng nhập</label><input class="form-control" th:field="*{username}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Error</div></div><div class="mb-3" th:if="${showEmail}"><label class="form-label">Email</label><input class="form-control" th:field="*{contactEmail}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('contactEmail')}" th:errors="*{contactEmail}">Error</div></div><div class="mb-3" th:if="${showPassword}"><label class="form-label">Password / Mật khẩu</label><input type="password" class="form-control" th:field="*{passwordHash}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('passwordHash')}" th:errors="*{passwordHash}">Error</div></div><button class="btn btn-primary w-100" th:text="${authButton}">Submit</button></form><div class="d-flex justify-content-between mt-3"><a th:href="@{/login}">Login</a><a th:href="@{/register}">Register</a><a th:href="@{/forgot-password}">Forgot?</a></div></div></div></div></div>
-</section>
-</html>
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+</head>
+<body>
+<h1>Register</h1>
 
+<form th:action="@{/register}" method="post">
+    <h2>Account information</h2>
+
+    <div>
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text">
+    </div>
+
+    <div>
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password">
+    </div>
+
+    <div>
+        <label for="confirmPassword">Confirm password</label>
+        <input id="confirmPassword" name="confirmPassword" type="password">
+    </div>
+
+    <h2>Passenger information</h2>
+
+    <div>
+        <label for="fullName">Full name</label>
+        <input id="fullName" name="fullName" type="text">
+    </div>
+
+    <div>
+        <label for="identityNumber">Identity number</label>
+        <input id="identityNumber" name="identityNumber" type="text">
+    </div>
+
+    <div>
+        <label for="dateOfBirth">Date of birth</label>
+        <input id="dateOfBirth" name="dateOfBirth" type="date">
+    </div>
+
+    <div>
+        <label for="gender">Gender</label>
+        <select id="gender" name="gender">
+            <option value="">-- Select gender --</option>
+            <option value="MALE">Male</option>
+            <option value="FEMALE">Female</option>
+            <option value="OTHER">Other</option>
+        </select>
+    </div>
+
+    <button type="submit">Register</button>
+</form>
+
+<p>
+    Already have an account?
+    <a th:href="@{/login}">Login</a>
+</p>
+</body>
+</html>
