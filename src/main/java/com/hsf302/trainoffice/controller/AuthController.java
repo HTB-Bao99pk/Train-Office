@@ -28,10 +28,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam("username") String uname,
+    public String login(@RequestParam("email") String email,
                         @RequestParam("password") String pwd,
                         HttpSession session) {
-        User user = userService.login(uname, pwd);
+        User user = userService.login(email, pwd);
 
         if (user == null) {
             return "auth/login";
@@ -66,11 +66,13 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    String register(@ModelAttribute RegisterRequest registerRequest) {
+    String register(@ModelAttribute RegisterRequest registerRequest, Model model) {
         if (userService.register(registerRequest)) {
-            return "auth/login";
+            return "redirect:/login";
         } else {
-            return "Redirect:auth/register";
+            model.addAttribute("registerRequest", registerRequest);
+            model.addAttribute("error", "Email da ton tai hoac thong tin dang ky khong hop le.");
+            return "auth/register";
         }
     }
 

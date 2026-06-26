@@ -2,8 +2,8 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Detail Users / Người dùng', ~{::section}, 'users')}">
 <section>
 <div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="card"><div class="card-header d-flex justify-content-between"><span>Users / Người dùng detail / Chi tiết</span><span th:replace="~{fragments/status-badge :: statusBadge(${detail.status})}"></span></div><div class="card-body table-responsive"><table class="table table-bordered"><tr><th>userId</th><td th:text="${detail.userId}">userId</td></tr>
-<tr><th>username</th><td th:text="${detail.username}">username</td></tr>
-<tr><th>passwordHash</th><td th:text="${detail.passwordHash}">passwordHash</td></tr>
+<tr><th>email</th><td th:text="${detail.email}">email</td></tr>
+<tr><th>password</th><td th:text="${detail.password}">password</td></tr>
 <tr><th>role</th><td th:text="${detail.role}">role</td></tr>
 <tr><th>status</th><td th:text="${detail.status}">status</td></tr>
 <tr><th>createdAt</th><td th:text="${detail.createdAt}">createdAt</td></tr>

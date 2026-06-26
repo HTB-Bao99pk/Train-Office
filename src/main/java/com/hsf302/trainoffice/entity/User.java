@@ -13,7 +13,7 @@ import java.util.List;
 @Table(
         name = "users",
         indexes = {
-                @Index(name = "idx_users_username", columnList = "username"),
+                @Index(name = "idx_users_email", columnList = "email"),
                 @Index(name = "idx_users_role", columnList = "role")
         }
 )
@@ -30,11 +30,11 @@ public class User {
     @EqualsAndHashCode.Include
     private Long userId;
 
-    @Column(name = "username", nullable = false, unique = true, length = 50)
-    private String username;
+    @Column(name = "email", nullable = false, unique = true, length = 120)
+    private String email;
 
-    @Column(name = "password_hash", nullable = false, length = 255)
-    private String passwordHash;
+    @Column(name = "password", nullable = false, length = 255)
+    private String password;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false, length = 20)

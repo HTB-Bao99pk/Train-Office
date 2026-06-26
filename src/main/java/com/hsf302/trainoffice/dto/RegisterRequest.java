@@ -1,26 +1,24 @@
 package com.hsf302.trainoffice.dto;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
-
-import java.time.LocalDate;
 
 @Data
 public class RegisterRequest {
 
-    @NotBlank(message = "Họ tên không được để trống")
+    @NotBlank(message = "Ho ten khong duoc de trong")
     private String fullName;
 
-    @NotBlank(message = "Username không được để trống")
-    @Pattern(
-            regexp = "^[a-zA-Z0-9_]{4,20}$",
-            message = "Username chỉ chứa chữ, số, dấu _ và từ 4-20 ký tự")
-    private String username;
+    @NotBlank(message = "Email khong duoc de trong")
+    @Email(message = "Email khong hop le")
+    private String email;
 
-    @NotBlank(message = "Mật khẩu không được để trống")
-    @Size(min = 6, message = "Mật khẩu tối thiểu 6 ký tự")
-    private String password_hash;
+    @NotBlank(message = "Mat khau khong duoc de trong")
+    @Size(min = 6, message = "Mat khau toi thieu 6 ky tu")
+    private String password;
 
-    @NotBlank(message = "Xác nhận mật khẩu")
+    @NotBlank(message = "Xac nhan mat khau")
     private String confirmPassword;
 }

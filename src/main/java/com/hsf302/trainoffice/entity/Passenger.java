@@ -34,10 +34,10 @@ public class Passenger {
     @ToString.Exclude
     private User user;
 
-    @Column(name = "full_name", nullable = false, length = 100)
+    @Column(name = "full_name", nullable = false, length = 100, columnDefinition = "NVARCHAR(100)")
     private String fullName;
 
-    @Column(name = "identity_number", length = 30)
+    @Column(name = "identity_number", length = 30, columnDefinition = "NVARCHAR(30)")
     private String identityNumber;
 
     @Column(name = "date_of_birth")

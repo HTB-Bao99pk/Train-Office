@@ -27,12 +27,12 @@
                         <span class="user-avatar">
                             <i class="bi bi-person-fill"></i>
                         </span>
-                        <span class="user-name" th:text="${session.currentUser.username}">User</span>
+                        <span class="user-name" th:text="${session.currentUser.email}">User</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm user-dropdown">
                         <li class="dropdown-header">
                             <div class="small text-muted">Signed in as</div>
-                            <div class="fw-semibold" th:text="${session.currentUser.username}">User</div>
+                            <div class="fw-semibold" th:text="${session.currentUser.email}">User</div>
                         </li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" th:href="@{/profile}">Profile / Hồ sơ</a></li>

@@ -8,6 +8,7 @@ import com.hsf302.trainoffice.entity.User;
 import com.hsf302.trainoffice.repository.PassengerRepository;
 import com.hsf302.trainoffice.repository.UserRepository;
 import com.hsf302.trainoffice.service.UserService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,21 +25,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean register(RegisterRequest registerRequest) {
         String fullName = registerRequest.getFullName();
-        String username = registerRequest.getUsername();
-        String password = registerRequest.getPassword_hash();
+        String email = registerRequest.getEmail();
+        String password = registerRequest.getPassword();
         String confirmPassword = registerRequest.getConfirmPassword();
-
-        if (userRepository.existsByUsername(username)) {
-            return false;
-        }
 
         if (fullName == null || fullName.isBlank()) {
             return false;
         }
 
-        if (username == null || username.isBlank()) {
+        if (email == null || email.isBlank()) {
             return false;
         }
+
+        email = email.trim().toLowerCase();
 
         if (password == null || password.isBlank()) {
             return false;
@@ -47,7 +46,7 @@ public class UserServiceImpl implements UserService {
         if (confirmPassword == null || !confirmPassword.equals(password)) {
             return false;
         }
-        if (!registerRequest.getPassword_hash()
+        if (!registerRequest.getPassword()
                 .equals(registerRequest.getConfirmPassword())) {
             return false;
         }
@@ -55,31 +54,40 @@ public class UserServiceImpl implements UserService {
 
         User user = new User();
 
-        user.setUsername(registerRequest.getUsername());
+        if (userRepository.existsByEmail(email)) {
+            return false;
+        }
 
-        user.setPasswordHash(
-                registerRequest.getPassword_hash());
+        user.setEmail(email);
+
+        user.setPassword(
+                registerRequest.getPassword());
 
         user.setRole(UserRole.CUSTOMER);
 
         user.setStatus(UserStatus.ACTIVE);
 
-        user = userRepository.save(user);
+        try {
+            user = userRepository.save(user);
 
-        Passenger passenger = new Passenger();
+            Passenger passenger = new Passenger();
 
-        passenger.setFullName(
-                registerRequest.getFullName());
+            passenger.setUser(user);
+            passenger.setFullName(
+                    registerRequest.getFullName());
 
-        passengerRepository.save(passenger);
-        return true;
+            passengerRepository.save(passenger);
+            return true;
+        } catch (DataIntegrityViolationException ex) {
+            return false;
+        }
     }
 
     @Override
-    public User login(String uname, String pwd) {
-       if (userRepository.findByUsernameAndPasswordHash(uname, pwd) == null){
+    public User login(String email, String pwd) {
+       if (email == null || pwd == null) {
            return null;
        }
-        return userRepository.findByUsernameAndPasswordHash(uname,pwd);
+        return userRepository.findByEmailAndPassword(email.trim().toLowerCase(), pwd);
     }
 }

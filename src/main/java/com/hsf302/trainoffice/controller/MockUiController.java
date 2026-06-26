@@ -147,11 +147,6 @@ public class MockUiController {
         return "booking/history";
     }
 
-    @GetMapping("/profile")
-    String profile() {
-        return "customer/profile";
-    }
-
     @GetMapping("/booking/{id}")
     String bookingDetail() {
         return "booking/detail";
@@ -233,7 +228,7 @@ public class MockUiController {
 
     private static List<Map<String, Object>> sampleItems() {
         List<Map<String, Object>> rows = new ArrayList<>();
-        rows.add(map("id", 1, "userId", 1, "username", "admin", "passwordHash", "***", "role", "ADMIN", "status", "ACTIVE",
+        rows.add(map("id", 1, "userId", 1, "email", "admin@railjet.local", "password", "***", "role", "ADMIN", "status", "ACTIVE",
                 "createdAt", "2026-06-24", "updatedAt", "2026-06-24", "passengerId", 1, "user", "admin",
                 "fullName", "Nguyen Van A", "identityNumber", "012345678901", "dateOfBirth", "1998-01-01",
                 "gender", "MALE", "stationId", 1, "stationCode", "HAN", "stationName", "Ha Noi", "city", "Ha Noi",
@@ -298,8 +293,8 @@ public class MockUiController {
         private String fromDate = LocalDate.now().minusDays(7).toString();
         private String toDate = LocalDate.now().toString();
         private String userId = "";
-        private String username = "";
-        private String passwordHash = "";
+        private String email = "";
+        private String password = "";
         private String role = "CUSTOMER";
         private String createdAt = "";
         private String updatedAt = "";
@@ -380,10 +375,10 @@ public class MockUiController {
         public void setFromDate(String fromDate) { this.fromDate = fromDate; }
         public String getToDate() { return toDate; }
         public void setToDate(String toDate) { this.toDate = toDate; }
-        public String getUsername() { return username; }
-        public void setUsername(String username) { this.username = username; }
-        public String getPasswordHash() { return passwordHash; }
-        public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+        public String getEmail() { return email; }
+        public void setEmail(String email) { this.email = email; }
+        public String getPassword() { return password; }
+        public void setPassword(String password) { this.password = password; }
         public String getRole() { return role; }
         public void setRole(String role) { this.role = role; }
         public String getContactName() { return contactName; }

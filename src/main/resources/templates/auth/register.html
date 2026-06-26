@@ -256,6 +256,10 @@
                       method="post"
                       th:object="${registerRequest}">
 
+                    <div class="alert alert-danger" th:if="${error}" th:text="${error}">
+                        Email da ton tai hoac thong tin dang ky khong hop le.
+                    </div>
+
                     <!-- FULL NAME -->
 
                     <div class="mb-3">
@@ -267,16 +271,16 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Username</label>
+                        <label class="form-label">Email</label>
 
-                        <input type="text"
+                        <input type="email"
                                class="form-control"
-                               th:field="*{username}"
-                               placeholder="Nhập username">
+                               th:field="*{email}"
+                               placeholder="email@example.com">
 
                         <div class="text-danger"
-                             th:if="${#fields.hasErrors('username')}"
-                             th:errors="*{username}">
+                             th:if="${#fields.hasErrors('email')}"
+                             th:errors="*{email}">
                         </div>
                     </div>
 
@@ -292,7 +296,7 @@
 
                             <input type="password"
                                    class="form-control"
-                                   th:field="*{password_hash}">
+                                   th:field="*{password}">
 
                         </div>
 
@@ -339,6 +343,7 @@
                     <!-- BUTTON -->
 
                     <button type="submit"
+                            id="registerSubmitButton"
                             class="btn btn-dark btn-register w-100">
                         Đăng ký
                     </button>
@@ -397,5 +402,15 @@
 
 </footer>
 
+<script>
+    const registerForm = document.querySelector('form[method="post"]');
+    const registerSubmitButton = document.getElementById('registerSubmitButton');
+
+    if (registerForm && registerSubmitButton) {
+        registerForm.addEventListener('submit', () => {
+            registerSubmitButton.disabled = true;
+        });
+    }
+</script>
 </body>
 </html>
