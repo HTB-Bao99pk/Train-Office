@@ -1,0 +1,7 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/customer-layout :: layout('Booking Success / Thành công', ~{::section}, 'booking')}">
+<section class="container">
+<div class="railjet-card card text-center"><div class="card-body py-5"><i class="bi bi-check-circle-fill display-3 text-success"></i><h1 class="fw-bold mt-3">Booking successful / Đặt vé thành công</h1><p>Booking code: <strong>RJ0001</strong></p><a class="btn btn-primary" th:href="@{/tickets/1}">View ticket / Xem vé</a> <a class="btn btn-outline-primary" th:href="@{/payments/1}">Pay now / Thanh toán</a></div></div>
+</section>
+</html>
+

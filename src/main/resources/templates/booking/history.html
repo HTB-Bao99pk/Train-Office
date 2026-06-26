@@ -1,0 +1,7 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/customer-layout :: layout('Booking History / Lịch sử', ~{::section}, 'booking')}">
+<section class="container">
+<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="railjet-card card"><div class="card-header">Booking history / Lịch sử đặt vé</div><div class="table-responsive"><table class="table mb-0"><thead><tr><th>Code</th><th>Route</th><th>Total</th><th>Status</th><th></th></tr></thead><tbody><tr th:each="booking : ${recentBookings}"><td th:text="${booking.bookingCode}">RJ</td><td th:text="${booking.route}">Route</td><td th:text="${booking.totalAmount}">0</td><td><span th:replace="~{fragments/status-badge :: statusBadge(${booking.status})}"></span></td><td><a class="btn btn-sm btn-primary" th:href="@{/booking/1}">Detail</a></td></tr></tbody></table></div></div>
+</section>
+</html>
+

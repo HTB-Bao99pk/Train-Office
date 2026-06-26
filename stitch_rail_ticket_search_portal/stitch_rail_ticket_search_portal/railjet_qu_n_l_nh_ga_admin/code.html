@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RailJet Admin - Station Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .active-nav-item {
+            scale: 0.98;
+            transition: all 0.15s ease-in-out;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#e0e3e5",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-secondary-fixed-variant": "#004c6b",
+                        "secondary-fixed-dim": "#83cfff",
+                        "secondary-fixed": "#c6e7ff",
+                        "outline": "#74777d",
+                        "surface-container-high": "#dce9ff",
+                        "on-tertiary-container": "#8d9193",
+                        "on-primary-container": "#8192a7",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "inverse-primary": "#b7c8de",
+                        "surface-bright": "#f8f9ff",
+                        "primary-fixed-dim": "#b7c8de",
+                        "on-tertiary-fixed-variant": "#434749",
+                        "on-tertiary-fixed": "#181c1e",
+                        "tertiary-container": "#262a2c",
+                        "tertiary": "#121617",
+                        "on-surface": "#0b1c30",
+                        "secondary-container": "#3dbeff",
+                        "error": "#ba1a1a",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed": "#001e2d",
+                        "on-primary-fixed": "#0b1d2d",
+                        "on-primary-fixed-variant": "#38485a",
+                        "surface-tint": "#4f6073",
+                        "inverse-surface": "#213145",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-container": "#004a69",
+                        "on-primary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "surface-variant": "#d3e4fe",
+                        "outline-variant": "#c4c6cd",
+                        "primary-container": "#1a2b3c",
+                        "on-surface-variant": "#44474c",
+                        "surface-container": "#e5eeff",
+                        "surface-container-low": "#eff4ff",
+                        "on-background": "#0b1c30",
+                        "primary-fixed": "#d2e4fb",
+                        "secondary": "#00658d",
+                        "surface": "#f8f9ff",
+                        "error-container": "#ffdad6",
+                        "primary": "#041627",
+                        "surface-dim": "#cbdbf5",
+                        "background": "#f8f9ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "stack-md": "16px",
+                        "stack-sm": "8px",
+                        "margin-mobile": "16px",
+                        "stack-lg": "32px",
+                        "gutter": "24px",
+                        "base": "4px",
+                        "margin-desktop": "48px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Inter"],
+                        "price-display": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["32px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "price-display": ["28px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body-md overflow-hidden">
+<!-- Main Shell -->
+<div class="flex h-screen w-full">
+<!-- Sidebar Navigation (SideNavBar) -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container-lowest border-r border-outline-variant flex flex-col py-stack-lg z-50">
+<div class="px-6 mb-stack-lg">
+<h1 class="text-headline-md font-headline-md font-bold text-primary tracking-tight">RailJet Admin</h1>
+<p class="text-label-md font-label-md text-on-primary-container opacity-70">Management Console</p>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<!-- Inactive Nav Item: Users -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary" data-icon="person">person</span>
+<span class="text-label-md font-label-md">Users</span>
+</a>
+<!-- Active Nav Item: Stations -->
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg font-semibold active-nav-item" href="#">
+<span class="material-symbols-outlined" data-icon="location_on" style="font-variation-settings: 'FILL' 1;">location_on</span>
+<span class="text-label-md font-label-md">Stations</span>
+</a>
+<!-- Inactive Nav Item: Trains -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary" data-icon="train">train</span>
+<span class="text-label-md font-label-md">Trains</span>
+</a>
+<!-- Inactive Nav Item: Routes -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary" data-icon="alt_route">alt_route</span>
+<span class="text-label-md font-label-md">Routes</span>
+</a>
+<!-- Inactive Nav Item: Trips -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary" data-icon="confirmation_number">confirmation_number</span>
+<span class="text-label-md font-label-md">Trips</span>
+</a>
+<!-- Inactive Nav Item: Refunds -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary" data-icon="payments">payments</span>
+<span class="text-label-md font-label-md">Refunds</span>
+</a>
+</nav>
+<div class="px-4 mt-auto">
+<div class="flex items-center gap-3 px-4 py-3 bg-surface-container-low rounded-xl">
+<img alt="Admin Profile" class="w-10 h-10 rounded-full bg-primary-fixed" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2nTKzyTFWknean_tS15Sy-j6aYcBdwjjbiuW3w6D1NzgZ0gGO8z6On8ode_FRfHqh9qOFrqeOLsqj3IyzoOBAYxgg0hNdZTSmhjV1aGVv6kIKRBXBMqxm353Dfie-zWGEfolWHoO3iKocscaQjKRW1uzdgG61Oa97So8SlsQv1PM93oa-3OHnPzVJCDjG2BjGKpjHkOhY5AcmkE62MTbM04JK2X2Z6TjlO8i5X9Ib-Bel35Wrd07BgRxo2rbwreKOyEnkCFmE3oo"/>
+<div class="overflow-hidden">
+<p class="text-label-md font-semibold text-on-surface truncate">Admin Root</p>
+<p class="text-[10px] text-on-surface-variant truncate">root@railjet.io</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-64 overflow-y-auto bg-surface">
+<!-- Top App Bar Content (Internal Header) -->
+<header class="h-20 flex items-center justify-between px-margin-desktop sticky top-0 bg-surface/80 backdrop-blur-md z-40 border-b border-outline-variant/30">
+<div class="flex flex-col">
+<h2 class="text-headline-sm font-headline-sm text-primary">Quản lý Nhà ga</h2>
+<p class="text-body-sm text-on-surface-variant">Cập nhật và điều chỉnh mạng lưới nhà ga RailJet</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg text-body-sm focus:ring-2 focus:ring-secondary focus:border-secondary transition-all w-72" placeholder="Tìm tên ga, thành phố..." type="text"/>
+</div>
+<button class="flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-lg font-semibold hover:opacity-90 active:scale-95 transition-all shadow-sm">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+<span class="text-label-md">Thêm ga mới</span>
+</button>
+</div>
+</header>
+<div class="p-margin-desktop space-y-stack-lg">
+<!-- Bento Stats (Quick Overview) -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter">
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm flex flex-col gap-2">
+<span class="text-label-md text-on-surface-variant font-medium">Tổng số ga</span>
+<div class="flex items-end gap-2">
+<span class="text-headline-md font-bold text-primary">124</span>
+<span class="text-body-sm text-green-600 font-bold mb-1">+2%</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm flex flex-col gap-2">
+<span class="text-label-md text-on-surface-variant font-medium">Đang hoạt động</span>
+<div class="flex items-end gap-2">
+<span class="text-headline-md font-bold text-primary">118</span>
+<span class="material-symbols-outlined text-green-500 text-sm" data-icon="check_circle">check_circle</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm flex flex-col gap-2">
+<span class="text-label-md text-on-surface-variant font-medium">Đang bảo trì</span>
+<div class="flex items-end gap-2">
+<span class="text-headline-md font-bold text-error">6</span>
+<span class="material-symbols-outlined text-error text-sm" data-icon="engineering">engineering</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm flex flex-col gap-2 relative overflow-hidden group">
+<div class="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity">
+
+</div>
+<span class="text-label-md text-on-surface-variant font-medium relative z-10">Lưu lượng TB</span>
+<span class="text-headline-md font-bold text-primary relative z-10">14.2k</span>
+<span class="text-[10px] text-on-surface-variant relative z-10">Lượt khách/ngày</span>
+</div>
+</div>
+<!-- Station Management Table -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-6 py-4 text-label-md font-bold text-on-surface-variant tracking-wider uppercase">Tên Ga</th>
+<th class="px-6 py-4 text-label-md font-bold text-on-surface-variant tracking-wider uppercase">Thành Phố</th>
+<th class="px-6 py-4 text-label-md font-bold text-on-surface-variant tracking-wider uppercase">Địa Chỉ</th>
+<th class="px-6 py-4 text-label-md font-bold text-on-surface-variant tracking-wider uppercase">Trạng Thái</th>
+<th class="px-6 py-4 text-label-md font-bold text-on-surface-variant tracking-wider uppercase text-right">Hành Động</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/30">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-primary-container flex items-center justify-center text-on-primary-container font-bold">SG</div>
+<div>
+<div class="text-body-md font-semibold text-on-surface">Ga Sài Gòn</div>
+<div class="text-label-md text-on-surface-variant">SGS - Central Hub</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-body-sm text-on-surface">TP. Hồ Chí Minh</td>
+<td class="px-6 py-4 text-body-sm text-on-surface-variant max-w-xs truncate">1 Nguyễn Thông, Phường 9, Quận 3</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[12px] font-bold bg-green-100 text-green-700">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                            Hoạt động
+                                        </span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="p-2 hover:bg-secondary-fixed text-on-surface-variant hover:text-secondary rounded-lg transition-all" title="Chỉnh sửa">
+<span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
+</button>
+<button class="p-2 hover:bg-error-container text-on-surface-variant hover:text-error rounded-lg transition-all" title="Xóa">
+<span class="material-symbols-outlined text-[20px]" data-icon="delete">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-primary-container flex items-center justify-center text-on-primary-container font-bold">HN</div>
+<div>
+<div class="text-body-md font-semibold text-on-surface">Ga Hà Nội</div>
+<div class="text-label-md text-on-surface-variant">HNS - North Station</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-body-sm text-on-surface">Hà Nội</td>
+<td class="px-6 py-4 text-body-sm text-on-surface-variant max-w-xs truncate">120 Lê Duẩn, Hoàn Kiếm</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[12px] font-bold bg-green-100 text-green-700">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                            Hoạt động
+                                        </span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="p-2 hover:bg-secondary-fixed text-on-surface-variant hover:text-secondary rounded-lg transition-all" title="Chỉnh sửa">
+<span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
+</button>
+<button class="p-2 hover:bg-error-container text-on-surface-variant hover:text-error rounded-lg transition-all" title="Xóa">
+<span class="material-symbols-outlined text-[20px]" data-icon="delete">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-tertiary-container flex items-center justify-center text-on-tertiary-container font-bold">DN</div>
+<div>
+<div class="text-body-md font-semibold text-on-surface">Ga Đà Nẵng</div>
+<div class="text-label-md text-on-surface-variant">DNS - Central Coast</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-body-sm text-on-surface">Đà Nẵng</td>
+<td class="px-6 py-4 text-body-sm text-on-surface-variant max-w-xs truncate">202 Hải Phòng, Thanh Khê</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[12px] font-bold bg-error-container text-error">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                                            Bảo trì
+                                        </span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="p-2 hover:bg-secondary-fixed text-on-surface-variant hover:text-secondary rounded-lg transition-all" title="Chỉnh sửa">
+<span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
+</button>
+<button class="p-2 hover:bg-error-container text-on-surface-variant hover:text-error rounded-lg transition-all" title="Xóa">
+<span class="material-symbols-outlined text-[20px]" data-icon="delete">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-primary-container flex items-center justify-center text-on-primary-container font-bold">VT</div>
+<div>
+<div class="text-body-md font-semibold text-on-surface">Ga Vũng Tàu</div>
+<div class="text-label-md text-on-surface-variant">VTS - Coastal Hub</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-body-sm text-on-surface">Vũng Tàu</td>
+<td class="px-6 py-4 text-body-sm text-on-surface-variant max-w-xs truncate">15 Hoàng Hoa Thám, Thắng Tam</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[12px] font-bold bg-green-100 text-green-700">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                            Hoạt động
+                                        </span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="p-2 hover:bg-secondary-fixed text-on-surface-variant hover:text-secondary rounded-lg transition-all" title="Chỉnh sửa">
+<span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
+</button>
+<button class="p-2 hover:bg-error-container text-on-surface-variant hover:text-error rounded-lg transition-all" title="Xóa">
+<span class="material-symbols-outlined text-[20px]" data-icon="delete">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-primary-container flex items-center justify-center text-on-primary-container font-bold">HP</div>
+<div>
+<div class="text-body-md font-semibold text-on-surface">Ga Hải Phòng</div>
+<div class="text-label-md text-on-surface-variant">HPS - Port Hub</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-body-sm text-on-surface">Hải Phòng</td>
+<td class="px-6 py-4 text-body-sm text-on-surface-variant max-w-xs truncate">75 Lương Khánh Thiện, Ngô Quyền</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[12px] font-bold bg-green-100 text-green-700">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                            Hoạt động
+                                        </span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="p-2 hover:bg-secondary-fixed text-on-surface-variant hover:text-secondary rounded-lg transition-all" title="Chỉnh sửa">
+<span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
+</button>
+<button class="p-2 hover:bg-error-container text-on-surface-variant hover:text-error rounded-lg transition-all" title="Xóa">
+<span class="material-symbols-outlined text-[20px]" data-icon="delete">delete</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Footer -->
+<div class="px-6 py-4 flex items-center justify-between bg-surface-container-low border-t border-outline-variant">
+<span class="text-label-md text-on-surface-variant">Đang hiển thị 1-5 trong tổng số 124 nhà ga</span>
+<div class="flex items-center gap-2">
+<button class="p-2 border border-outline-variant rounded hover:bg-surface-container-high transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-[18px]" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center bg-primary text-on-primary rounded font-bold text-label-md">1</button>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container-high text-on-surface rounded font-medium text-label-md">2</button>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container-high text-on-surface rounded font-medium text-label-md">3</button>
+<button class="p-2 border border-outline-variant rounded hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Footer Section -->
+<footer class="w-full py-stack-lg border-t border-outline-variant/30 flex flex-col md:flex-row justify-between items-center gap-stack-md">
+<div class="flex flex-col gap-1">
+<h3 class="text-label-md font-bold text-primary">RAILJET VELOCITY</h3>
+<p class="text-body-sm text-on-surface-variant">© 2024 RailJet Velocity. All rights reserved. Precision in Motion.</p>
+</div>
+<div class="flex gap-6">
+<a class="text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Support</a>
+</div>
+</footer>
+</div>
+</main>
+</div>
+<!-- Micro-interactions Script -->
+<script>
+        // Simple search highlight simulation
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                if (text.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Button Ripple Effect Simulation
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', function(e) {
+                this.classList.add('active:scale-95');
+            });
+            button.addEventListener('mouseup', function(e) {
+                this.classList.remove('active:scale-95');
+            });
+        });
+    </script>
+</body></html>

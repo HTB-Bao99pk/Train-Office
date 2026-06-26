@@ -1,0 +1,11 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Detail Seats / Ghế', ~{::section}, 'seats')}">
+<section>
+<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="card"><div class="card-header d-flex justify-content-between"><span>Seats / Ghế detail / Chi tiết</span><span th:replace="~{fragments/status-badge :: statusBadge(${detail.status})}"></span></div><div class="card-body table-responsive"><table class="table table-bordered"><tr><th>seatId</th><td th:text="${detail.seatId}">seatId</td></tr>
+<tr><th>coach</th><td th:text="${detail.coach}">coach</td></tr>
+<tr><th>seatNumber</th><td th:text="${detail.seatNumber}">seatNumber</td></tr>
+<tr><th>seatType</th><td th:text="${detail.seatType}">seatType</td></tr>
+<tr><th>extraPrice</th><td th:text="${detail.extraPrice}">extraPrice</td></tr></table></div><div class="card-footer"><a class="btn btn-secondary" th:href="@{'/admin/seats'}">Back</a> <a class="btn btn-warning" th:href="@{'/admin/seats/' + ${detail.id} + '/edit'}">Edit</a></div></div>
+</section>
+</html>
+

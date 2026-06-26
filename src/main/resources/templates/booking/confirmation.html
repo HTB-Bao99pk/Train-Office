@@ -1,0 +1,7 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/customer-layout :: layout('Confirmation / Xác nhận', ~{::section}, 'booking')}">
+<section class="container">
+<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="railjet-card card"><div class="card-header">Booking confirmation / Xác nhận đặt vé</div><div class="card-body row g-4"><div class="col-lg-8"><h5>Trip / Chuyến</h5><p>SE1 - Ha Noi to Sai Gon</p><h5>Passenger / Hành khách</h5><p th:text="${form.fullName}">Nguyen Van A</p><h5>Seat / Ghế</h5><p>A1, A2</p></div><div class="col-lg-4"><div class="border rounded p-3"><div class="d-flex justify-content-between"><span>Total / Tổng</span><strong>900,000 VND</strong></div><a class="btn btn-primary w-100 mt-3" th:href="@{/booking/success}">Confirm / Xác nhận</a></div></div></div></div>
+</section>
+</html>
+

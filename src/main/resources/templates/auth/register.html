@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RailJet - Register</title>
+
+    <link rel="stylesheet" th:href="@{css/bootstrap.css}">
+
+    <style>
+
+        :root{
+            --primary:#0B5C89;
+            --dark:#081A33;
+            --light:#F5F8FC;
+        }
+
+        body{
+            background:#f4f8fc;
+            font-family:"Segoe UI",sans-serif;
+            min-height:100vh;
+        }
+
+        /* HEADER */
+
+        .navbar-custom{
+            background:#fff;
+            border-bottom:1px solid #e5e5e5;
+            height:75px;
+        }
+
+        .brand{
+            font-size:22px;
+            font-weight:700;
+            color:#081A33;
+            text-decoration:none;
+        }
+
+        .nav-link{
+            color:#222;
+            font-size:15px;
+        }
+
+        /* HERO */
+
+        .hero-title{
+            font-size:72px;
+            font-weight:800;
+            line-height:1.05;
+            color:#081A33;
+        }
+
+        .hero-title span{
+            color:#0B5C89;
+        }
+
+        .hero-description{
+            margin-top:30px;
+            max-width:600px;
+            font-size:22px;
+            line-height:1.7;
+            color:#4d5966;
+        }
+
+        /* FEATURE */
+
+        .feature-card{
+            background:#fff;
+            border-radius:15px;
+            padding:30px;
+            box-shadow:0 2px 12px rgba(0,0,0,.05);
+            height:180px;
+        }
+
+        .feature-icon{
+            font-size:36px;
+        }
+
+        .feature-title{
+            font-size:30px;
+            font-weight:700;
+            margin-top:10px;
+            color:#081A33;
+        }
+
+        .feature-desc{
+            color:#5f6b78;
+            font-size:18px;
+        }
+
+        /* REGISTER CARD */
+
+        .register-card{
+            background:white;
+            border-radius:18px;
+            padding:40px;
+            box-shadow:0 5px 20px rgba(0,0,0,.08);
+        }
+
+        .register-title{
+            font-size:42px;
+            font-weight:700;
+            color:#081A33;
+        }
+
+        .register-subtitle{
+            color:#6c757d;
+            margin-bottom:30px;
+        }
+
+        .form-control,
+        .form-select{
+            height:55px;
+        }
+
+        .btn-register{
+            height:60px;
+            font-size:24px;
+            font-weight:700;
+            background:#081A33;
+            border:none;
+        }
+
+        .btn-register:hover{
+            background:#10233D;
+        }
+
+        footer{
+            background:#081A33;
+            color:white;
+            padding:25px 0;
+            margin-top:60px;
+        }
+
+        footer a{
+            color:white;
+            text-decoration:none;
+        }
+
+        @media(max-width:992px){
+
+            .hero-title{
+                font-size:50px;
+            }
+
+            .register-card{
+                margin-top:40px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-custom">
+
+    <div class="container-fluid px-5">
+
+        <a class="brand" href="#">
+            RailJet
+        </a>
+
+        <div class="ms-auto d-flex gap-4">
+            <a href="#" class="nav-link">Dịch vụ</a>
+            <a href="#" class="nav-link">Hỗ trợ</a>
+            <a href="#" class="nav-link">Ngôn ngữ</a>
+        </div>
+
+    </div>
+
+</nav>
+
+<div class="container-fluid px-5">
+
+    <div class="row align-items-center py-5">
+
+        <!-- LEFT -->
+
+        <div class="col-lg-7 pe-lg-5">
+
+            <h1 class="hero-title">
+                Hành trình của bạn
+                <br>
+                <span>bắt đầu từ đây.</span>
+            </h1>
+
+            <p class="hero-description">
+                Tham gia mạng lưới đường sắt hiện đại nhất.
+                Đặt vé nhanh hơn, nhận ưu đãi độc quyền
+                và quản lý chuyến đi của bạn một cách chuyên nghiệp.
+            </p>
+
+            <div class="row mt-5">
+
+                <div class="col-md-5">
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon">⚡</div>
+
+                        <div class="feature-title">
+                            Tốc độ tối đa
+                        </div>
+
+                        <div class="feature-desc">
+                            Quy trình đặt vé chỉ trong 60 giây.
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-5">
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon">🛡️</div>
+
+                        <div class="feature-title">
+                            Bảo mật cao
+                        </div>
+
+                        <div class="feature-desc">
+                            Dữ liệu cá nhân được mã hóa tuyệt đối.
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- RIGHT -->
+
+        <div class="col-lg-5">
+
+            <div class="register-card">
+
+                <h2 class="register-title">
+                    Đăng ký tài khoản - RailJet
+                </h2>
+
+                <p class="register-subtitle">
+                    Vui lòng điền thông tin bên dưới để tiếp tục.
+                </p>
+
+                <form th:action="@{/register}"
+                      method="post"
+                      th:object="${registerRequest}">
+
+                    <!-- FULL NAME -->
+
+                    <div class="mb-3">
+                        <label class="form-label">Họ và tên</label>
+                        <input type="text"
+                               class="form-control"
+                               th:field="*{fullName}"
+                               placeholder="Nguyễn Văn A">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+
+                        <input type="text"
+                               class="form-control"
+                               th:field="*{username}"
+                               placeholder="Nhập username">
+
+                        <div class="text-danger"
+                             th:if="${#fields.hasErrors('username')}"
+                             th:errors="*{username}">
+                        </div>
+                    </div>
+
+                    <!-- PASSWORD -->
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Mật khẩu
+                            </label>
+
+                            <input type="password"
+                                   class="form-control"
+                                   th:field="*{password_hash}">
+
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="mb-4">
+
+                            <label class="form-label">
+                                Xác nhận mật khẩu
+                            </label>
+
+                            <input type="password"
+                                   class="form-control"
+                                   th:field="*{confirmPassword}">
+
+                            <div class="text-danger"
+                                 th:errors="*{confirmPassword}">
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                    <!-- TERMS -->
+
+                    <div class="form-check mb-4">
+
+                        <input class="form-check-input"
+                               type="checkbox"
+                               required>
+
+                        <label class="form-check-label">
+
+                            Tôi đồng ý với các
+                            <a href="#">điều khoản</a>
+                            và
+                            <a href="#">điều kiện</a>
+                            của RailJet.
+
+                        </label>
+
+                    </div>
+
+                    <!-- BUTTON -->
+
+                    <button type="submit"
+                            class="btn btn-dark btn-register w-100">
+                        Đăng ký
+                    </button>
+
+                </form>
+
+                <hr class="my-4">
+
+                <div class="text-center">
+
+                    <p class="mb-2">
+                        Đã có tài khoản?
+                    </p>
+
+                    <a th:href="@{/login}"
+                       class="fw-bold text-decoration-none">
+                        Đăng nhập ngay
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<footer>
+
+    <div class="container-fluid px-5">
+
+        <div class="row align-items-center">
+
+            <div class="col-md-2">
+                <h3 class="fw-bold m-0">
+                    RailJet
+                </h3>
+            </div>
+
+            <div class="col-md-6 d-flex gap-4">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Station Network</a>
+                <a href="#">Support</a>
+            </div>
+
+            <div class="col-md-4 text-end">
+                © 2024 RailJet Velocity.
+            </div>
+
+        </div>
+
+    </div>
+
+</footer>
+
+</body>
+</html>

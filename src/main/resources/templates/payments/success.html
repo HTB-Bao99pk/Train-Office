@@ -1,0 +1,7 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/customer-layout :: layout('Payment Success / Thành công', ~{::section}, 'payments')}">
+<section class="container">
+<div class="railjet-card card text-center"><div class="card-body py-5"><i class="bi bi-credit-card-fill display-3 text-success"></i><h1>Payment successful / Thanh toán thành công</h1><p>Transaction: TXN001</p><a class="btn btn-primary" th:href="@{/invoices/1}">View invoice</a></div></div>
+</section>
+</html>
+

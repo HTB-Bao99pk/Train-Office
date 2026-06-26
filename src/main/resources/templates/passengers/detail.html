@@ -1,0 +1,12 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Detail Passengers / Hành khách', ~{::section}, 'passengers')}">
+<section>
+<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="card"><div class="card-header d-flex justify-content-between"><span>Passengers / Hành khách detail / Chi tiết</span><span th:replace="~{fragments/status-badge :: statusBadge(${detail.status})}"></span></div><div class="card-body table-responsive"><table class="table table-bordered"><tr><th>passengerId</th><td th:text="${detail.passengerId}">passengerId</td></tr>
+<tr><th>user</th><td th:text="${detail.user}">user</td></tr>
+<tr><th>fullName</th><td th:text="${detail.fullName}">fullName</td></tr>
+<tr><th>identityNumber</th><td th:text="${detail.identityNumber}">identityNumber</td></tr>
+<tr><th>dateOfBirth</th><td th:text="${detail.dateOfBirth}">dateOfBirth</td></tr>
+<tr><th>gender</th><td th:text="${detail.gender}">gender</td></tr></table></div><div class="card-footer"><a class="btn btn-secondary" th:href="@{'/admin/passengers'}">Back</a> <a class="btn btn-warning" th:href="@{'/admin/passengers/' + ${detail.id} + '/edit'}">Edit</a></div></div>
+</section>
+</html>
+

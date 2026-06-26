@@ -1,37 +1,47 @@
 package com.hsf302.trainoffice.entity;
 
-
-import com.hsf302.trainoffice.common.SeatStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name = "seats")
-@Data
+@Table(
+        name = "seats",
+        uniqueConstraints = @UniqueConstraint(name = "uk_seats_coach_number", columnNames = {"coach_id", "seat_number"}),
+        indexes = @Index(name = "idx_seats_coach", columnList = "coach_id")
+)
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-public class Seat extends BaseEntity {
-
+@Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class Seat {
     @Id
-    @Column(name = "seat_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "seat_id")
+    @EqualsAndHashCode.Include
     private Long seatId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "carriage_id", nullable = false)
-    private Carriage carriage;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "coach_id", nullable = false)
+    @ToString.Exclude
+    private Coach coach;
 
-    @NotBlank(message = "Seat number is mandatory")
-    @Column(name = "seat_number", nullable = false, columnDefinition = "nvarchar(10)")
+    @Column(name = "seat_number", nullable = false, length = 20)
     private String seatNumber;
 
+    @Column(name = "seat_type", nullable = false, length = 50)
+    private String seatType;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status")
-    private SeatStatus status;
+    @Column(name = "extra_price", nullable = false, precision = 12, scale = 2)
+    private BigDecimal extraPrice;
 
-    private Boolean isActive = true;
+    @Builder.Default
+    @OneToMany(mappedBy = "seat", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<Ticket> tickets = new ArrayList<>();
 }

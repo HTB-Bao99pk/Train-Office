@@ -1,0 +1,12 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Create Passengers / Hành khách', ~{::section}, 'passengers')}">
+<section>
+<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="card"><div class="card-header">Create / Tạo Passengers / Hành khách</div><form th:action="@{'/admin/passengers/save'}" method="post" th:object="${form}"><div class="card-body"><div th:replace="~{fragments/form-errors :: globalErrors}"></div><div class="row g-3"><div class="col-md-6"><label class="form-label">passengerId</label><input class="form-control" th:field="*{passengerId}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('passengerId')}" th:errors="*{passengerId}">Error</div></div>
+<div class="col-md-6"><label class="form-label">user</label><input class="form-control" th:field="*{user}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('user')}" th:errors="*{user}">Error</div></div>
+<div class="col-md-6"><label class="form-label">fullName</label><input class="form-control" th:field="*{fullName}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}">Error</div></div>
+<div class="col-md-6"><label class="form-label">identityNumber</label><input class="form-control" th:field="*{identityNumber}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('identityNumber')}" th:errors="*{identityNumber}">Error</div></div>
+<div class="col-md-6"><label class="form-label">dateOfBirth</label><input class="form-control" th:field="*{dateOfBirth}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('dateOfBirth')}" th:errors="*{dateOfBirth}">Error</div></div>
+<div class="col-md-6"><label class="form-label">gender</label><input class="form-control" th:field="*{gender}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}">Error</div></div></div></div><div class="card-footer d-flex justify-content-between"><a class="btn btn-secondary" th:href="@{'/admin/passengers'}">Back / Quay lại</a><button class="btn btn-primary">Save / Lưu</button></div></form></div>
+</section>
+</html>
+

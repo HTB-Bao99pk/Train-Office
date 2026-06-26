@@ -1,0 +1,8 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/customer-layout :: layout('Search Trip / Tìm chuyến', ~{::section}, 'booking')}">
+<section class="container">
+<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="railjet-card card"><div class="card-body p-4 p-lg-5"><h1 class="fw-bold">Tìm vé tàu / Search tickets</h1><form th:action="@{/booking/trips}" method="get" th:object="${form}" class="row g-3 mt-2"><div class="col-md-3"><label class="form-label">Departure / Ga đi</label><input class="form-control" th:field="*{departureStationId}"><div class="text-danger small" th:if="${#fields.hasErrors('departureStationId')}" th:errors="*{departureStationId}">Error</div></div><div class="col-md-3"><label class="form-label">Arrival / Ga đến</label><input class="form-control" th:field="*{arrivalStationId}"><div class="text-danger small" th:if="${#fields.hasErrors('arrivalStationId')}" th:errors="*{arrivalStationId}">Error</div></div><div class="col-md-3"><label class="form-label">Date / Ngày đi</label><input type="date" class="form-control" th:field="*{departureDate}"><div class="text-danger small" th:if="${#fields.hasErrors('departureDate')}" th:errors="*{departureDate}">Error</div></div><div class="col-md-3"><label class="form-label">Passengers / Số khách</label><input type="number" min="1" class="form-control" th:field="*{passengerCount}"><div class="text-danger small" th:if="${#fields.hasErrors('passengerCount')}" th:errors="*{passengerCount}">Error</div></div><div class="col-12 text-end"><button class="btn btn-primary btn-lg">Search / Tìm chuyến</button></div></form></div></div>
+</section>
+</html>
+
+.

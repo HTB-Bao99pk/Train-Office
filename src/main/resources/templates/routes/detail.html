@@ -1,0 +1,10 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Detail Routes / Tuyến', ~{::section}, 'routes')}">
+<section>
+<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="card"><div class="card-header d-flex justify-content-between"><span>Routes / Tuyến detail / Chi tiết</span><span th:replace="~{fragments/status-badge :: statusBadge(${detail.status})}"></span></div><div class="card-body table-responsive"><table class="table table-bordered"><tr><th>routeId</th><td th:text="${detail.routeId}">routeId</td></tr>
+<tr><th>routeCode</th><td th:text="${detail.routeCode}">routeCode</td></tr>
+<tr><th>routeName</th><td th:text="${detail.routeName}">routeName</td></tr>
+<tr><th>distanceKm</th><td th:text="${detail.distanceKm}">distanceKm</td></tr></table></div><div class="card-footer"><a class="btn btn-secondary" th:href="@{'/admin/routes'}">Back</a> <a class="btn btn-warning" th:href="@{'/admin/routes/' + ${detail.id} + '/edit'}">Edit</a></div></div>
+</section>
+</html>
+

@@ -1,0 +1,7 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/customer-layout :: layout('Refund Detail / Chi tiết hoàn tiền', ~{::section}, 'payments')}">
+<section class="container">
+<div class="railjet-card card"><div class="card-header">Refund detail / Chi tiết hoàn tiền</div><div class="card-body"><h4>RF0001</h4><p>Amount: 450,000 VND</p><p>Status: <span th:replace="~{fragments/status-badge :: statusBadge('PENDING')}"></span></p><p>Reason / Lý do: Change plan</p></div></div>
+</section>
+</html>
+

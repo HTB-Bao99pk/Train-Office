@@ -1,0 +1,7 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/customer-layout :: layout('Invoice / Hóa đơn', ~{::section}, 'payments')}">
+<section class="container">
+<div class="railjet-card card"><div class="card-header d-flex justify-content-between"><span>Invoice detail / Chi tiết hóa đơn</span><a class="btn btn-sm btn-primary" th:href="@{/invoices/1/print}">Print</a></div><div class="card-body"><h3>INV0001</h3><p>Total: <strong>900,000 VND</strong></p><p>Status: <span th:replace="~{fragments/status-badge :: statusBadge('PAID')}"></span></p></div></div>
+</section>
+</html>
+

@@ -1,0 +1,7 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Seat Layout / Sơ đồ ghế', ~{::section}, 'seats')}">
+<section>
+<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="card"><div class="card-header">Seat map / Sơ đồ ghế</div><div class="card-body"><div class="seat-map-grid"><button class="seat available" th:each="seat : ${seats}" th:text="${seat.seatNumber}">A1</button></div></div></div>
+</section>
+</html>
+

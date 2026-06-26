@@ -1,0 +1,47 @@
+<nav class="navbar navbar-expand-lg customer-navbar" xmlns:th="http://www.thymeleaf.org" th:fragment="customerHeader(activeMenu)">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/}">
+            <i class="bi bi-train-front-fill me-2"></i>RailJet
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#customerNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div id="customerNav" class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeMenu == 'home'} ? ' active'" th:href="@{/}">Home / Trang chủ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeMenu == 'booking'} ? ' active'" th:href="@{/booking/search}">Book / Đặt vé</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeMenu == 'tickets'} ? ' active'" th:href="@{/tickets}">Tickets / Vé</a>
+                </li>
+                <li class="nav-item ms-lg-3" th:if="${session.currentUser == null}">
+                    <a class="btn btn-primary btn-sm rounded-pill px-3" th:href="@{/login}">
+                        Login / Đăng nhập
+                    </a>
+                </li>
+                <li class="nav-item dropdown ms-lg-3" th:if="${session.currentUser != null}">
+                    <a class="nav-link dropdown-toggle user-menu-trigger" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="user-avatar">
+                            <i class="bi bi-person-fill"></i>
+                        </span>
+                        <span class="user-name" th:text="${session.currentUser.username}">User</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm user-dropdown">
+                        <li class="dropdown-header">
+                            <div class="small text-muted">Signed in as</div>
+                            <div class="fw-semibold" th:text="${session.currentUser.username}">User</div>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" th:href="@{/profile}">Profile / Hồ sơ</a></li>
+                        <li><a class="dropdown-item" th:href="@{/booking/history}">My bookings / Vé của tôi</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" th:href="@{/logout}">Logout / Đăng xuất</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

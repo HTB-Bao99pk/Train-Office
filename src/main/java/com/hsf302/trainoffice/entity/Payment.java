@@ -1,64 +1,68 @@
 package com.hsf302.trainoffice.entity;
 
-
-import com.hsf302.trainoffice.common.PaymentStatus;
+import com.hsf302.trainoffice.common.enums.PaymentMethod;
+import com.hsf302.trainoffice.common.enums.PaymentStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import java.math.BigDecimal; // <-- THÊM
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+
 @Entity
-@Table(name = "payments")
+@Table(
+        name = "payments",
+        indexes = {
+                @Index(name = "idx_payments_booking", columnList = "booking_id"),
+                @Index(name = "idx_payments_transaction", columnList = "transaction_code"),
+                @Index(name = "idx_payments_status", columnList = "payment_status")
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor
-public class Payment extends BaseEntity {
-
+@AllArgsConstructor
+@Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "payment_id")
+    @EqualsAndHashCode.Include
     private Long paymentId;
 
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "order_id", nullable = false)
-    private Order order;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal amount;
+    @JoinColumn(name = "booking_id", nullable = false)
+    @ToString.Exclude
+    private Booking booking;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private PaymentStatus status = PaymentStatus.PENDING;
+    @Column(name = "payment_method", nullable = false, length = 30)
+    private PaymentMethod paymentMethod;
 
-    @Column(name = "transaction_ref", unique = true, length = 64)
-    private String transactionRef;
+    @Column(name = "amount", nullable = false, precision = 15, scale = 2)
+    private BigDecimal amount;
 
-    @Column(name = "order_info")
-    private String orderInfo;
+    @Column(name = "transaction_code", length = 100)
+    private String transactionCode;
 
-    @Column(name = "bank_code")
-    private String bankCode;
+    @Column(name = "otp_code", length = 20)
+    private String otpCode;
 
-    @Column(name = "bank_tran_no")
-    private String bankTranNo;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_status", nullable = false, length = 20)
+    private PaymentStatus paymentStatus;
 
-    @Column(name = "vnp_transaction_no")
-    private String vnpTransactionNo;
+    @Column(name = "paid_at")
+    private LocalDateTime paidAt;
 
-    @Column(name = "response_code")
-    private String responseCode;
+    @OneToOne(mappedBy = "payment", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private Invoice invoice;
 
-    @Column(name = "pay_date")
-    private LocalDateTime payDate;
-
-    @Column(name = "secure_hash", length = 256)
-    private String secureHash;
+    @PrePersist
+    void onCreate() {
+        if (paymentStatus == null) {
+            paymentStatus = PaymentStatus.PENDING;
+        }
+    }
 }
