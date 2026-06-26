@@ -1,150 +1,119 @@
 package com.hsf302.trainoffice.controller;
 
 import com.hsf302.trainoffice.entity.Route;
-import com.hsf302.trainoffice.entity.Station;
 import com.hsf302.trainoffice.service.RouteService;
-import com.hsf302.trainoffice.service.StationService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
-import java.util.Optional;
-
 @Controller
 @RequestMapping("/routes")
 public class RouteController {
 
     private final RouteService routeService;
-    private final StationService stationService;
 
-    @Autowired
-    public RouteController(RouteService routeService, StationService stationService) {
+    public RouteController(RouteService routeService) {
         this.routeService = routeService;
-        this.stationService = stationService;
     }
 
+    // ==========================
+    // LIST
+    // ==========================
     @GetMapping
     public String listRoutes(Model model) {
-        List<Route> routes = routeService.getAllRoutes();
-        model.addAttribute("routes", routes);
+
+        model.addAttribute("routes", routeService.getAllRoutes());
+
         return "route/list";
     }
 
-    private void addCommonAttributes(Model model) {
-        List<Station> allStations = stationService.getAllStations();
-        model.addAttribute("allStations", allStations);
-        model.addAttribute("statusTypes", new String[]{"ACTIVE", "INACTIVE"});
-    }
-
+    // ==========================
+    // CREATE
+    // ==========================
     @GetMapping("/new")
     public String showCreateForm(Model model) {
+
         model.addAttribute("route", new Route());
-        addCommonAttributes(model);
+
         return "route/form";
     }
 
+    // ==========================
+    // EDIT
+    // ==========================
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable("id") Integer id, Model model) {
-        Route route = routeService.findById(id).orElse(null);
-
-        if (route != null) {
-            model.addAttribute("route", route);
-            addCommonAttributes(model);
-            return "route/form";
-        }
-        return "redirect:/routes";
-    }
-
-    @PostMapping("/save")
-    public String saveRoute(@Valid @ModelAttribute("route") Route route,
-                            BindingResult result, Model model,
-                            RedirectAttributes redirectAttributes) {
-        if (result.hasErrors()) {
-            addCommonAttributes(model);
-            return "route/form";
-        }
-
-        try {
-            if (route.getId() == null) {
-                Route createdRoute = routeService.createRoute(route);
-                if (createdRoute == null) {
-                    model.addAttribute("errorMessage", "Route code already exists!");
-                    addCommonAttributes(model);
-                    return "route/form";
-                }
-            } else {
-                Route updatedRoute = routeService.updateRoute(route.getId(), route);
-                if (updatedRoute == null) {
-                    model.addAttribute("errorMessage", "Route code already exists or route not found!");
-                    addCommonAttributes(model);
-                    return "route/form";
-                }
-            }
-
-            redirectAttributes.addFlashAttribute("successMessage", "Route saved successfully!");
-            return "redirect:/routes";
-        } catch (Exception e) {
-            model.addAttribute("errorMessage", "Error saving route: " + e.getMessage());
-            addCommonAttributes(model);
-            return "route/form";
-        }
-    }
-
-    @GetMapping("/delete/{id}")
-    public String deleteRoute(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
-        try {
-            routeService.deleteRoute(id);
-            redirectAttributes.addFlashAttribute("successMessage", "Route with ID " + id + " has been deleted.");
-        } catch (DataIntegrityViolationException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Không thể xóa tuyến này. Đã có Chuyến (Trip) đang sử dụng tuyến này.");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Error deleting route: " + e.getMessage());
-        }
-        return "redirect:/routes";
-    }
-
-    @GetMapping("/search")
-    public String searchRoutesForm(Model model) {
-        List<Station> allStations = stationService.getAllStations();
-        model.addAttribute("allStations", allStations);
-        return "route/search";
-    }
-
-    @PostMapping("/search")
-    public String searchRoutes(@RequestParam Integer startStationId,
-                               @RequestParam Integer endStationId,
+    public String showEditForm(@PathVariable Long id,
                                Model model) {
-        try {
-            Station startStation = stationService.getStationById(startStationId);
-            Station endStation = stationService.getStationById(endStationId);
 
-            if (startStation == null || endStation == null) {
-                model.addAttribute("errorMessage", "Start station or end station not found!");
-                List<Station> allStations = stationService.getAllStations();
-                model.addAttribute("allStations", allStations);
-                return "route/search";
-            }
+        routeService.getRouteById(id).ifPresent(route ->
+                model.addAttribute("route", route));
 
-            List<Route> routes = routeService.getRoutesByStartAndEndStation(startStation, endStation);
-            model.addAttribute("routes", routes);
-            model.addAttribute("startStation", startStation);
-            model.addAttribute("endStation", endStation);
-
-            List<Station> allStations = stationService.getAllStations();
-            model.addAttribute("allStations", allStations);
-
-            return "route/search";
-        } catch (Exception e) {
-            model.addAttribute("errorMessage", "Error searching routes: " + e.getMessage());
-            List<Station> allStations = stationService.getAllStations();
-            model.addAttribute("allStations", allStations);
-            return "route/search";
-        }
+        return model.containsAttribute("route")
+                ? "route/form"
+                : "redirect:/routes";
     }
+
+    // ==========================
+    // SAVE
+    // ==========================
+    @PostMapping("/save")
+    public String saveRoute(
+            @Valid @ModelAttribute("route") Route route,
+            BindingResult result,
+            RedirectAttributes redirectAttributes) {
+
+        if (result.hasErrors()) {
+            return "route/form";
+        }
+
+        try {
+
+            routeService.saveRoute(route);
+
+            redirectAttributes.addFlashAttribute(
+                    "successMessage",
+                    "Route saved successfully!"
+            );
+
+        } catch (Exception e) {
+
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    e.getMessage()
+            );
+        }
+
+        return "redirect:/routes";
+    }
+
+    // ==========================
+    // DELETE
+    // ==========================
+    @GetMapping("/delete/{id}")
+    public String deleteRoute(@PathVariable Long id,
+                              RedirectAttributes redirectAttributes) {
+
+        try {
+
+            routeService.deleteRoute(id);
+
+            redirectAttributes.addFlashAttribute(
+                    "successMessage",
+                    "Route deleted successfully!"
+            );
+
+        } catch (Exception e) {
+
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    e.getMessage()
+            );
+        }
+
+        return "redirect:/routes";
+    }
+
 }

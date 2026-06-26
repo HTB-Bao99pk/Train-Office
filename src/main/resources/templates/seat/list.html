@@ -4,120 +4,81 @@
       layout:decorate="~{fragments/_admin_layout}">
 
 <head>
-    <title>Quản Lý Ghế</title>
+    <title>Seat Management</title>
 </head>
 
 <body>
+
 <div layout:fragment="content">
 
-    <h2>Quản Lý Ghế</h2>
+    <div class="container-fluid mt-4">
 
-    <h4 th:if="${selectedCarriage != null}"
-        th:text="|Toa: ${selectedCarriage.name} (Tàu ${selectedCarriage.train.code})|">
-    </h4>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold">
+                <i class="bi bi-grid-3x3-gap-fill"></i>
+                Seat Management
+            </h2>
 
-    <div th:if="${successMessage}" th:text="${successMessage}"></div>
-    <div th:if="${errorMessage}" th:text="${errorMessage}"></div>
+            <a class="btn btn-primary"
+               th:href="@{/seats/new(coachId=${selectedCoachId})}">
+                <i class="bi bi-plus-circle"></i>
+                Add Seat
+            </a>
+        </div>
 
-    <div>
-        <a th:href="@{/seats/new(carriageId=${selectedCarriageId})}"
-           th:classappend="${selectedCarriageId == null} ? 'disabled' : ''">
-            Thêm Ghế Mới
+        <form th:action="@{/seats}" method="get" class="row mb-3">
+
+            <div class="col-md-4">
+                <select class="form-select"
+                        name="coachId"
+                        onchange="this.form.submit()">
+
+                    <option value="">All Coaches</option>
+
+                    <option
+                            th:each="coach : ${allCoaches}"
+                            th:value="${coach.coachId}"
+                            th:selected="${selectedCoachId != null and selectedCoachId == coach.coachId}"
+                            th:text="${coach.coachNumber}">
+                    </option>
+
+                </select>
+            </div>
+
+        </form>
+        <a class="btn btn-primary"
+           th:href="@{/seats/new(coachId=${selectedCoachId})}">
+            Add Seat
         </a>
-
-        <small th:if="${selectedCarriageId == null}">
-            (Vui lòng lọc theo Toa để thêm Ghế)
-        </small>
-    </div>
-
-    <hr>
-
-    <form th:action="@{/seats}" method="GET">
-
-        <label for="carriageId">
-            Lọc theo Toa (Bắt buộc)
-        </label>
-
-        <select name="carriageId" id="carriageId">
-            <option value="">
-                -- Chọn Toa để xem ghế --
-            </option>
-
-            <option th:each="carriage : ${allCarriages}"
-                    th:value="${carriage.carriageId}"
-                    th:text="|Tàu ${carriage.train.code} - ${carriage.name} (${carriage.seatType != null ? carriage.seatType.name : 'N/A'})|"
-                    th:selected="${carriage.carriageId == selectedCarriageId}">
-            </option>
-        </select>
-
-        <button type="submit">Lọc</button>
-
-    </form>
-
-    <br>
-
-    <table border="1">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Số Ghế</th>
-            <th>Trạng Thái</th>
-            <th>Kích Hoạt</th>
-            <th>Hành Động</th>
-        </tr>
-        </thead>
-
-        <tbody>
         <tr th:each="seat : ${seats}">
-            <td th:text="${seat.seatId}"></td>
 
             <td th:text="${seat.seatNumber}"></td>
 
-            <td>
-                <span th:if="${seat.status == T(com.example.trainticketoffice.common.SeatStatus).AVAILABLE}"
-                      th:text="${seat.status}">
-                </span>
+            <td th:text="${seat.coach.coachNumber}"></td>
 
-                <span th:if="${seat.status == T(com.example.trainticketoffice.common.SeatStatus).BOOKED}"
-                      th:text="${seat.status}">
-                </span>
-            </td>
+            <td th:text="${seat.seatType}"></td>
 
-            <td th:text="${seat.isActive ? 'Có' : 'Không'}"></td>
+            <td th:text="${seat.extraPrice}"></td>
 
             <td>
-                <a th:href="@{/seats/edit/{id}(id=${seat.seatId})}">
-                    Sửa
+
+                <a class="btn btn-warning btn-sm"
+                   th:href="@{/seats/edit/{id}(id=${seat.seatId})}">
+                    Edit
                 </a>
 
-                <a th:href="@{/seats/delete/{id}(id=${seat.seatId}, carriageId=${selectedCarriageId})}"
-                   onclick="return confirm('Are you sure?')">
-                    Xóa
+                <a class="btn btn-danger btn-sm"
+                   th:href="@{/seats/delete/{id}(id=${seat.seatId},coachId=${selectedCoachId})}"
+                   onclick="return confirm('Delete this seat?')">
+                    Delete
                 </a>
+
             </td>
+
         </tr>
-
-        <tr th:if="${#lists.isEmpty(seats)}">
-            <td colspan="5">
-                Không tìm thấy ghế nào (Hoặc bạn chưa chọn Toa).
-            </td>
-        </tr>
-        </tbody>
-    </table>
-
-    <br>
-
-    <a th:if="${selectedCarriage != null}"
-       th:href="@{/carriages(trainId=${selectedCarriage.train.id})}">
-        Quay Lại Danh Sách Toa
-    </a>
-
-    <br><br>
-
-    <a th:href="@{/admin/dashboard}">
-        Quay Lại Dashboard
-    </a>
+    </div>
 
 </div>
+
 </body>
 </html>

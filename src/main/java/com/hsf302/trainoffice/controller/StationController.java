@@ -56,7 +56,7 @@ public class StationController {
     }
 
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable("id") Integer id, Model model) {
+    public String showEditForm(@PathVariable("id") Long id, Model model) {
         Station station = stationService.getStationById(id);
         if (station != null) {
             model.addAttribute("station", station);
@@ -76,7 +76,7 @@ public class StationController {
         }
 
         try {
-            if (station.getId() == null) {
+            if (station.getStationId() == null) {
                 Station createdStation = stationService.createStation(station);
                 if (createdStation == null) {
                     model.addAttribute("errorMessage", "Station code already exists!");
@@ -84,7 +84,7 @@ public class StationController {
                     return "station/form";
                 }
             } else {
-                Station updatedStation = stationService.updateStation(station.getId(), station);
+                Station updatedStation = stationService.updateStation(station.getStationId(), station);
                 if (updatedStation == null) {
                     model.addAttribute("errorMessage", "Station code already exists or station not found!");
                     model.addAttribute("statusTypes", new String[]{"ACTIVE", "INACTIVE"});
@@ -102,7 +102,7 @@ public class StationController {
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteStation(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
+    public String deleteStation(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         try {
             stationService.deleteStation(id);
             redirectAttributes.addFlashAttribute("successMessage", "Station with ID " + id + " has been deleted.");

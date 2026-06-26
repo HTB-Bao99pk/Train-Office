@@ -1,5 +1,6 @@
 package com.hsf302.trainoffice.entity;
 
+import com.hsf302.trainoffice.common.enums.TrainStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -42,4 +43,9 @@ public class Train {
     @OneToMany(mappedBy = "train", fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<TrainTrip> trainTrips = new ArrayList<>();
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    @Builder.Default
+    private TrainStatus status = TrainStatus.AVAILABLE;
 }

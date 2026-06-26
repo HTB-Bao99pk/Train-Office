@@ -1,6 +1,6 @@
 package com.hsf302.trainoffice.controller;
 
-import com.hsf302.trainoffice.common.TrainStatus;
+import com.hsf302.trainoffice.common.enums.TrainStatus;
 import com.hsf302.trainoffice.entity.Train;
 import com.hsf302.trainoffice.service.TrainService;
 import jakarta.validation.Valid;

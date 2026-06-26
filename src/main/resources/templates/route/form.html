@@ -1,89 +1,68 @@
 <!DOCTYPE html>
+
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{fragments/_admin_layout}">
 
 <head>
-    <title th:text="${route.id != null ? 'Chỉnh Sửa Tuyến' : 'Thêm Tuyến Mới'}">
-        Form Tuyến
-    </title>
+    <title>Route Form</title>
 </head>
 
-<body>
 <div layout:fragment="content">
 
-    <h2 th:text="${route.id != null ? 'Chỉnh Sửa Tuyến' : 'Thêm Tuyến Mới'}">
-        Form Tuyến
+    <h2
+            th:text="${route.routeId==null}
+            ? 'Create Route'
+            : 'Update Route'">
     </h2>
-
-    <div th:if="${errorMessage}"
-         th:text="${errorMessage}">
-    </div>
 
     <form th:action="@{/routes/save}"
           th:object="${route}"
           method="post">
 
-        <input type="hidden" th:field="*{id}">
+        <input type="hidden"
+               th:field="*{routeId}">
 
-        <div>
-            <label>Mã Tuyến</label>
+        <div class="mb-3">
 
-            <input type="text"
-                   th:field="*{code}"
-                   placeholder="Nhập mã đường hành trình"
-                   required>
+            <label>Route Code</label>
+
+            <input class="form-control"
+                   th:field="*{routeCode}">
+
         </div>
 
-        <div>
-            <label>Ga Khởi Hành</label>
+        <div class="mb-3">
 
-            <select th:field="*{startStation.id}" required>
-                <option value="">-- Chọn Ga Khởi Hành --</option>
+            <label>Route Name</label>
 
-                <option th:each="station : ${allStations}"
-                        th:value="${station.id}"
-                        th:text="|${station.name} (${station.code})|">
-                </option>
-            </select>
+            <input class="form-control"
+                   th:field="*{routeName}">
+
         </div>
 
-        <div>
-            <label>Ga Đến</label>
+        <div class="mb-3">
 
-            <select th:field="*{endStation.id}" required>
-                <option value="">-- Chọn Ga Đến --</option>
+            <label>Distance (km)</label>
 
-                <option th:each="station : ${allStations}"
-                        th:value="${station.id}"
-                        th:text="|${station.name} (${station.code})|">
-                </option>
-            </select>
+            <input type="number"
+                   step="0.1"
+                   class="form-control"
+                   th:field="*{distanceKm}">
+
         </div>
 
-        <div>
-            <label>Trạng Thái Hoạt Động</label>
+        <button class="btn btn-success">
+            Save
+        </button>
 
-            <select th:field="*{status}" required>
-                <option th:each="status : ${statusTypes}"
-                        th:value="${status}"
-                        th:text="${status}">
-                </option>
-            </select>
-        </div>
-
-        <div>
-            <button type="submit">
-                Xác Nhận Tuyến
-            </button>
-
-            <a th:href="@{/routes}">
-                Hủy Thao Tác
-            </a>
-        </div>
+        <a th:href="@{/routes}"
+           class="btn btn-secondary">
+            Back
+        </a>
 
     </form>
 
 </div>
-</body>
+
 </html>

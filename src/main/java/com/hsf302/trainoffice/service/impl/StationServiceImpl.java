@@ -30,58 +30,67 @@ public class StationServiceImpl implements StationService {
         Pageable pageable = PageRequest.of(pageNum - 1, STATIONS_PER_PAGE);
 
         if (keyword != null && !keyword.isEmpty()) {
-            return stationRepository.findByNameContainingIgnoreCaseOrCodeContainingIgnoreCase(keyword, keyword, pageable);
+            return stationRepository
+                    .findByStationNameContainingIgnoreCaseOrStationCodeContainingIgnoreCase(
+                            keyword,
+                            keyword,
+                            pageable
+                    );
         }
 
         return stationRepository.findAll(pageable);
     }
 
     @Override
-    public Station getStationById(Integer id) {
+    public Station getStationById(Long id) {
         return stationRepository.findById(id).orElse(null);
     }
 
     @Override
     public Station createStation(Station station) {
-        if (stationRepository.existsByCode(station.getCode())) {
+        if (stationRepository.existsByStationCode(
+                station.getStationCode())) {
             return null;
         }
         return stationRepository.save(station);
     }
 
     @Override
-    public Station updateStation(Integer id, Station station) {
-        Station existingStation = stationRepository.findById(id).orElse(null);
-        if (existingStation != null) {
-            if (!existingStation.getCode().equals(station.getCode()) &&
-                    stationRepository.existsByCode(station.getCode())) {
+    public Station updateStation(Long id, Station station) {
+        Station existing =
+                stationRepository.findById(id).orElse(null);
+
+        if (existing != null) {
+
+            if (!existing.getStationCode().equals(station.getStationCode())
+                    &&
+                    stationRepository.existsByStationCode(
+                            station.getStationCode())) {
                 return null;
             }
 
-            existingStation.setCode(station.getCode());
-            existingStation.setName(station.getName());
-            existingStation.setCity(station.getCity());
-            existingStation.setProvince(station.getProvince());
-            existingStation.setDistanceKm(station.getDistanceKm());
-            existingStation.setStatus(station.getStatus());
+            existing.setStationCode(station.getStationCode());
+            existing.setStationName(station.getStationName());
+            existing.setCity(station.getCity());
 
-            return stationRepository.save(existingStation);
+            return stationRepository.save(existing);
         }
+
         return null;
     }
 
     @Override
-    public void deleteStation(Integer id) {
+    public void deleteStation(Long id) {
         stationRepository.deleteById(id);
     }
 
     @Override
     public boolean stationExists(String code) {
-        return stationRepository.existsByCode(code);
+        return stationRepository.existsByStationCode(code);
     }
 
     @Override
-    public Optional<Station> findById(Integer id) {
+    public Optional<Station> findById(Long id) {
         return stationRepository.findById(id);
     }
 }

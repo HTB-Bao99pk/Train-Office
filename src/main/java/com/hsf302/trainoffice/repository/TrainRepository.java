@@ -2,10 +2,14 @@ package com.hsf302.trainoffice.repository;
 
 import com.hsf302.trainoffice.entity.Train;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+@Repository
 public interface TrainRepository extends JpaRepository<Train, Long> {
-    Optional<Train> findByCode(String code);
-    boolean existsByCode(String code);
+
+    Optional<Train> findByTrainCode(String trainCode);
+
+    boolean existsByTrainCode(String trainCode);
 }

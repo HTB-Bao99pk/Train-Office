@@ -4,78 +4,162 @@
       layout:decorate="~{fragments/_admin_layout}">
 
 <head>
-    <title>Quản Lý Loại Ghế</title>
+    <title>Seat Type Management</title>
 </head>
 
 <body>
+
 <div layout:fragment="content">
 
-    <h2>Quản Lý Loại Ghế (Giá vé)</h2>
+    <div class="container-fluid">
 
-    <div th:if="${successMessage}"
-         th:text="${successMessage}">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+                <h2 class="fw-bold text-primary">
+                    Seat Type Management
+                </h2>
+
+                <p class="text-muted mb-0">
+                    Manage all seat types in the system.
+                </p>
+            </div>
+
+            <a th:href="@{/seat-types/new}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i>
+                Add Seat Type
+            </a>
+
+        </div>
+
+
+        <!-- Success -->
+        <div class="alert alert-success alert-dismissible fade show"
+             th:if="${successMessage}">
+
+            <span th:text="${successMessage}"></span>
+
+            <button class="btn-close"
+                    data-bs-dismiss="alert"></button>
+
+        </div>
+
+
+        <!-- Error -->
+        <div class="alert alert-danger alert-dismissible fade show"
+             th:if="${errorMessage}">
+
+            <span th:text="${errorMessage}"></span>
+
+            <button class="btn-close"
+                    data-bs-dismiss="alert"></button>
+
+        </div>
+
+
+        <!-- Card -->
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-header bg-primary text-white">
+
+                <h5 class="mb-0">
+                    Seat Type List
+                </h5>
+
+            </div>
+
+            <div class="card-body p-0">
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover table-striped align-middle mb-0">
+
+                        <thead class="table-light">
+
+                        <tr>
+
+                            <th width="10%">ID</th>
+
+                            <th>Name</th>
+
+                            <th>Price / Km</th>
+
+                            <th width="18%" class="text-center">
+                                Actions
+                            </th>
+
+                        </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                        <tr th:each="seatType : ${seatTypes}">
+
+                            <td th:text="${seatType.id}"></td>
+
+                            <td th:text="${seatType.name}"></td>
+
+                            <td>
+
+                                <span class="badge bg-success"
+                                      th:text="${seatType.pricePerKm}">
+                                </span>
+
+                            </td>
+
+                            <td class="text-center">
+
+                                <a class="btn btn-warning btn-sm"
+                                   th:href="@{'/seat-types/edit/' + ${seatType.id}}">
+
+                                    <i class="bi bi-pencil-square"></i>
+
+                                    Edit
+
+                                </a>
+
+                                <a class="btn btn-danger btn-sm"
+                                   onclick="return confirm('Delete this seat type?')"
+                                   th:href="@{'/seat-types/delete/' + ${seatType.id}}">
+
+                                    <i class="bi bi-trash"></i>
+
+                                    Delete
+
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                        <tr th:if="${#lists.isEmpty(seatTypes)}">
+
+                            <td colspan="4"
+                                class="text-center text-muted py-5">
+
+                                No seat types found.
+
+                            </td>
+
+                        </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
-
-    <div th:if="${errorMessage}"
-         th:text="${errorMessage}">
-    </div>
-
-    <div>
-        <a th:href="@{/seat-types/new}">
-            Thêm Loại Ghế Mới
-        </a>
-    </div>
-
-    <br>
-
-    <table border="1">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Tên Loại Ghế</th>
-            <th>Đơn Giá (VND / KM)</th>
-            <th>Hành Động</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        <tr th:each="st : ${seatTypes}">
-
-            <td th:text="${st.id}"></td>
-
-            <td th:text="${st.name}"></td>
-
-            <td th:text="${#numbers.formatDecimal(st.pricePerKm, 0, 'COMMA', 0, 'POINT') + ' đ/km'}">
-            </td>
-
-            <td>
-                <a th:href="@{/seat-types/edit/{id}(id=${st.id})}">
-                    Chỉnh Sửa
-                </a>
-
-                <a th:href="@{/seat-types/delete/{id}(id=${st.id})}"
-                   onclick="return confirm('Bạn có chắc chắn muốn xóa? Nếu có Toa đang dùng loại này, hệ thống sẽ báo lỗi.')">
-                    Xóa
-                </a>
-            </td>
-
-        </tr>
-
-        <tr th:if="${#lists.isEmpty(seatTypes)}">
-            <td colspan="4">
-                Chưa có loại ghế nào.
-            </td>
-        </tr>
-
-        </tbody>
-    </table>
-
-    <br>
-
-    <a th:href="@{/admin/dashboard}">
-        Quay Lại Dashboard
-    </a>
 
 </div>
+
 </body>
+
 </html>

@@ -4,91 +4,80 @@
       layout:decorate="~{fragments/_admin_layout}">
 
 <head>
-    <title>Quản Lý Tuyến</title>
+    <title>Route Management</title>
 </head>
 
-<body>
 <div layout:fragment="content">
 
-    <h2>Quản Lý Tuyến/Đường Hành Trình</h2>
+    <div class="d-flex justify-content-between mb-3">
+        <h2>Route Management</h2>
 
-    <div th:if="${successMessage}"
+        <div>
+            <a th:href="@{/routes/search}" class="btn btn-info">
+                Search Route
+            </a>
+
+            <a th:href="@{/routes/new}" class="btn btn-primary">
+                Add Route
+            </a>
+        </div>
+    </div>
+
+    <div class="alert alert-success"
+         th:if="${successMessage}"
          th:text="${successMessage}">
     </div>
 
-    <div th:if="${errorMessage}"
+    <div class="alert alert-danger"
+         th:if="${errorMessage}"
          th:text="${errorMessage}">
     </div>
 
-    <div>
-        <a th:href="@{/routes/new}">
-            Thêm Tuyến Mới
-        </a>
-    </div>
+    <table class="table table-bordered table-hover">
 
-    <br>
-
-    <table border="1">
-        <thead>
+        <thead class="table-dark">
         <tr>
             <th>ID</th>
-            <th>Mã Tuyến</th>
-            <th>Ga Khởi Hành</th>
-            <th>Ga Đến</th>
-            <th>Trạng Thái Hoạt Động</th>
-            <th>Hành Động</th>
+            <th>Route Code</th>
+            <th>Route Name</th>
+            <th>Distance (km)</th>
+            <th width="180">Action</th>
         </tr>
         </thead>
 
         <tbody>
+
         <tr th:each="route : ${routes}">
 
-            <td th:text="${route.id}"></td>
+            <td th:text="${route.routeId}"></td>
 
-            <td th:text="${route.code}"></td>
+            <td th:text="${route.routeCode}"></td>
 
-            <td th:text="${route.startStation.name}"></td>
+            <td th:text="${route.routeName}"></td>
 
-            <td th:text="${route.endStation.name}"></td>
-
-            <td>
-                <span th:if="${route.status.name() == 'ACTIVE'}">
-                    Hoạt Động
-                </span>
-
-                <span th:if="${route.status.name() == 'INACTIVE'}">
-                    Ngưng Hoạt Động
-                </span>
-            </td>
+            <td th:text="${route.distanceKm}"></td>
 
             <td>
-                <a th:href="@{/routes/edit/{id}(id=${route.id})}">
-                    Chỉnh Sửa
+
+                <a class="btn btn-warning btn-sm"
+                   th:href="@{'/routes/edit/' + ${route.routeId}}">
+                    Edit
                 </a>
 
-                <a th:href="@{/routes/delete/{id}(id=${route.id})}"
-                   onclick="return confirm('Bạn có chắc muốn xóa tuyến này?')">
-                    Xóa
+                <a class="btn btn-danger btn-sm"
+                   onclick="return confirm('Delete this route?')"
+                   th:href="@{'/routes/delete/' + ${route.routeId}}">
+                    Delete
                 </a>
+
             </td>
 
-        </tr>
-
-        <tr th:if="${#lists.isEmpty(routes)}">
-            <td colspan="6">
-                Không có tuyến nào.
-            </td>
         </tr>
 
         </tbody>
+
     </table>
 
-    <br>
-
-    <a th:href="@{/admin/dashboard}">
-        Quay Lại Dashboard
-    </a>
-
 </div>
-</body>
+
 </html>

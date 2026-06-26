@@ -1,65 +1,113 @@
 <!DOCTYPE html>
+
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{fragments/_customer_layout}">
+      layout:decorate="~{fragments/_admin_layout}">
 
 <head>
-    <title>Kết Quả Tìm Kiếm | Train Ticket Office</title>
+    <title>Search Route</title>
 </head>
 
-<body>
 <div layout:fragment="content">
 
-    <h2>Kết Quả Tìm Kiếm</h2>
+    <h2>Search Route</h2>
 
-    <form th:action="@{/trips/search}" method="GET">
+    <form th:action="@{/routes/search}"
+          method="post">
 
-        <div>
-            <label>Ga khởi hành</label>
+        <div class="row">
 
-            <select name="startStationId" required>
-                <option value="">Chọn ga khởi hành</option>
+            <div class="col-md-5">
 
-                <option th:each="station : ${allStations}"
-                        th:value="${station.id}"
-                        th:text="|${station.name} (${station.code})|">
-                </option>
-            </select>
+                <label>Start Station</label>
+
+                <select class="form-control"
+                        name="startStationId">
+
+                    <option
+                            th:each="station:${allStations}"
+                            th:value="${station.stationId}"
+                            th:text="${station.stationName}">
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="col-md-5">
+
+                <label>End Station</label>
+
+                <select class="form-control"
+                        name="endStationId">
+
+                    <option
+                            th:each="station:${allStations}"
+                            th:value="${station.stationId}"
+                            th:text="${station.stationName}">
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="col-md-2 d-flex align-items-end">
+
+                <button class="btn btn-primary w-100">
+
+                    Search
+
+                </button>
+
+            </div>
+
         </div>
-
-        <br>
-
-        <div>
-            <label>Ga đến</label>
-
-            <select name="endStationId" required>
-                <option value="">Chọn ga đến</option>
-
-                <option th:each="station : ${allStations}"
-                        th:value="${station.id}"
-                        th:text="|${station.name} (${station.code})|">
-                </option>
-            </select>
-        </div>
-
-        <br>
-
-        <button type="submit">
-            Tìm chuyến khác
-        </button>
 
     </form>
 
-    <br>
+    <hr>
 
-    <div th:if="${not #lists.isEmpty(param.startStationId)
-                 and not #lists.isEmpty(param.endStationId)
-                 and #lists.isEmpty(trips)}">
+    <div
+            th:if="${routes!=null}">
 
-        Không tìm thấy chuyến tàu phù hợp.
+        <table class="table table-bordered">
+
+            <thead>
+
+            <tr>
+
+                <th>ID</th>
+
+                <th>Code</th>
+
+                <th>Name</th>
+
+                <th>Distance</th>
+
+            </tr>
+
+            </thead>
+
+            <tbody>
+
+            <tr th:each="route:${routes}">
+
+                <td th:text="${route.routeId}"></td>
+
+                <td th:text="${route.routeCode}"></td>
+
+                <td th:text="${route.routeName}"></td>
+
+                <td th:text="${route.distanceKm}"></td>
+
+            </tr>
+
+            </tbody>
+
+        </table>
 
     </div>
 
 </div>
-</body>
+
 </html>

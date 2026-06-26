@@ -4,80 +4,76 @@
       layout:decorate="~{fragments/_admin_layout}">
 
 <head>
-    <title th:text="${seat.seatId != null ? 'Chỉnh Sửa Ghế' : 'Thêm Mới Ghế'}">
-        Seat Form
+    <title th:text="${seat.seatId == null ? 'Add Seat' : 'Edit Seat'}">
+        Seat
     </title>
 </head>
 
 <body>
+
 <div layout:fragment="content">
 
-    <h2 th:text="${seat.seatId != null ? 'Chỉnh Sửa Ghế' : 'Thêm Mới Ghế'}">
-        Seat Form
-    </h2>
+    <div class="container mt-4">
 
-    <div th:if="${errorMessage}" th:text="${errorMessage}"></div>
+        <div class="card shadow">
 
-    <form th:action="@{/seats/save}" th:object="${seat}" method="post">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"
+                    th:text="${seat.seatId == null ? 'Add New Seat' : 'Edit Seat'}">
+                </h4>
+            </div>
 
-        <input type="hidden" th:field="*{seatId}">
+            <div class="card-body">
 
-        <div>
-            <label>Toa Thuộc (Carriage)</label>
+                <form th:action="@{/seats/save}"
+                      th:object="${seat}"
+                      method="post">
 
-            <select th:field="*{carriage}"
-                    required
-                    th:disabled="${#lists.size(allCarriages) == 1}">
+                    <input type="hidden" th:field="*{seatId}"/>
 
-                <option value="">-- Chọn Toa --</option>
+                    <select
+                            class="form-select"
+                            th:field="*{coach.coachId}">
 
-                <option th:each="carriage : ${allCarriages}"
-                        th:value="${carriage.carriageId}"
-                        th:text="|${carriage.train.code} - ${carriage.name} (${carriage.seatType != null ? carriage.seatType.name : 'N/A'})|">
-                </option>
+                        <option value="">Select Coach</option>
 
-            </select>
+                        <option
+                                th:each="coach : ${allCoaches}"
+                                th:value="${coach.coachId}"
+                                th:text="${coach.coachNumber}">
+                        </option>
 
-            <input th:if="${#lists.size(allCarriages) == 1}"
-                   type="hidden"
-                   th:field="*{carriage}" />
+                    </select>
+                    <input
+                            class="form-control"
+                            th:field="*{seatNumber}">
+                    <input
+                            class="form-control"
+                            th:field="*{seatType}">
+                    <input
+                            type="number"
+                            step="0.01"
+                            class="form-control"
+                            th:field="*{extraPrice}">
+                    <button
+                            type="submit"
+                            class="btn btn-success">
+                        Save
+                    </button>
+                    <a
+                            th:href="@{/seats(coachId=${selectedCoachId})}"
+                            class="btn btn-secondary">
+                        Cancel
+                    </a>
+                </form>
+
+            </div>
+
         </div>
 
-        <div>
-            <label>Số Ghế (Seat Number)</label>
-
-            <input type="text"
-                   th:field="*{seatNumber}"
-                   placeholder="Nhập số ghế (A1, A2...)"
-                   required>
-        </div>
-
-        <div>
-            <label>Trạng Thái Ghế (Ban đầu)</label>
-
-            <select th:field="*{status}" required>
-                <option th:each="s : ${seatStatusTypes}"
-                        th:value="${s}"
-                        th:text="${s}">
-                </option>
-            </select>
-        </div>
-
-        <div>
-            <input type="checkbox" th:field="*{isActive}">
-            <label>Kích Hoạt Ghế</label>
-        </div>
-
-        <div>
-            <button type="submit">Lưu Ghế</button>
-
-            <a th:href="@{/seats(carriageId=${selectedCarriageId})}">
-                Hủy
-            </a>
-        </div>
-
-    </form>
+    </div>
 
 </div>
+
 </body>
 </html>

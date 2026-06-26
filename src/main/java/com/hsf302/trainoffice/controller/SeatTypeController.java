@@ -2,6 +2,7 @@ package com.hsf302.trainoffice.controller;
 
 import com.hsf302.trainoffice.entity.SeatType;
 import com.hsf302.trainoffice.service.PaymentService;
+import com.hsf302.trainoffice.service.SeatTypeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -18,10 +19,10 @@ import java.util.Optional;
 @RequestMapping("/seat-types") // Đặt tên URL là /seat-types
 public class SeatTypeController {
 
-    private final PaymentService seatTypeService;
+    private final SeatTypeService seatTypeService;
 
     @Autowired
-    public SeatTypeController(PaymentService seatTypeService) {
+    public SeatTypeController(SeatTypeService seatTypeService) {
         this.seatTypeService = seatTypeService;
     }
 
@@ -31,6 +32,7 @@ public class SeatTypeController {
         model.addAttribute("seatTypes", seatTypes);
         return "seattype/list";
     }
+
 
     @GetMapping("/new")
     public String showCreateForm(Model model) {
