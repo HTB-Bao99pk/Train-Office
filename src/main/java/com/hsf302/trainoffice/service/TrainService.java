@@ -1,0 +1,13 @@
+package com.hsf302.trainoffice.service;
+
+import com.hsf302.trainoffice.entity.Train;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface TrainService {
+    List<Train> getAllTrains();
+    Optional<Train> getTrainById(Long id);
+    Train saveTrain(Train train);
+    void deleteTrain(Long id);
+}

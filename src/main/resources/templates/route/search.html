@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/_customer_layout}">
+
+<head>
+    <title>Kết Quả Tìm Kiếm | Train Ticket Office</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <h2>Kết Quả Tìm Kiếm</h2>
+
+    <form th:action="@{/trips/search}" method="GET">
+
+        <div>
+            <label>Ga khởi hành</label>
+
+            <select name="startStationId" required>
+                <option value="">Chọn ga khởi hành</option>
+
+                <option th:each="station : ${allStations}"
+                        th:value="${station.id}"
+                        th:text="|${station.name} (${station.code})|">
+                </option>
+            </select>
+        </div>
+
+        <br>
+
+        <div>
+            <label>Ga đến</label>
+
+            <select name="endStationId" required>
+                <option value="">Chọn ga đến</option>
+
+                <option th:each="station : ${allStations}"
+                        th:value="${station.id}"
+                        th:text="|${station.name} (${station.code})|">
+                </option>
+            </select>
+        </div>
+
+        <br>
+
+        <button type="submit">
+            Tìm chuyến khác
+        </button>
+
+    </form>
+
+    <br>
+
+    <div th:if="${not #lists.isEmpty(param.startStationId)
+                 and not #lists.isEmpty(param.endStationId)
+                 and #lists.isEmpty(trips)}">
+
+        Không tìm thấy chuyến tàu phù hợp.
+
+    </div>
+
+</div>
+</body>
+</html>
