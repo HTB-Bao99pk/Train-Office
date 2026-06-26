@@ -3,7 +3,6 @@ package com.hsf302.trainoffice.service.impl;
 import com.hsf302.trainoffice.entity.Seat;
 import com.hsf302.trainoffice.repository.SeatRepository;
 import com.hsf302.trainoffice.service.SeatService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,7 +13,6 @@ public class SeatServiceImpl implements SeatService {
 
     private final SeatRepository seatRepository;
 
-    @Autowired
     public SeatServiceImpl(SeatRepository seatRepository) {
         this.seatRepository = seatRepository;
     }
@@ -32,8 +30,12 @@ public class SeatServiceImpl implements SeatService {
     @Override
     public Seat saveSeat(Seat seat) {
         if (seat.getSeatId() == null) {
-            if (seatRepository.existsByCarriageAndSeatNumber(seat.getCarriage(), seat.getSeatNumber())) {
-                throw new IllegalStateException("Số ghế '" + seat.getSeatNumber() + "' đã tồn tại trên toa '" + seat.getCarriage().getName() + "'.");
+            if (seatRepository.existsByCoachAndSeatNumber(seat.getCoach(), seat.getSeatNumber())) {
+                throw new IllegalStateException(
+                        "Số ghế '" + seat.getSeatNumber()
+                                + "' đã tồn tại trên toa '"
+                                + seat.getCoach().getCoachNumber() + "'."
+                );
             }
         }
         return seatRepository.save(seat);
