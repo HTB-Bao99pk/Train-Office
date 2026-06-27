@@ -1,2 +1,79 @@
-﻿<aside class="main-sidebar sidebar-dark-primary elevation-4" xmlns:th="http://www.thymeleaf.org" th:fragment="adminSidebar(activeMenu)"><a th:href="@{/admin}" class="brand-link"><i class="fas fa-train brand-image ml-3"></i><span class="brand-text font-weight-bold">RailJet Admin</span></a><div class="sidebar"><nav class="mt-3"><ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview"><li class="nav-item"><a th:href="@{/admin}" class="nav-link" th:classappend="${activeMenu == 'dashboard'} ? ' active'"><i class="nav-icon fas fa-chart-line"></i><p>Dashboard</p></a></li><li class="nav-item" th:each="item : ${adminMenus}"><a class="nav-link" th:href="@{'/admin/' + ${item.key}}" th:classappend="${activeMenu == item.key} ? ' active'"><i class="nav-icon" th:classappend="${item.icon}"></i><p th:text="${item.label}">Menu</p></a></li></ul></nav></div></aside>
+﻿<aside class="main-sidebar sidebar-dark-primary elevation-4 velocity-sidebar"
+       xmlns:th="http://www.thymeleaf.org"
+       th:fragment="adminSidebar(activeMenu)">
+    <a th:href="@{/admin}" class="brand-link velocity-brand">
+        <span class="velocity-brand-icon"><i class="fas fa-train"></i></span>
+        <span class="brand-text">
+            RailJet Admin
+            <small>Fleet Management</small>
+        </span>
+    </a>
 
+    <div class="sidebar">
+        <nav class="mt-3">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview">
+                <li class="nav-header">Tá»•ng quan</li>
+                <li class="nav-item">
+                    <a th:href="@{/admin}" class="nav-link" th:classappend="${activeMenu == 'dashboard'} ? ' active'">
+                        <i class="nav-icon fas fa-chart-line"></i>
+                        <p>Dashboard</p>
+                    </a>
+                </li>
+
+                <li class="nav-header">Master Data</li>
+                <li class="nav-item">
+                    <a th:href="@{/admin/trains}" class="nav-link" th:classappend="${activeMenu == 'trains'} ? ' active'">
+                        <i class="nav-icon fas fa-train"></i>
+                        <p>Trains</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/admin/coaches}" class="nav-link" th:classappend="${activeMenu == 'coaches'} ? ' active'">
+                        <i class="nav-icon fas fa-subway"></i>
+                        <p>Coaches</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/admin/seats}" class="nav-link" th:classappend="${activeMenu == 'seats'} ? ' active'">
+                        <i class="nav-icon fas fa-chair"></i>
+                        <p>Seats</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/seat-types}" class="nav-link" th:classappend="${activeMenu == 'seat-types'} ? ' active'">
+                        <i class="nav-icon fas fa-couch"></i>
+                        <p>Seat Types</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/admin/routes}" class="nav-link" th:classappend="${activeMenu == 'routes'} ? ' active'">
+                        <i class="nav-icon fas fa-route"></i>
+                        <p>Routes</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/admin/stations}" class="nav-link" th:classappend="${activeMenu == 'stations'} ? ' active'">
+                        <i class="nav-icon fas fa-map-marker-alt"></i>
+                        <p>Stations</p>
+                    </a>
+                </li>
+
+                <li class="nav-header">Operations</li>
+                <li class="nav-item">
+                    <a th:href="@{/admin/payments}" class="nav-link" th:classappend="${activeMenu == 'payments'} ? ' active'">
+                        <i class="nav-icon fas fa-credit-card"></i>
+                        <p>Payments</p>
+                    </a>
+                </li>
+
+                <li class="nav-header">Quick Access</li>
+                <li class="nav-item">
+                    <a th:href="@{/admin/users}" class="nav-link" th:classappend="${activeMenu == 'users'} ? ' active'">
+                        <i class="nav-icon fas fa-users"></i>
+                        <p>Users</p>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</aside>

@@ -1,13 +1,22 @@
-﻿<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Detail Trips / Chuyến tàu', ~{::section}, 'trips')}">
-<section>
-<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="card"><div class="card-header d-flex justify-content-between"><span>Trips / Chuyến tàu detail / Chi tiết</span><span th:replace="~{fragments/status-badge :: statusBadge(${detail.status})}"></span></div><div class="card-body table-responsive"><table class="table table-bordered"><tr><th>tripId</th><td th:text="${detail.tripId}">tripId</td></tr>
-<tr><th>train</th><td th:text="${detail.train}">train</td></tr>
-<tr><th>route</th><td th:text="${detail.route}">route</td></tr>
-<tr><th>departureTime</th><td th:text="${detail.departureTime}">departureTime</td></tr>
-<tr><th>arrivalTime</th><td th:text="${detail.arrivalTime}">arrivalTime</td></tr>
-<tr><th>basePrice</th><td th:text="${detail.basePrice}">basePrice</td></tr>
-<tr><th>status</th><td th:text="${detail.status}">status</td></tr></table></div><div class="card-footer"><a class="btn btn-secondary" th:href="@{'/admin/trips'}">Back</a> <a class="btn btn-warning" th:href="@{'/admin/trips/' + ${detail.id} + '/edit'}">Edit</a></div></div>
-</section>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Train Trip Detail</title>
+</head>
+<body>
+<h1>Train Trip Detail</h1>
+<dl th:object="${trip}">
+    <dt>ID</dt><dd th:text="*{tripId}"></dd>
+    <dt>Train</dt><dd th:text="*{train != null ? train.trainName : ''}"></dd>
+    <dt>Route</dt><dd th:text="*{route != null ? route.routeName : ''}"></dd>
+    <dt>Departure</dt><dd th:text="*{departureTime}"></dd>
+    <dt>Arrival</dt><dd th:text="*{arrivalTime}"></dd>
+    <dt>Base price</dt><dd th:text="*{basePrice}"></dd>
+    <dt>Status</dt><dd th:text="*{status}"></dd>
+</dl>
+<a th:href="@{/admin/trips/{id}/edit(id=${trip.tripId})}">Edit</a>
+<a th:href="@{/admin/trips/{id}/stations(id=${trip.tripId})}">Stations</a>
+<a th:href="@{/admin/trips}">Back</a>
+</body>
 </html>
-

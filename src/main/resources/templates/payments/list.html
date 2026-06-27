@@ -1,9 +1,97 @@
 ﻿<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Payments / Thanh toán', ~{::section}, 'payments')}">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Payment Management', ~{::section}, 'payments')}">
 <section>
-<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div>
-<div class="row mb-3"><div th:replace="~{fragments/stat-card :: statCard('Total / Tổng', ${totalItems}, 'fas fa-list', ' bg-info', 'Payments / Thanh toán')}"></div><div th:replace="~{fragments/stat-card :: statCard('Active / Hoạt động', ${activeItems}, 'fas fa-check', ' bg-success', 'Current')}"></div><div th:replace="~{fragments/stat-card :: statCard('Pending / Chờ', ${pendingItems}, 'fas fa-clock', ' bg-warning', 'Need review')}"></div><div th:replace="~{fragments/stat-card :: statCard('Issues / Lỗi', ${issueItems}, 'fas fa-exclamation', ' bg-danger', 'Attention')}"></div></div>
-<div class="card"><div class="card-header"><form th:action="@{'/admin/payments'}" method="get" th:object="${filter}" class="row g-2"><div class="col-md-4"><input class="form-control" th:field="*{keyword}" placeholder="Search / Tìm kiếm"><div class="text-danger small" th:if="${#fields.hasErrors('keyword')}" th:errors="*{keyword}">Error</div></div><div class="col-md-3"><select class="form-control" th:field="*{status}"><option value="">All status</option><option value="ACTIVE">ACTIVE</option><option value="PENDING">PENDING</option><option value="INACTIVE">INACTIVE</option></select><div class="text-danger small" th:if="${#fields.hasErrors('status')}" th:errors="*{status}">Error</div></div><div class="col-md-3"><button class="btn btn-primary w-100"><i class="fas fa-search"></i> Filter / Lọc</button></div><div class="col-md-2"><a class="btn btn-success w-100" th:href="@{'/admin/payments/create'}"><i class="fas fa-plus"></i> Add</a></div></form></div><div class="card-body table-responsive p-0"><table class="table table-hover mb-0"><thead><tr><th>paymentId</th><th>booking</th><th>paymentMethod</th><th>amount</th><th>transactionCode</th><th>otpCode</th><th>paymentStatus</th><th>paidAt</th><th>Status</th><th class="text-right">Actions</th></tr></thead><tbody><tr th:each="row : ${items}"><td th:text="${row.paymentId}">paymentId</td><td th:text="${row.booking}">booking</td><td th:text="${row.paymentMethod}">paymentMethod</td><td th:text="${row.amount}">amount</td><td th:text="${row.transactionCode}">transactionCode</td><td th:text="${row.otpCode}">otpCode</td><td th:text="${row.paymentStatus}">paymentStatus</td><td th:text="${row.paidAt}">paidAt</td><td><span th:replace="~{fragments/status-badge :: statusBadge(${row.status})}"></span></td><td class="text-right"><a class="btn btn-sm btn-info" th:href="@{'/admin/payments/' + ${row.id}}"><i class="fas fa-eye"></i></a> <a class="btn btn-sm btn-warning" th:href="@{'/admin/payments/' + ${row.id} + '/edit'}"><i class="fas fa-edit"></i></a> <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" th:data-target="${'#deleteModal' + row.id}"><i class="fas fa-trash"></i></button><div class="modal fade" th:id="${'deleteModal' + row.id}" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Confirm / Xác nhận</h5><button type="button" class="close" data-dismiss="modal">&times;</button></div><div class="modal-body">Delete this item? / Xóa mục này?</div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button><form th:action="@{'/admin/payments/delete'}" method="post"><button class="btn btn-danger">Delete / Xóa</button></form></div></div></div></div></td></tr><tr th:if="${#lists.isEmpty(items)}"><td colspan="12" class="text-center text-muted py-4">No data / Chưa có dữ liệu</td></tr></tbody></table></div><div class="card-footer"><div th:replace="~{fragments/pagination :: pagination(${page})}"></div></div></div>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2 class="mb-1">Payment Management</h2>
+            <p class="text-muted mb-0">Manage booking payments and statuses.</p>
+        </div>
+        <a class="btn btn-primary" th:href="@{/admin/payments/new}">
+            <i class="fas fa-plus mr-1"></i>Add Payment
+        </a>
+    </div>
+
+    <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <form th:action="@{/admin/payments}" method="get" class="row">
+                <div class="col-md-4">
+                    <select class="form-control" name="status">
+                        <option value="">All statuses</option>
+                        <option th:each="status : ${paymentStatuses}"
+                                th:value="${status}"
+                                th:selected="${selectedStatus != null and selectedStatus == status}"
+                                th:text="${status}">
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-4 mt-2 mt-md-0">
+                    <input class="form-control" type="number" name="bookingId" placeholder="Booking ID" th:value="${selectedBookingId}">
+                </div>
+                <div class="col-md-2 mt-2 mt-md-0">
+                    <button class="btn btn-primary w-100" type="submit">Filter</button>
+                </div>
+                <div class="col-md-2 mt-2 mt-md-0">
+                    <a class="btn btn-outline-secondary w-100" th:href="@{/admin/payments}">Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body table-responsive p-0">
+            <table class="table table-hover mb-0">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Booking</th>
+                    <th>Method</th>
+                    <th>Amount</th>
+                    <th>Transaction</th>
+                    <th>OTP</th>
+                    <th>Status</th>
+                    <th>Paid At</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="payment : ${payments}">
+                    <td th:text="${payment.paymentId}">1</td>
+                    <td th:text="${payment.booking != null ? payment.booking.bookingNumber : ''}">RJ0001</td>
+                    <td th:text="${payment.paymentMethod}">BANK_TRANSFER</td>
+                    <td th:text="${payment.amount}">0</td>
+                    <td th:text="${payment.transactionCode}">TXN</td>
+                    <td th:text="${payment.otpCode}">OTP</td>
+                    <td><span th:replace="~{fragments/status-badge :: statusBadge(${payment.paymentStatus})}"></span></td>
+                    <td th:text="${payment.paidAt}">Paid At</td>
+                    <td class="text-right">
+                        <a class="btn btn-sm btn-info" th:href="@{/admin/payments/detail/{id}(id=${payment.paymentId})}">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a class="btn btn-sm btn-warning" th:href="@{/admin/payments/edit/{id}(id=${payment.paymentId})}">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a class="btn btn-sm btn-success" th:href="@{/admin/payments/success/{id}(id=${payment.paymentId})}">
+                            <i class="fas fa-check"></i>
+                        </a>
+                        <a class="btn btn-sm btn-secondary" th:href="@{/admin/payments/failed/{id}(id=${payment.paymentId})}">
+                            <i class="fas fa-times"></i>
+                        </a>
+                        <a class="btn btn-sm btn-danger"
+                           th:href="@{/admin/payments/delete/{id}(id=${payment.paymentId})}"
+                           onclick="return confirm('Delete this payment?')">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(payments)}">
+                    <td colspan="9" class="text-center text-muted py-4">No payments found.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </section>
 </html>
-

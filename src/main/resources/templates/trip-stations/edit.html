@@ -1,12 +1,29 @@
-﻿<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Edit Trip Stations / Ga dừng', ~{::section}, 'trip-stations')}">
-<section>
-<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="card"><div class="card-header">Edit / Sửa Trip Stations / Ga dừng</div><form th:action="@{'/admin/trip-stations/save'}" method="post" th:object="${form}"><div class="card-body"><div th:replace="~{fragments/form-errors :: globalErrors}"></div><div class="row g-3"><div class="col-md-6"><label class="form-label">tripStationId</label><input class="form-control" th:field="*{tripStationId}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('tripStationId')}" th:errors="*{tripStationId}">Error</div></div>
-<div class="col-md-6"><label class="form-label">trainTrip</label><input class="form-control" th:field="*{trainTrip}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('trainTrip')}" th:errors="*{trainTrip}">Error</div></div>
-<div class="col-md-6"><label class="form-label">station</label><input class="form-control" th:field="*{station}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('station')}" th:errors="*{station}">Error</div></div>
-<div class="col-md-6"><label class="form-label">stationOrder</label><input class="form-control" th:field="*{stationOrder}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('stationOrder')}" th:errors="*{stationOrder}">Error</div></div>
-<div class="col-md-6"><label class="form-label">arrivalTime</label><input class="form-control" th:field="*{arrivalTime}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('arrivalTime')}" th:errors="*{arrivalTime}">Error</div></div>
-<div class="col-md-6"><label class="form-label">departureTime</label><input class="form-control" th:field="*{departureTime}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('departureTime')}" th:errors="*{departureTime}">Error</div></div></div></div><div class="card-footer d-flex justify-content-between"><a class="btn btn-secondary" th:href="@{'/admin/trip-stations'}">Back / Quay lại</a><button class="btn btn-primary">Save / Lưu</button></div></form></div>
-</section>
-</html>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Trip Station</title>
+</head>
+<body>
+<h1>Edit Trip Station</h1>
+<p th:if="${error}" th:text="${error}"></p>
+<form th:action="@{/admin/trips/{tripId}/stations/{id}/update(tripId=${trip.tripId},id=${tripStation.tripStationId})}" th:object="${tripStation}" method="post">
+    <label>Station</label>
+    <select th:field="*{station.stationId}" required>
+        <option th:each="station : ${stations}" th:value="${station.stationId}" th:text="${station.stationName}"></option>
+    </select>
 
+    <label>Station order</label>
+    <input type="number" min="1" th:field="*{stationOrder}" required>
+
+    <label>Arrival time</label>
+    <input type="datetime-local" th:field="*{arrivalTime}">
+
+    <label>Departure time</label>
+    <input type="datetime-local" th:field="*{departureTime}">
+
+    <button type="submit">Update</button>
+    <a th:href="@{/admin/trips/{tripId}/stations(tripId=${trip.tripId})}">Back</a>
+</form>
+</body>
+</html>

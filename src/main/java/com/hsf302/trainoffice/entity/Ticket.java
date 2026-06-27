@@ -1,7 +1,7 @@
 package com.hsf302.trainoffice.entity;
 
 
-import com.hsf302.trainoffice.common.TicketStatus;
+import com.hsf302.trainoffice.common.enums.TicketStatus;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -20,6 +20,7 @@ import java.util.List;
                 @Index(name = "idx_tickets_code", columnList = "ticket_code"),
                 @Index(name = "idx_tickets_booking", columnList = "booking_id"),
                 @Index(name = "idx_tickets_passenger", columnList = "passenger_id"),
+                @Index(name = "idx_tickets_trip", columnList = "trip_id"),
                 @Index(name = "idx_tickets_seat", columnList = "seat_id"),
                 @Index(name = "idx_tickets_status", columnList = "ticket_status")
         }
@@ -50,6 +51,11 @@ public class Ticket {
     @ToString.Exclude
     private Passenger passenger;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "trip_id")
+    @ToString.Exclude
+    private TrainTrip trainTrip;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "seat_id", nullable = false)
     @ToString.Exclude
@@ -70,7 +76,7 @@ public class Ticket {
     @PrePersist
     void onCreate() {
         if (ticketStatus == null) {
-            ticketStatus = TicketStatus.ACTIVE;
+            ticketStatus = TicketStatus.BOOKED;
         }
     }
 }

@@ -1,7 +1,70 @@
-﻿<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/customer-layout :: layout('Trips / Chuyến tàu', ~{::section}, 'booking')}">
-<section class="container">
-<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="d-flex justify-content-between align-items-center mb-3"><h1 class="fw-bold">Select trip / Chọn chuyến</h1><a class="btn btn-outline-primary" th:href="@{/booking/search}">Modify search</a></div><div class="row g-3"><div class="col-12" th:each="trip : ${trips}"><div class="railjet-card card"><div class="card-body row align-items-center g-3"><div class="col-md-3"><span class="badge text-bg-primary" th:text="${trip.train}">SE1</span><h5 th:text="${trip.route}">Route</h5></div><div class="col-md-3"><strong th:text="${trip.departureTime}">08:00</strong><div class="text-muted">Departure / Khởi hành</div></div><div class="col-md-3"><strong th:text="${trip.arrivalTime}">20:00</strong><div class="text-muted">Arrival / Đến nơi</div></div><div class="col-md-3 text-md-end"><div class="h5 text-primary" th:text="${trip.basePrice}">450000</div><a class="btn btn-primary" th:href="@{/booking/1/seats}">Select seats / Chọn ghế</a></div></div></div></div></div>
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: layout('Kết quả tìm kiếm', ~{::section}, 'booking')}">
+<section class="booking-shell booking-section">
+    <div class="booking-progress three" aria-label="Tiến trình đặt vé">
+        <div class="booking-progress-item done"><span>1</span>Tìm kiếm</div>
+        <div class="booking-progress-item active"><span>2</span>Chọn chuyến</div>
+        <div class="booking-progress-item"><span>3</span>Hoàn tất</div>
+    </div>
+
+    <div class="page-hero compact-hero">
+        <span class="page-eyebrow">Kết quả</span>
+        <h1 class="page-title">Chọn chuyến tàu phù hợp</h1>
+        <p class="page-subtitle">So sánh thời gian, tuyến đường và giá cơ bản trước khi chọn ghế.</p>
+    </div>
+
+    <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+    <div class="result-toolbar">
+        <div>
+            <strong th:text="${trips != null ? #lists.size(trips) : 0}">0</strong>
+            <span> chuyến được tìm thấy</span>
+        </div>
+        <a class="btn btn-outline-primary" th:href="@{/booking/search}">
+            <i class="bi bi-arrow-left me-2"></i>Tìm lại
+        </a>
+    </div>
+
+    <div class="trip-result-list">
+        <article class="railjet-card trip-card" th:each="result : ${trips}">
+            <div class="trip-card-body">
+                <div class="trip-result-grid">
+                    <div class="trip-train">
+                        <span class="rail-badge">RailJet</span>
+                        <h2 th:text="${result.trainTrip.train != null ? result.trainTrip.train.trainName : 'Chuyến tàu'}">SE1</h2>
+                        <small th:text="${result.trainTrip.route != null ? result.trainTrip.route.routeName : 'Tuyến đường'}">Hà Nội - Sài Gòn</small>
+                    </div>
+                    <div class="trip-time-line">
+                        <div>
+                            <span>Ga đi</span>
+                            <strong th:text="${result.segment.departureStop.station.stationName}">Hà Nội</strong>
+                            <small class="trip-time" th:text="${result.trainTrip.departureTime}">08:00</small>
+                        </div>
+                        <div class="route-line" aria-hidden="true"></div>
+                        <div class="text-end">
+                            <span>Ga đến</span>
+                            <strong th:text="${result.segment.arrivalStop.station.stationName}">Đà Nẵng</strong>
+                            <small class="trip-time" th:text="${result.trainTrip.arrivalTime}">18:00</small>
+                        </div>
+                    </div>
+                    <div class="trip-meta">
+                        <span class="rail-badge status-muted">Còn ghế</span>
+                        <strong class="trip-price" th:text="${result.trainTrip.basePrice}">450000</strong>
+                        <a class="btn btn-primary w-100"
+                           th:href="@{/booking/{tripId}/seats(tripId=${result.trainTrip.tripId},departureStationId=${result.segment.departureStop.station.stationId},arrivalStationId=${result.segment.arrivalStop.station.stationId},passengerCount=${result.passengerCount})}">
+                            Chọn ghế
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <div class="empty-state" th:if="${#lists.isEmpty(trips)}">
+            <i class="bi bi-search"></i>
+            <h2>Không tìm thấy chuyến phù hợp</h2>
+            <p>Hãy thử chọn ngày khác hoặc đổi ga đi/ga đến.</p>
+            <a class="btn btn-primary" th:href="@{/booking/search}">Quay lại tìm kiếm</a>
+        </div>
+    </div>
 </section>
 </html>
-

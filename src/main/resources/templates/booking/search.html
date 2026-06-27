@@ -1,8 +1,90 @@
-﻿<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/customer-layout :: layout('Search Trip / Tìm chuyến', ~{::section}, 'booking')}">
-<section class="container">
-<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="railjet-card card"><div class="card-body p-4 p-lg-5"><h1 class="fw-bold">Tìm vé tàu / Search tickets</h1><form th:action="@{/booking/trips}" method="get" th:object="${form}" class="row g-3 mt-2"><div class="col-md-3"><label class="form-label">Departure / Ga đi</label><input class="form-control" th:field="*{departureStationId}"><div class="text-danger small" th:if="${#fields.hasErrors('departureStationId')}" th:errors="*{departureStationId}">Error</div></div><div class="col-md-3"><label class="form-label">Arrival / Ga đến</label><input class="form-control" th:field="*{arrivalStationId}"><div class="text-danger small" th:if="${#fields.hasErrors('arrivalStationId')}" th:errors="*{arrivalStationId}">Error</div></div><div class="col-md-3"><label class="form-label">Date / Ngày đi</label><input type="date" class="form-control" th:field="*{departureDate}"><div class="text-danger small" th:if="${#fields.hasErrors('departureDate')}" th:errors="*{departureDate}">Error</div></div><div class="col-md-3"><label class="form-label">Passengers / Số khách</label><input type="number" min="1" class="form-control" th:field="*{passengerCount}"><div class="text-danger small" th:if="${#fields.hasErrors('passengerCount')}" th:errors="*{passengerCount}">Error</div></div><div class="col-12 text-end"><button class="btn btn-primary btn-lg">Search / Tìm chuyến</button></div></form></div></div>
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: layout('Tìm chuyến tàu', ~{::section}, 'booking')}">
+<section class="booking-shell booking-section">
+    <div class="booking-progress three" aria-label="Tiến trình đặt vé">
+        <div class="booking-progress-item active"><span>1</span>Tìm kiếm</div>
+        <div class="booking-progress-item"><span>2</span>Chọn chuyến</div>
+        <div class="booking-progress-item"><span>3</span>Hoàn tất</div>
+    </div>
+
+    <div class="booking-hero">
+        <div>
+            <span class="page-eyebrow">RailJet Booking</span>
+            <h1 class="page-title">Lên kế hoạch cho chuyến đi tiếp theo</h1>
+            <p class="page-subtitle">
+                Tìm chuyến tàu theo ga đi, ga đến và ngày khởi hành. Hệ thống hỗ trợ đặt vé theo từng đoạn ga trên cùng chuyến tàu.
+            </p>
+        </div>
+        <div class="hero-visual">
+            <div>
+                <span class="rail-badge">Nhanh và rõ ràng</span>
+            </div>
+            <div>
+                <strong>Chọn chuyến, chọn ghế, tạo booking trong vài bước.</strong>
+                <small>Giữ luồng đặt vé tập trung, không lẫn với trang hồ sơ.</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="railjet-card card booking-search-card">
+        <div class="card-body p-4 p-lg-5">
+            <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+            <form class="booking-search-form" th:action="@{/booking/trips}" th:object="${tripSearchForm}" method="post">
+                <div class="row g-3">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="search-field-card">
+                            <label class="form-label" for="departureStationId"><i class="bi bi-geo-alt"></i>Ga đi</label>
+                            <select id="departureStationId" class="form-select" th:field="*{departureStationId}" required>
+                                <option value="">Chọn ga đi</option>
+                                <option th:each="station : ${stations}" th:value="${station.stationId}" th:text="${station.stationName}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="search-field-card">
+                            <label class="form-label" for="arrivalStationId"><i class="bi bi-signpost-2"></i>Ga đến</label>
+                            <select id="arrivalStationId" class="form-select" th:field="*{arrivalStationId}" required>
+                                <option value="">Chọn ga đến</option>
+                                <option th:each="station : ${stations}" th:value="${station.stationId}" th:text="${station.stationName}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="search-field-card">
+                            <label class="form-label" for="departureDate"><i class="bi bi-calendar3"></i>Ngày đi</label>
+                            <input id="departureDate" class="form-control" type="date" th:field="*{departureDate}" required>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="search-field-card">
+                            <label class="form-label" for="passengerCount"><i class="bi bi-people"></i>Hành khách</label>
+                            <input id="passengerCount" class="form-control" type="number" min="1" th:field="*{passengerCount}" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="booking-actions mt-4 justify-content-end">
+                    <button class="btn btn-primary btn-lg" type="submit">
+                        <i class="bi bi-search me-2"></i>Tìm chuyến tàu
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="booking-info-grid">
+        <div class="booking-info-item">
+            <i class="bi bi-train-front"></i>
+            <div><strong>Tìm theo đoạn ga</strong><span>Chọn ga đi và ga đến nằm giữa tuyến, hệ thống vẫn tìm đúng chuyến phù hợp.</span></div>
+        </div>
+        <div class="booking-info-item">
+            <i class="bi bi-grid-3x3-gap"></i>
+            <div><strong>Chọn ghế trực quan</strong><span>Ghế đã đặt được đánh dấu rõ ràng theo đoạn hành trình.</span></div>
+        </div>
+        <div class="booking-info-item">
+            <i class="bi bi-receipt"></i>
+            <div><strong>Booking chờ thanh toán</strong><span>Sau khi tạo booking, module thanh toán sẽ xử lý bước tiếp theo.</span></div>
+        </div>
+    </div>
 </section>
 </html>
-
-.

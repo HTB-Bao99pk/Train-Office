@@ -1,23 +1,16 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{fragments/_admin_layout}">
-
-<head>
-    <title>Route Management</title>
-</head>
-
-<div layout:fragment="content">
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Route Management', ~{::section}, 'routes')}">
+<section>
 
     <div class="d-flex justify-content-between mb-3">
         <h2>Route Management</h2>
 
         <div>
-            <a th:href="@{/routes/search}" class="btn btn-info">
+            <a th:href="@{/admin/routes/search}" class="btn btn-info">
                 Search Route
             </a>
 
-            <a th:href="@{/routes/new}" class="btn btn-primary">
+            <a th:href="@{/admin/routes/new}" class="btn btn-primary">
                 Add Route
             </a>
         </div>
@@ -60,13 +53,13 @@
             <td>
 
                 <a class="btn btn-warning btn-sm"
-                   th:href="@{'/routes/edit/' + ${route.routeId}}">
+                   th:href="@{'/admin/routes/edit/' + ${route.routeId}}">
                     Edit
                 </a>
 
                 <a class="btn btn-danger btn-sm"
                    onclick="return confirm('Delete this route?')"
-                   th:href="@{'/routes/delete/' + ${route.routeId}}">
+                   th:href="@{'/admin/routes/delete/' + ${route.routeId}}">
                     Delete
                 </a>
 
@@ -78,6 +71,6 @@
 
     </table>
 
-</div>
+</section>
 
 </html>

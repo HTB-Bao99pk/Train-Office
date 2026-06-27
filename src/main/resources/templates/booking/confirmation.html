@@ -1,7 +1,101 @@
-﻿<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/customer-layout :: layout('Confirmation / Xác nhận', ~{::section}, 'booking')}">
-<section class="container">
-<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="railjet-card card"><div class="card-header">Booking confirmation / Xác nhận đặt vé</div><div class="card-body row g-4"><div class="col-lg-8"><h5>Trip / Chuyến</h5><p>SE1 - Ha Noi to Sai Gon</p><h5>Passenger / Hành khách</h5><p th:text="${form.fullName}">Nguyen Van A</p><h5>Seat / Ghế</h5><p>A1, A2</p></div><div class="col-lg-4"><div class="border rounded p-3"><div class="d-flex justify-content-between"><span>Total / Tổng</span><strong>900,000 VND</strong></div><a class="btn btn-primary w-100 mt-3" th:href="@{/booking/success}">Confirm / Xác nhận</a></div></div></div></div>
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: layout('Xác nhận booking', ~{::section}, 'booking')}">
+<section class="booking-shell booking-section">
+    <div class="booking-progress">
+        <div class="booking-progress-item done"><span>1</span>Tìm kiếm</div>
+        <div class="booking-progress-item done"><span>2</span>Chọn chuyến</div>
+        <div class="booking-progress-item done"><span>3</span>Chọn ghế</div>
+        <div class="booking-progress-item done"><span>4</span>Hành khách</div>
+        <div class="booking-progress-item active"><span>5</span>Xác nhận</div>
+        <div class="booking-progress-item"><span>6</span>Hoàn tất</div>
+    </div>
+
+    <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+    <div class="detail-grid">
+        <aside class="railjet-card card sticky-summary">
+            <div class="card-header">Tóm tắt booking</div>
+            <div class="card-body">
+                <div class="summary-box mb-3">
+                    <span class="summary-label">Chuyến tàu</span>
+                    <strong th:text="${trip.train != null ? trip.train.trainName : 'Chuyến tàu'}">SE1</strong>
+                    <small th:text="${trip.route != null ? trip.route.routeName : 'Tuyến đường'}">Tuyến đường</small>
+                </div>
+                <div class="summary-line">
+                    <span>Ga đi</span>
+                    <strong th:text="${segment.departureStop.station.stationName}">Hà Nội</strong>
+                </div>
+                <div class="summary-line">
+                    <span>Ga đến</span>
+                    <strong th:text="${segment.arrivalStop.station.stationName}">Đà Nẵng</strong>
+                </div>
+                <div class="summary-line">
+                    <span>Số ghế</span>
+                    <strong th:text="${#lists.size(selectedSeats)}">1</strong>
+                </div>
+                <hr>
+                <div class="summary-line total">
+                    <span>Tổng tiền</span>
+                    <strong th:text="${totalAmount}">0</strong>
+                </div>
+                <form th:action="@{/booking/confirmation}" method="post" class="booking-actions mt-4">
+                    <button class="btn btn-primary w-100" type="submit">Tạo booking</button>
+                    <a class="btn btn-outline-primary w-100" th:href="@{/booking/passenger-info}">Quay lại</a>
+                </form>
+            </div>
+        </aside>
+
+        <div class="booking-section">
+            <div class="railjet-card card">
+                <div class="card-header">Hành trình</div>
+                <div class="card-body">
+                    <div class="confirm-route">
+                        <div>
+                            <span>Khởi hành</span>
+                            <strong th:text="${segment.departureStop.station.stationName}">Hà Nội</strong>
+                            <small th:text="${trip.departureTime}">08:00</small>
+                        </div>
+                        <div class="route-line"></div>
+                        <div class="text-lg-end">
+                            <span>Đến</span>
+                            <strong th:text="${segment.arrivalStop.station.stationName}">Đà Nẵng</strong>
+                            <small th:text="${trip.arrivalTime}">18:00</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="railjet-card card">
+                <div class="card-header">Hành khách và ghế</div>
+                <div class="card-body table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead>
+                        <tr>
+                            <th>Hành khách</th>
+                            <th>Ghế</th>
+                            <th>Loại ghế</th>
+                            <th class="text-end">Giá</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="seat, stat : ${selectedSeats}">
+                            <td th:text="${passengerInfo.passengers[stat.index].fullName}">Nguyễn Văn A</td>
+                            <td>
+                                <strong th:text="${seat.coach.coachNumber + ' - ' + seat.seatNumber}">A - 01</strong>
+                            </td>
+                            <td th:text="${seat.seatType}">Ghế mềm</td>
+                            <td class="text-end">
+                                <span th:text="${trip.basePrice}">0</span>
+                                <span> + </span>
+                                <span th:text="${seat.extraPrice}">0</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 </html>
-

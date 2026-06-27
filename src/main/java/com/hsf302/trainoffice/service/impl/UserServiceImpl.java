@@ -3,23 +3,22 @@ package com.hsf302.trainoffice.service.impl;
 import com.hsf302.trainoffice.common.enums.UserRole;
 import com.hsf302.trainoffice.common.enums.UserStatus;
 import com.hsf302.trainoffice.dto.RegisterRequest;
-import com.hsf302.trainoffice.entity.Passenger;
 import com.hsf302.trainoffice.entity.User;
-import com.hsf302.trainoffice.repository.PassengerRepository;
 import com.hsf302.trainoffice.repository.UserRepository;
 import com.hsf302.trainoffice.service.UserService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final PassengerRepository passengerRepository;
 
-    public UserServiceImpl(UserRepository userRepository, PassengerRepository passengerRepository) {
+    public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passengerRepository = passengerRepository;
     }
 
     @Override
@@ -63,20 +62,14 @@ public class UserServiceImpl implements UserService {
         user.setPassword(
                 registerRequest.getPassword());
 
+        user.setFullName(registerRequest.getFullName().trim());
+
         user.setRole(UserRole.CUSTOMER);
 
         user.setStatus(UserStatus.ACTIVE);
 
         try {
-            user = userRepository.save(user);
-
-            Passenger passenger = new Passenger();
-
-            passenger.setUser(user);
-            passenger.setFullName(
-                    registerRequest.getFullName());
-
-            passengerRepository.save(passenger);
+            userRepository.save(user);
             return true;
         } catch (DataIntegrityViolationException ex) {
             return false;
@@ -89,5 +82,42 @@ public class UserServiceImpl implements UserService {
            return null;
        }
         return userRepository.findByEmailAndPassword(email.trim().toLowerCase(), pwd);
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public Optional<User> getUserById(Long userId) {
+        if (userId == null) {
+            return Optional.empty();
+        }
+        return userRepository.findById(userId);
+    }
+
+    @Override
+    public User saveUser(User user) {
+        if (user.getUserId() != null) {
+            userRepository.findById(user.getUserId()).ifPresent(existing -> {
+                user.setCreatedAt(existing.getCreatedAt());
+            });
+        }
+        if (user.getEmail() != null) {
+            user.setEmail(user.getEmail().trim().toLowerCase());
+        }
+        if (user.getRole() == null) {
+            user.setRole(UserRole.CUSTOMER);
+        }
+        if (user.getStatus() == null) {
+            user.setStatus(UserStatus.ACTIVE);
+        }
+        return userRepository.save(user);
+    }
+
+    @Override
+    public void deleteUser(Long userId) {
+        userRepository.deleteById(userId);
     }
 }

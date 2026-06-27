@@ -1,14 +1,6 @@
-<!DOCTYPE html>
-
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{fragments/_admin_layout}">
-
-<head>
-    <title>Route Form</title>
-</head>
-
-<div layout:fragment="content">
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Route Form', ~{::section}, 'routes')}">
+<section>
 
     <h2
             th:text="${route.routeId==null}
@@ -16,7 +8,7 @@
             : 'Update Route'">
     </h2>
 
-    <form th:action="@{/routes/save}"
+    <form th:action="@{/admin/routes/save}"
           th:object="${route}"
           method="post">
 
@@ -56,13 +48,13 @@
             Save
         </button>
 
-        <a th:href="@{/routes}"
+        <a th:href="@{/admin/routes}"
            class="btn btn-secondary">
             Back
         </a>
 
     </form>
 
-</div>
+</section>
 
 </html>

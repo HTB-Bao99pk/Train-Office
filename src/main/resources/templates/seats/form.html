@@ -1,17 +1,6 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{fragments/_admin_layout}">
-
-<head>
-    <title th:text="${seat.seatId == null ? 'Add Seat' : 'Edit Seat'}">
-        Seat
-    </title>
-</head>
-
-<body>
-
-<div layout:fragment="content">
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Seat Form', ~{::section}, 'seats')}">
+<section>
 
     <div class="container mt-4">
 
@@ -25,7 +14,7 @@
 
             <div class="card-body">
 
-                <form th:action="@{/seats/save}"
+                <form th:action="@{/admin/seats/save}"
                       th:object="${seat}"
                       method="post">
 
@@ -61,7 +50,7 @@
                         Save
                     </button>
                     <a
-                            th:href="@{/seats(coachId=${selectedCoachId})}"
+                            th:href="@{/admin/seats(coachId=${selectedCoachId})}"
                             class="btn btn-secondary">
                         Cancel
                     </a>
@@ -73,7 +62,5 @@
 
     </div>
 
-</div>
-
-</body>
+</section>
 </html>

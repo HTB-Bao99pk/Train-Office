@@ -10,6 +10,7 @@
     <link rel="stylesheet" th:href="@{/css/customer.css}">
 </head>
 <body>
+<div class="velocity-progress"></div>
 <div th:replace="~{fragments/customer-header :: customerHeader(${activeMenu})}"></div>
 <main class="railjet-main"><div th:replace="${content}"></div></main>
 <div th:replace="~{fragments/customer-footer :: customerFooter}"></div>

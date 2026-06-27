@@ -1,17 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{fragments/_admin_layout}">
-
-<head>
-    <title th:text="${seatType.id == null ? 'Add Seat Type' : 'Edit Seat Type'}">
-        Seat Type
-    </title>
-</head>
-
-<body>
-
-<div layout:fragment="content">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Seat Type Form', ~{::section}, 'seat-types')}">
+<section>
 
     <div class="container-fluid">
 
@@ -135,8 +124,6 @@
 
     </div>
 
-</div>
-
-</body>
+</section>
 
 </html>

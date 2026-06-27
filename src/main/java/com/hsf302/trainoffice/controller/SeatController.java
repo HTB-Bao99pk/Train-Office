@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/seats")
+@RequestMapping("/admin/seats")
 public class SeatController {
 
     private final SeatService seatService;
@@ -55,7 +55,7 @@ public class SeatController {
         model.addAttribute("selectedCoachId", coachId);
         model.addAttribute("selectedCoach", selectedCoach);
 
-        return "seat/list";
+        return "seats/admin-list";
     }
 
     private void addCommonAttributes(Model model, Long coachId) {
@@ -79,7 +79,7 @@ public class SeatController {
         model.addAttribute("seat", newSeat);
         addCommonAttributes(model, coachId);
 
-        return "seat/form";
+        return "seats/form";
     }
 
     @GetMapping("/edit/{id}")
@@ -95,10 +95,10 @@ public class SeatController {
             model.addAttribute("seat", seat);
             addCommonAttributes(model, seat.getCoach().getCoachId());
 
-            return "seat/form";
+            return "seats/form";
         }
 
-        return "redirect:/seats";
+        return "redirect:/admin/seats";
     }
 
     @PostMapping("/save")
@@ -116,7 +116,7 @@ public class SeatController {
 
         if (result.hasErrors()) {
             addCommonAttributes(model, coachId);
-            return "seat/form";
+            return "seats/form";
         }
 
         try {
@@ -124,16 +124,16 @@ public class SeatController {
             redirectAttributes.addFlashAttribute("successMessage", "Ghế đã được lưu!");
 
             if (coachId != null) {
-                return "redirect:/seats?coachId=" + coachId;
+                return "redirect:/admin/seats?coachId=" + coachId;
             }
 
-            return "redirect:/seats";
+            return "redirect:/admin/seats";
 
         } catch (IllegalStateException e) {
             model.addAttribute("errorMessage", e.getMessage());
             addCommonAttributes(model, coachId);
 
-            return "seat/form";
+            return "seats/form";
         }
     }
 
@@ -151,9 +151,9 @@ public class SeatController {
         }
 
         if (coachId != null) {
-            return "redirect:/seats?coachId=" + coachId;
+            return "redirect:/admin/seats?coachId=" + coachId;
         }
 
-        return "redirect:/seats";
+        return "redirect:/admin/seats";
     }
 }

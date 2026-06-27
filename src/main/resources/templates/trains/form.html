@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Train Form', ~{::section}, 'trains')}">
+<section>
+
+    <h2 th:text="${train.trainId == null ? 'Add Train' : 'Update Train'}">Train Form</h2>
+
+    <div th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+    <form th:action="@{/admin/trains/save}" th:object="${train}" method="POST">
+
+        <input type="hidden" th:field="*{trainId}" />
+
+        <div>
+            <label for="trainCode">Train Code</label>
+            <input type="text"
+                   th:field="*{trainCode}"
+                   id="trainCode"
+                   required>
+
+            <div th:if="${#fields.hasErrors('trainCode')}"
+                 th:errors="*{trainCode}">
+            </div>
+        </div>
+
+        <div>
+            <label for="trainName">Train Name</label>
+            <input type="text"
+                   th:field="*{trainName}"
+                   id="trainName"
+                   required>
+
+            <div th:if="${#fields.hasErrors('trainName')}"
+                 th:errors="*{trainName}">
+            </div>
+        </div>
+
+        <div>
+            <label for="trainType">Train Type</label>
+            <input type="text"
+                   th:field="*{trainType}"
+                   id="trainType"
+                   required>
+
+            <div th:if="${#fields.hasErrors('trainType')}"
+                 th:errors="*{trainType}">
+            </div>
+        </div>
+
+        <div>
+            <label for="status">Status</label>
+
+            <select th:field="*{status}" id="status">
+                <option th:each="s : ${allTrainStatus}"
+                        th:value="${s}"
+                        th:text="${s.description}">
+                </option>
+            </select>
+        </div>
+
+        <div>
+            <button type="submit">Save Train</button>
+            <a th:href="@{/admin/trains}">Back to list</a>
+        </div>
+
+    </form>
+</section>
+</html>

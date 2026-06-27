@@ -1,13 +1,6 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{fragments/_admin_layout}">
-
-<head>
-    <title>Station Management</title>
-</head>
-
-<div layout:fragment="content">
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Station Management', ~{::section}, 'stations')}">
+<section>
 
     <div class="container-fluid">
 
@@ -17,7 +10,7 @@
                 Station Management
             </h2>
 
-            <a th:href="@{/stations/new}" class="btn btn-primary">
+            <a th:href="@{/admin/stations/new}" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i>
                 Add Station
             </a>
@@ -43,7 +36,7 @@
 
             <div class="card-body">
 
-                <form th:action="@{/stations}" method="get">
+                <form th:action="@{/admin/stations}" method="get">
 
                     <div class="row">
 
@@ -115,13 +108,13 @@
                         <td>
 
                             <a class="btn btn-warning btn-sm"
-                               th:href="@{'/stations/edit/' + ${station.stationId}}">
+                               th:href="@{'/admin/stations/edit/' + ${station.stationId}}">
                                 Edit
                             </a>
 
                             <a class="btn btn-danger btn-sm"
                                onclick="return confirm('Delete this station?')"
-                               th:href="@{'/stations/delete/' + ${station.stationId}}">
+                               th:href="@{'/admin/stations/delete/' + ${station.stationId}}">
                                 Delete
                             </a>
 
@@ -157,7 +150,7 @@
                     th:classappend="${currentPage==1} ? 'disabled'">
 
                     <a class="page-link"
-                       th:href="@{/stations(page=${currentPage - 1}, keyword=${keyword})}">
+                       th:href="@{/admin/stations(page=${currentPage - 1}, keyword=${keyword})}">
                         Previous
                     </a>
 
@@ -169,7 +162,7 @@
 
                     <a class="page-link"
                        th:text="${i}"
-                       th:href="@{/stations(page=${i},keyword=${keyword})}">
+                       th:href="@{/admin/stations(page=${i},keyword=${keyword})}">
                     </a>
 
                 </li>
@@ -178,7 +171,7 @@
                     th:classappend="${currentPage==totalPages}?'disabled'">
 
                     <a class="page-link"
-                       th:href="@{/stations(page=${currentPage+1},keyword=${keyword})}">
+                       th:href="@{/admin/stations(page=${currentPage+1},keyword=${keyword})}">
                         Next
                     </a>
 
@@ -190,6 +183,6 @@
 
     </div>
 
-</div>
+</section>
 
 </html>

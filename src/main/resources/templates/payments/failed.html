@@ -1,7 +1,35 @@
 ﻿<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/customer-layout :: layout('Payment Failed / Thất bại', ~{::section}, 'payments')}">
-<section class="container">
-<div class="railjet-card card text-center"><div class="card-body py-5"><i class="bi bi-x-circle-fill display-3 text-danger"></i><h1>Payment failed / Thanh toán thất bại</h1><p>Please try again / Vui lòng thử lại.</p><a class="btn btn-primary" th:href="@{/payments/1}">Try again</a></div></div>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: layout('Thanh toÃ¡n tháº¥t báº¡i', ~{::section}, 'payments')}">
+<section class="container customer-page">
+    <div class="page-hero text-center">
+        <span class="page-eyebrow">Payment failed</span>
+        <h1 class="page-title">Thanh toÃ¡n chÆ°a hoÃ n táº¥t</h1>
+        <p class="page-subtitle mx-auto">
+            Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng hoáº·c Ä‘Ã£ bá»‹ há»§y. Vui lÃ²ng kiá»ƒm tra láº¡i thÃ´ng tin vÃ  thá»­ thanh toÃ¡n láº¡i.
+        </p>
+    </div>
+
+    <div class="railjet-card card">
+        <div class="card-body p-4 p-lg-5 text-center">
+            <div class="d-inline-flex align-items-center justify-content-center mb-3 rounded-3"
+                 style="width:76px;height:76px;background:#ffdad6;color:#ba1a1a;font-size:38px">
+                <i class="bi bi-x-circle"></i>
+            </div>
+            <h2 class="fw-bold mb-2">KhÃ´ng thá»ƒ xÃ¡c nháº­n thanh toÃ¡n</h2>
+            <p class="text-muted mb-4">Náº¿u tiá»n Ä‘Ã£ bá»‹ trá»«, hÃ£y lÆ°u láº¡i mÃ£ booking vÃ  liÃªn há»‡ há»— trá»£ Ä‘á»ƒ Ä‘á»‘i soÃ¡t.</p>
+            <div class="d-flex flex-wrap justify-content-center gap-2">
+                <a class="btn btn-primary px-4" th:href="@{/admin/payments/1}">
+                    <i class="bi bi-arrow-repeat me-1"></i> Thá»­ láº¡i
+                </a>
+                <a class="btn btn-outline-primary px-4" th:href="@{/profile}">
+                    <i class="bi bi-clock-history me-1"></i> Kiá»ƒm tra booking
+                </a>
+                <a class="btn btn-outline-primary px-4" th:href="@{/profile}">
+                    <i class="bi bi-search me-1"></i> TÃ¬m chuyáº¿n khÃ¡c
+                </a>
+            </div>
+        </div>
+    </div>
 </section>
 </html>
-

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/coaches")
+@RequestMapping("/admin/coaches")
 public class CoachController {
 
     private final CoachService coachService;
@@ -97,7 +97,7 @@ public class CoachController {
             return "coaches/form";
         }
 
-        return "redirect:/coaches";
+        return "redirect:/admin/coaches";
     }
 
     @PostMapping("/save")
@@ -119,10 +119,10 @@ public class CoachController {
             redirectAttributes.addFlashAttribute("successMessage", "Coach saved successfully!");
 
             if (trainId != null) {
-                return "redirect:/coaches?trainId=" + trainId;
+                return "redirect:/admin/coaches?trainId=" + trainId;
             }
 
-            return "redirect:/coaches";
+            return "redirect:/admin/coaches";
 
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Error saving coach: " + e.getMessage());
@@ -152,9 +152,9 @@ public class CoachController {
         }
 
         if (trainId != null) {
-            return "redirect:/coaches?trainId=" + trainId;
+            return "redirect:/admin/coaches?trainId=" + trainId;
         }
 
-        return "redirect:/coaches";
+        return "redirect:/admin/coaches";
     }
 }

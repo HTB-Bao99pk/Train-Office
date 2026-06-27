@@ -1,279 +1,387 @@
-<!DOCTYPE html>
-<html lang="vi"
-      xmlns:th="http://www.thymeleaf.org">
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>RailJet Login</title>
-
-    <link rel="stylesheet" th:href="@{css/bootstrap.css}">
-
+    <title>ÄÄƒng nháº­p | RailJet</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
     <style>
-
-        body{
-            background:#f8f9ff;
-            min-height:100vh;
-            font-family: "Segoe UI", sans-serif;
+        :root {
+            --rail-navy: #071a33;
+            --rail-blue: #0b6fa4;
+            --rail-sky: #2fb8f6;
+            --rail-bg: #f3f7fb;
+            --rail-muted: #657287;
+            --rail-line: #d9e3ef;
         }
 
-        .brand{
-            font-size:40px;
-            font-weight:700;
-            color:#0d1b2a;
+        * {
+            letter-spacing: 0;
         }
 
-        .login-card{
-            background:white;
-            border-radius:18px;
-            padding:40px;
-            box-shadow:0 5px 25px rgba(0,0,0,.08);
-            border-top:4px solid #0ea5e9;
+        body {
+            min-height: 100vh;
+            margin: 0;
+            color: var(--rail-navy);
+            background:
+                linear-gradient(120deg, rgba(11, 111, 164, .08), transparent 38%),
+                linear-gradient(180deg, #f8fbff 0%, var(--rail-bg) 100%);
+            font-family: "Segoe UI", Arial, sans-serif;
         }
 
-        .train-icon{
-            width:90px;
-            height:90px;
-            background:#10233d;
-            border-radius:18px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            margin:auto;
-            font-size:42px;
-            color:white;
+        .auth-shell {
+            min-height: 100vh;
+            display: grid;
+            grid-template-rows: auto 1fr;
         }
 
-        .form-control{
-            height:55px;
+        .auth-nav {
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 clamp(20px, 4vw, 56px);
+            background: rgba(255, 255, 255, .86);
+            border-bottom: 1px solid rgba(217, 227, 239, .85);
+            backdrop-filter: blur(10px);
         }
 
-        .btn-login{
-            height:55px;
-            background:#081a33;
-            color:white;
-            font-weight:600;
-            border:none;
+        .brand {
+            color: var(--rail-navy);
+            font-size: 26px;
+            font-weight: 800;
+            text-decoration: none;
         }
 
-        .btn-login:hover{
-            background:#10233d;
-            color:white;
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            font-size: 14px;
         }
 
-        .social-btn{
-            height:48px;
+        .nav-actions a {
+            color: var(--rail-navy);
+            text-decoration: none;
+            font-weight: 600;
         }
 
-        .version-badge{
-            display:inline-block;
-            background:#39bdf8;
-            color:white;
-            padding:8px 18px;
-            border-radius:30px;
-            font-size:14px;
-            font-weight:600;
+        .auth-main {
+            width: min(1220px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 44px 0 52px;
+            display: grid;
+            grid-template-columns: minmax(360px, 520px) 1fr;
+            gap: clamp(36px, 6vw, 92px);
+            align-items: center;
         }
 
-        .hero-title{
-            font-size:64px;
-            font-weight:800;
-            line-height:1.1;
-            color:#081a33;
+        .auth-card {
+            background: #fff;
+            border: 1px solid rgba(217, 227, 239, .95);
+            border-top: 4px solid var(--rail-sky);
+            border-radius: 8px;
+            box-shadow: 0 18px 48px rgba(7, 26, 51, .10);
+            padding: clamp(28px, 4vw, 42px);
         }
 
-        .hero-desc{
-            font-size:22px;
-            color:#495057;
+        .card-mark {
+            width: 56px;
+            height: 56px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            background: var(--rail-navy);
+            border-radius: 8px;
+            font-size: 28px;
+            margin-bottom: 18px;
         }
 
-        .train-image{
-            width:100%;
-            height:350px;
-            object-fit:cover;
-            border-radius:18px;
-            box-shadow:0 10px 25px rgba(0,0,0,.1);
+        .auth-title {
+            margin: 0;
+            font-size: clamp(28px, 3vw, 36px);
+            font-weight: 800;
         }
 
-        @media(max-width:992px){
+        .auth-subtitle {
+            margin: 8px 0 28px;
+            color: var(--rail-muted);
+            font-size: 15px;
+        }
 
-            .hero-title{
-                font-size:42px;
+        .form-label {
+            color: var(--rail-navy);
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .form-control {
+            min-height: 50px;
+            border-color: #cbd7e6;
+            border-radius: 6px;
+        }
+
+        .form-control:focus {
+            border-color: var(--rail-sky);
+            box-shadow: 0 0 0 .2rem rgba(47, 184, 246, .18);
+        }
+
+        .btn-rail {
+            min-height: 52px;
+            color: #fff;
+            background: var(--rail-navy);
+            border: 0;
+            border-radius: 6px;
+            font-weight: 800;
+        }
+
+        .btn-rail:hover {
+            color: #fff;
+            background: #10284a;
+        }
+
+        .divider {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 14px;
+            margin: 24px 0;
+            color: var(--rail-muted);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            height: 1px;
+            background: var(--rail-line);
+        }
+
+        .social-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .social-grid .btn {
+            min-height: 44px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .auth-hero {
+            min-width: 0;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            min-height: 32px;
+            padding: 0 14px;
+            color: #fff;
+            background: var(--rail-sky);
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .hero-title {
+            max-width: 720px;
+            margin: 18px 0 18px;
+            font-size: clamp(44px, 5.5vw, 76px);
+            line-height: 1.02;
+            font-weight: 900;
+        }
+
+        .hero-copy {
+            max-width: 760px;
+            color: #3f4b60;
+            font-size: clamp(16px, 1.5vw, 20px);
+            line-height: 1.65;
+        }
+
+        .train-panel {
+            position: relative;
+            min-height: 230px;
+            margin-top: 34px;
+            overflow: hidden;
+            border-radius: 8px;
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, .88), rgba(255, 255, 255, .64)),
+                linear-gradient(135deg, #dff4ff, #f7fbff);
+            border: 1px solid rgba(217, 227, 239, .9);
+            box-shadow: 0 18px 42px rgba(7, 26, 51, .08);
+        }
+
+        .train-body {
+            position: absolute;
+            left: 9%;
+            right: 9%;
+            bottom: 72px;
+            height: 76px;
+            background: var(--rail-navy);
+            border-radius: 16px 42px 14px 14px;
+        }
+
+        .train-body::before {
+            content: "";
+            position: absolute;
+            left: 28px;
+            right: 100px;
+            top: 18px;
+            height: 22px;
+            background: repeating-linear-gradient(90deg, #eaf8ff 0 42px, transparent 42px 56px);
+            border-radius: 5px;
+        }
+
+        .train-body::after {
+            content: "";
+            position: absolute;
+            right: 26px;
+            top: 18px;
+            width: 46px;
+            height: 26px;
+            background: var(--rail-sky);
+            border-radius: 20px 28px 8px 8px;
+        }
+
+        .rail-line {
+            position: absolute;
+            left: 6%;
+            right: 6%;
+            bottom: 48px;
+            height: 4px;
+            background: var(--rail-navy);
+            box-shadow: 0 18px 0 rgba(7, 26, 51, .22);
+        }
+
+        .rail-line::after {
+            content: "";
+            position: absolute;
+            inset: 12px 0 auto;
+            height: 22px;
+            background: repeating-linear-gradient(90deg, transparent 0 36px, rgba(7, 26, 51, .24) 36px 42px);
+        }
+
+        .auth-footnote {
+            margin-top: 26px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        @media (max-width: 992px) {
+            .auth-main {
+                grid-template-columns: 1fr;
+                padding-top: 28px;
             }
 
-            .login-card{
-                margin-bottom:40px;
+            .auth-hero {
+                order: -1;
+            }
+
+            .train-panel {
+                min-height: 180px;
             }
         }
 
+        @media (max-width: 576px) {
+            .auth-nav {
+                height: auto;
+                padding-top: 16px;
+                padding-bottom: 16px;
+                align-items: flex-start;
+                gap: 12px;
+                flex-direction: column;
+            }
+
+            .nav-actions {
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+
+            .auth-main {
+                width: min(100% - 24px, 1220px);
+            }
+
+            .social-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
-
 <body>
+<div class="auth-shell">
+    <nav class="auth-nav">
+        <a class="brand" th:href="@{/profile}">RailJet</a>
+        <div class="nav-actions">
+            <a th:href="@{/profile}">Äáº·t vÃ©</a>
+            <a href="#">Há»— trá»£</a>
+            <a th:href="@{/register}">ÄÄƒng kÃ½</a>
+        </div>
+    </nav>
 
-<div class="container-fluid py-4 px-lg-5">
-
-    <!-- Logo -->
-    <div class="mb-4">
-        <span class="brand">RailJet</span>
-    </div>
-
-    <div class="row align-items-center g-5">
-
-        <!-- Login Form -->
-        <div class="col-lg-5">
-
-            <div class="login-card">
-
-                <div class="text-center mb-4">
-
-                    <div class="train-icon mb-4">
-                        🚆
-                    </div>
-
-                    <h1 class="fw-bold">
-                        Đăng nhập - RailJet
-                    </h1>
-
-                    <p class="text-muted">
-                        Chào mừng trở lại! Hãy nhập thông tin để tiếp tục.
-                    </p>
-
-                </div>
-
-                <form th:action="@{/login}" method="post">
-
-                    <!-- Error -->
-                    <div th:if="${error}"
-                         class="alert alert-danger"
-                         th:text="${error}">
-                    </div>
-
-                    <div class="mb-3">
-
-                        <label class="form-label fw-semibold">
-                            EMAIL
-                        </label>
-
-                        <input type="email"
-                               name="email"
-                               class="form-control"
-                               placeholder="email@example.com">
-
-                    </div>
-
-                    <div class="mb-3">
-
-                        <div class="d-flex justify-content-between">
-
-                            <label class="form-label fw-semibold">
-                                MẬT KHẨU
-                            </label>
-
-                            <a href="#"
-                               class="text-decoration-none">
-                                Quên mật khẩu?
-                            </a>
-
-                        </div>
-
-                        <input type="password"
-                               name="password"
-                               class="form-control"
-                               placeholder="••••••••">
-
-                    </div>
-
-                    <div class="form-check mb-4">
-
-                        <input class="form-check-input"
-                               type="checkbox"
-                               id="remember">
-
-                        <label class="form-check-label"
-                               for="remember">
-                            Ghi nhớ đăng nhập
-                        </label>
-
-                    </div>
-
-                    <button class="btn btn-login w-100 mb-4"
-                            type="submit">
-                        Đăng nhập
-                    </button>
-
-                    <div class="d-flex align-items-center mb-4">
-                        <hr class="flex-grow-1">
-                        <span class="px-3 text-muted">
-                            HOẶC TIẾP TỤC VỚI
-                        </span>
-                        <hr class="flex-grow-1">
-                    </div>
-
-                    <div class="row g-3">
-
-                        <div class="col-6">
-                            <button type="button"
-                                    class="btn btn-outline-secondary w-100 social-btn">
-                                Google
-                            </button>
-                        </div>
-
-                        <div class="col-6">
-                            <button type="button"
-                                    class="btn btn-outline-secondary w-100 social-btn">
-                                Facebook
-                            </button>
-                        </div>
-
-                    </div>
-
-                    <div class="text-center mt-5">
-
-                        Chưa có tài khoản?
-
-                        <a th:href="@{/register}"
-                           class="fw-bold text-decoration-none">
-                            Đăng ký ngay
-                        </a>
-
-                    </div>
-
-                </form>
-
+    <main class="auth-main">
+        <section class="auth-card">
+            <div class="text-center">
+                <div class="card-mark">ðŸš†</div>
+                <h1 class="auth-title">ÄÄƒng nháº­p - RailJet</h1>
+                <p class="auth-subtitle">ChÃ o má»«ng trá»Ÿ láº¡i. ÄÄƒng nháº­p Ä‘á»ƒ tiáº¿p tá»¥c quáº£n lÃ½ hÃ nh trÃ¬nh cá»§a báº¡n.</p>
             </div>
 
-        </div>
+            <form th:action="@{/login}" method="post">
+                <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
-        <!-- Right Side -->
-        <div class="col-lg-7">
+                <div class="mb-3">
+                    <label class="form-label" for="email">Email</label>
+                    <input id="email" type="email" name="email" class="form-control" placeholder="email@example.com" required>
+                </div>
 
-            <span class="version-badge">
-                PHIÊN BẢN 2.0
-            </span>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <label class="form-label" for="password">Máº­t kháº©u</label>
+                        <a class="small text-decoration-none fw-semibold" th:href="@{/login}">QuÃªn máº­t kháº©u?</a>
+                    </div>
+                    <input id="password" type="password" name="password" class="form-control" placeholder="Nháº­p máº­t kháº©u" required>
+                </div>
 
-            <h2 class="hero-title mt-3">
-                Vận tốc tối ưu.<br>
-                Hành trình hoàn hảo.
-            </h2>
+                <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" id="remember">
+                    <label class="form-check-label" for="remember">Ghi nhá»› Ä‘Äƒng nháº­p</label>
+                </div>
 
-            <p class="hero-desc mt-4">
-                Hệ thống quản lý hành trình RailJet giúp bạn tiết kiệm
-                thời gian và tối ưu hóa mọi chuyến đi trên khắp
-                mạng lưới đường sắt hiện đại.
+                <button class="btn btn-rail w-100" type="submit">ÄÄƒng nháº­p</button>
+
+                <div class="divider">Hoáº·c tiáº¿p tá»¥c vá»›i</div>
+
+                <div class="social-grid">
+                    <button type="button" class="btn btn-outline-secondary">Google</button>
+                    <button type="button" class="btn btn-outline-secondary">Facebook</button>
+                </div>
+
+                <div class="auth-footnote">
+                    ChÆ°a cÃ³ tÃ i khoáº£n?
+                    <a th:href="@{/register}" class="fw-bold text-decoration-none">ÄÄƒng kÃ½ ngay</a>
+                </div>
+            </form>
+        </section>
+
+        <section class="auth-hero">
+            <span class="eyebrow">PHIÃŠN Báº¢N 2.0</span>
+            <h2 class="hero-title">Váº­n tá»‘c tá»‘i Æ°u.<br>HÃ nh trÃ¬nh hoÃ n háº£o.</h2>
+            <p class="hero-copy">
+                Há»‡ thá»‘ng quáº£n lÃ½ hÃ nh trÃ¬nh RailJet giÃºp báº¡n Ä‘áº·t vÃ© nhanh hÆ¡n, theo dÃµi chuyáº¿n Ä‘i rÃµ rÃ ng hÆ¡n
+                vÃ  tá»‘i Æ°u má»i thao tÃ¡c trÃªn máº¡ng lÆ°á»›i Ä‘Æ°á»ng sáº¯t hiá»‡n Ä‘áº¡i.
             </p>
-
-            <!-- Ảnh -->
-            <img th:src="@{/images/train.jpg}"
-                 src="/images/train.jpg"
-                 class="train-image mt-4"
-                 alt="Train">
-
-        </div>
-
-    </div>
-
+            <div class="train-panel" aria-hidden="true">
+                <div class="train-body"></div>
+                <div class="rail-line"></div>
+            </div>
+        </section>
+    </main>
 </div>
-
 </body>
 </html>

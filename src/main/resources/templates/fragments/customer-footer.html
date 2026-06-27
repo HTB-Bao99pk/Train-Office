@@ -1,2 +1,17 @@
-﻿<footer class="customer-footer" xmlns:th="http://www.thymeleaf.org" th:fragment="customerFooter"><div class="container"><div class="row g-4"><div class="col-md-6"><h5>RailJet</h5><p>Fast booking, smooth journey / Đặt vé nhanh, hành trình êm.</p></div><div class="col-md-3"><h6>Customer</h6><a th:href="@{/booking/search}">Search trip</a><a th:href="@{/booking/history}">Booking history</a></div><div class="col-md-3"><h6>Support</h6><a href="#">Help center</a><a href="#">Contact</a></div></div></div></footer>
-
+<footer class="customer-footer" xmlns:th="http://www.thymeleaf.org" th:fragment="customerFooter">
+    <div class="container">
+        <div class="customer-footer-inner">
+            <div>
+                <h5>RailJet Velocity</h5>
+                <p>Đặt vé nhanh, quản lý hành trình rõ ràng.</p>
+            </div>
+            <div class="footer-links">
+                <a th:href="@{/booking/search}">Tìm chuyến</a>
+                <a th:href="@{/booking/history}">Đặt chỗ của tôi</a>
+                <a th:href="@{/profile}">Hồ sơ</a>
+                <a th:href="@{/logout}" th:if="${session.currentUser != null}">Đăng xuất</a>
+            </div>
+            <span class="footer-copy">© 2026 RailJet.</span>
+        </div>
+    </div>
+</footer>

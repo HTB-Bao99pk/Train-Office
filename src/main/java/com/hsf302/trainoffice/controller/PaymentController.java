@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/payments")
+@RequestMapping("/admin/payments")
 public class PaymentController {
 
     private final PaymentService paymentService;
@@ -85,7 +85,7 @@ public class PaymentController {
 
         if (paymentOpt.isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy payment ID: " + id);
-            return "redirect:/payments";
+            return "redirect:/admin/payments";
         }
 
         model.addAttribute("payment", paymentOpt.get());
@@ -127,7 +127,7 @@ public class PaymentController {
             paymentService.savePayment(payment);
             redirectAttributes.addFlashAttribute("successMessage", "Payment đã được lưu thành công!");
 
-            return "redirect:/payments";
+            return "redirect:/admin/payments";
 
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Lỗi khi lưu payment: " + e.getMessage());
@@ -147,7 +147,7 @@ public class PaymentController {
 
         if (paymentOpt.isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy payment ID: " + id);
-            return "redirect:/payments";
+            return "redirect:/admin/payments";
         }
 
         model.addAttribute("payment", paymentOpt.get());
@@ -167,7 +167,7 @@ public class PaymentController {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi cập nhật payment: " + e.getMessage());
         }
 
-        return "redirect:/payments";
+            return "redirect:/admin/payments";
     }
 
     @GetMapping("/failed/{id}")
@@ -182,7 +182,7 @@ public class PaymentController {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi cập nhật payment: " + e.getMessage());
         }
 
-        return "redirect:/payments";
+            return "redirect:/admin/payments";
     }
 
     @GetMapping("/delete/{id}")
@@ -197,6 +197,6 @@ public class PaymentController {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xoá payment: " + e.getMessage());
         }
 
-        return "redirect:/payments";
+        return "redirect:/admin/payments";
     }
 }

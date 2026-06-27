@@ -1,9 +1,7 @@
 package com.hsf302.trainoffice.controller;
 
 import com.hsf302.trainoffice.dto.ProfileForm;
-import com.hsf302.trainoffice.entity.Passenger;
 import com.hsf302.trainoffice.entity.User;
-import com.hsf302.trainoffice.repository.PassengerRepository;
 import com.hsf302.trainoffice.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -18,11 +16,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class ProfileController {
     private final UserRepository userRepository;
-    private final PassengerRepository passengerRepository;
 
-    public ProfileController(UserRepository userRepository, PassengerRepository passengerRepository) {
+    public ProfileController(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passengerRepository = passengerRepository;
     }
 
     @GetMapping("/profile")
@@ -34,7 +30,7 @@ public class ProfileController {
 
         model.addAttribute("currentUser", user);
         if (!model.containsAttribute("profileForm")) {
-            model.addAttribute("profileForm", toForm(findPassenger(user)));
+            model.addAttribute("profileForm", toForm(user));
         }
         return "customer/profile";
     }
@@ -56,13 +52,11 @@ public class ProfileController {
             return "customer/profile";
         }
 
-        Passenger passenger = findPassenger(user);
-        passenger.setUser(user);
-        passenger.setFullName(profileForm.getFullName().trim());
-        passenger.setIdentityNumber(blankToNull(profileForm.getIdentityNumber()));
-        passenger.setDateOfBirth(profileForm.getDateOfBirth());
-        passenger.setGender(profileForm.getGender());
-        passengerRepository.save(passenger);
+        user.setFullName(profileForm.getFullName().trim());
+        user.setIdentityNumber(blankToNull(profileForm.getIdentityNumber()));
+        user.setDateOfBirth(profileForm.getDateOfBirth());
+        user.setGender(profileForm.getGender());
+        userRepository.save(user);
 
         session.setAttribute("currentUser", user);
         redirectAttributes.addFlashAttribute("successMessage", "Cap nhat profile thanh cong.");
@@ -77,18 +71,12 @@ public class ProfileController {
         return userRepository.findById(user.getUserId()).orElse(null);
     }
 
-    private Passenger findPassenger(User user) {
-        return passengerRepository.findFirstByUser_UserId(user.getUserId())
-                .orElseGet(Passenger::new);
-    }
-
-    private ProfileForm toForm(Passenger passenger) {
+    private ProfileForm toForm(User user) {
         ProfileForm form = new ProfileForm();
-        form.setPassengerId(passenger.getPassengerId());
-        form.setFullName(passenger.getFullName());
-        form.setIdentityNumber(passenger.getIdentityNumber());
-        form.setDateOfBirth(passenger.getDateOfBirth());
-        form.setGender(passenger.getGender());
+        form.setFullName(user.getFullName());
+        form.setIdentityNumber(user.getIdentityNumber());
+        form.setDateOfBirth(user.getDateOfBirth());
+        form.setGender(user.getGender());
         return form;
     }
 

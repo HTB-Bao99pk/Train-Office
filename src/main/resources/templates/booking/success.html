@@ -1,7 +1,40 @@
-﻿<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/customer-layout :: layout('Booking Success / Thành công', ~{::section}, 'booking')}">
-<section class="container">
-<div class="railjet-card card text-center"><div class="card-body py-5"><i class="bi bi-check-circle-fill display-3 text-success"></i><h1 class="fw-bold mt-3">Booking successful / Đặt vé thành công</h1><p>Booking code: <strong>RJ0001</strong></p><a class="btn btn-primary" th:href="@{/tickets/1}">View ticket / Xem vé</a> <a class="btn btn-outline-primary" th:href="@{/payments/1}">Pay now / Thanh toán</a></div></div>
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: layout('Tạo booking thành công', ~{::section}, 'booking')}">
+<section class="booking-shell">
+    <div class="booking-success-card railjet-card card text-center">
+        <div class="card-body p-5">
+            <div class="success-mark mb-4">
+                <i class="bi bi-check2"></i>
+            </div>
+            <span class="rail-badge status-success mb-3">Booking đã tạo</span>
+            <h1 class="page-title mb-3">Đặt chỗ thành công</h1>
+            <p class="page-subtitle mx-auto">
+                Booking đang ở trạng thái chờ thanh toán. Module thanh toán có thể tiếp tục xử lý từ booking này.
+            </p>
+
+            <div class="summary-box my-4 text-start" th:if="${booking != null}">
+                <div class="summary-line">
+                    <span>Mã booking</span>
+                    <strong th:text="${booking.bookingNumber}">RJ0001</strong>
+                </div>
+                <div class="summary-line">
+                    <span>Trạng thái</span>
+                    <strong th:text="${booking.bookingStatus}">PENDING_PAYMENT</strong>
+                </div>
+                <div class="summary-line total">
+                    <span>Tổng tiền</span>
+                    <strong th:text="${booking.totalAmount}">0</strong>
+                </div>
+            </div>
+
+            <div class="booking-actions justify-content-center">
+                <a class="btn btn-outline-primary" th:href="@{/booking/history}">
+                    Xem đặt chỗ của tôi
+                </a>
+                <a class="btn btn-primary" th:href="@{/booking/search}">Đặt chuyến khác</a>
+            </div>
+        </div>
+    </div>
 </section>
 </html>
-

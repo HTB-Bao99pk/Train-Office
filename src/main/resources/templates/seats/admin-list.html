@@ -1,15 +1,6 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{fragments/_admin_layout}">
-
-<head>
-    <title>Seat Management</title>
-</head>
-
-<body>
-
-<div layout:fragment="content">
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Seat Management', ~{::section}, 'seats')}">
+<section>
 
     <div class="container-fluid mt-4">
 
@@ -20,13 +11,13 @@
             </h2>
 
             <a class="btn btn-primary"
-               th:href="@{/seats/new(coachId=${selectedCoachId})}">
+               th:href="@{/admin/seats/new(coachId=${selectedCoachId})}">
                 <i class="bi bi-plus-circle"></i>
                 Add Seat
             </a>
         </div>
 
-        <form th:action="@{/seats}" method="get" class="row mb-3">
+        <form th:action="@{/admin/seats}" method="get" class="row mb-3">
 
             <div class="col-md-4">
                 <select class="form-select"
@@ -47,7 +38,7 @@
 
         </form>
         <a class="btn btn-primary"
-           th:href="@{/seats/new(coachId=${selectedCoachId})}">
+           th:href="@{/admin/seats/new(coachId=${selectedCoachId})}">
             Add Seat
         </a>
         <tr th:each="seat : ${seats}">
@@ -63,12 +54,12 @@
             <td>
 
                 <a class="btn btn-warning btn-sm"
-                   th:href="@{/seats/edit/{id}(id=${seat.seatId})}">
+                   th:href="@{/admin/seats/edit/{id}(id=${seat.seatId})}">
                     Edit
                 </a>
 
                 <a class="btn btn-danger btn-sm"
-                   th:href="@{/seats/delete/{id}(id=${seat.seatId},coachId=${selectedCoachId})}"
+                   th:href="@{/admin/seats/delete/{id}(id=${seat.seatId},coachId=${selectedCoachId})}"
                    onclick="return confirm('Delete this seat?')">
                     Delete
                 </a>
@@ -78,7 +69,5 @@
         </tr>
     </div>
 
-</div>
-
-</body>
+</section>
 </html>

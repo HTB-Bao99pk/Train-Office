@@ -1,14 +1,27 @@
 ﻿<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Detail Payments / Thanh toán', ~{::section}, 'payments')}">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Payment Detail', ~{::section}, 'payments')}">
 <section>
-<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="card"><div class="card-header d-flex justify-content-between"><span>Payments / Thanh toán detail / Chi tiết</span><span th:replace="~{fragments/status-badge :: statusBadge(${detail.status})}"></span></div><div class="card-body table-responsive"><table class="table table-bordered"><tr><th>paymentId</th><td th:text="${detail.paymentId}">paymentId</td></tr>
-<tr><th>booking</th><td th:text="${detail.booking}">booking</td></tr>
-<tr><th>paymentMethod</th><td th:text="${detail.paymentMethod}">paymentMethod</td></tr>
-<tr><th>amount</th><td th:text="${detail.amount}">amount</td></tr>
-<tr><th>transactionCode</th><td th:text="${detail.transactionCode}">transactionCode</td></tr>
-<tr><th>otpCode</th><td th:text="${detail.otpCode}">otpCode</td></tr>
-<tr><th>paymentStatus</th><td th:text="${detail.paymentStatus}">paymentStatus</td></tr>
-<tr><th>paidAt</th><td th:text="${detail.paidAt}">paidAt</td></tr></table></div><div class="card-footer"><a class="btn btn-secondary" th:href="@{'/admin/payments'}">Back</a> <a class="btn btn-warning" th:href="@{'/admin/payments/' + ${detail.id} + '/edit'}">Edit</a></div></div>
+    <div class="card">
+        <div class="card-header d-flex justify-content-between">
+            <span>Payment Detail</span>
+            <span th:replace="~{fragments/status-badge :: statusBadge(${payment.paymentStatus})}"></span>
+        </div>
+        <div class="card-body table-responsive">
+            <table class="table table-bordered">
+                <tr><th>ID</th><td th:text="${payment.paymentId}">1</td></tr>
+                <tr><th>Booking</th><td th:text="${payment.booking != null ? payment.booking.bookingNumber : ''}">RJ0001</td></tr>
+                <tr><th>Method</th><td th:text="${payment.paymentMethod}">BANK_TRANSFER</td></tr>
+                <tr><th>Amount</th><td th:text="${payment.amount}">0</td></tr>
+                <tr><th>Transaction</th><td th:text="${payment.transactionCode}">TXN</td></tr>
+                <tr><th>OTP</th><td th:text="${payment.otpCode}">OTP</td></tr>
+                <tr><th>Status</th><td th:text="${payment.paymentStatus}">PENDING</td></tr>
+                <tr><th>Paid At</th><td th:text="${payment.paidAt}">Paid At</td></tr>
+            </table>
+        </div>
+        <div class="card-footer">
+            <a class="btn btn-secondary" th:href="@{/admin/payments}">Back</a>
+            <a class="btn btn-warning" th:href="@{/admin/payments/edit/{id}(id=${payment.paymentId})}">Edit</a>
+        </div>
+    </div>
 </section>
 </html>
-

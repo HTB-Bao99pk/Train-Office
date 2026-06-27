@@ -1,7 +1,144 @@
 ﻿<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Dashboard / Bảng điều khiển', ~{::section}, 'dashboard')}">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/admin-layout :: layout('Dashboard', ~{::section}, 'dashboard')}">
 <section>
-<div class="row"><div th:replace="~{fragments/stat-card :: statCard('Revenue / Doanh thu', ${totalRevenue}, 'fas fa-dollar-sign', ' bg-success', 'Today')}"></div><div th:replace="~{fragments/stat-card :: statCard('Bookings / Đặt vé', ${totalBookings}, 'fas fa-ticket-alt', ' bg-info', 'All')}"></div><div th:replace="~{fragments/stat-card :: statCard('Occupancy / Lấp đầy', ${occupancyRate}, 'fas fa-chair', ' bg-warning', 'Average')}"></div><div th:replace="~{fragments/stat-card :: statCard('Refunds / Hoàn tiền', ${pendingRefunds}, 'fas fa-undo', ' bg-danger', 'Pending')}"></div></div><div class="row"><div class="col-lg-8"><div class="card"><div class="card-header">Revenue chart / Biểu đồ doanh thu</div><div class="card-body"><canvas id="revenueChart" height="120"></canvas></div></div></div><div class="col-lg-4"><div class="card"><div class="card-header">Top routes / Tuyến phổ biến</div><div class="card-body table-responsive p-0"><table class="table mb-0"><thead><tr><th>Route</th><th>Bookings</th></tr></thead><tbody><tr th:each="route : ${topRoutes}"><td th:text="${route.name}">Route</td><td th:text="${route.count}">0</td></tr></tbody></table></div></div></div></div><div class="card"><div class="card-header">Recent bookings / Đặt vé gần đây</div><div class="card-body table-responsive p-0"><table class="table"><thead><tr><th>Code</th><th>Customer</th><th>Route</th><th>Total</th><th>Status</th></tr></thead><tbody><tr th:each="booking : ${recentBookings}"><td th:text="${booking.bookingCode}">RJ</td><td th:text="${booking.contactName}">Name</td><td th:text="${booking.route}">Route</td><td th:text="${booking.totalAmount}">0</td><td><span th:replace="~{fragments/status-badge :: statusBadge(${booking.status})}"></span></td></tr></tbody></table></div></div><script th:inline="javascript">new Chart(document.getElementById('revenueChart'),{type:'line',data:{labels:/*[[${chartLabels}]]*/[],datasets:[{label:'Revenue',data:/*[[${chartData}]]*/[],borderColor:'#2563EB',tension:.35}]}});</script>
+    <div class="d-flex flex-wrap gap-2 mb-3">
+        <a class="btn btn-primary" th:href="@{/admin/users}"><i class="fas fa-users mr-1"></i> Users</a>
+        <a class="btn btn-info" th:href="@{/admin/trains}"><i class="fas fa-train mr-1"></i> Master data</a>
+        <a class="btn btn-success" th:href="@{/admin/payments}"><i class="fas fa-credit-card mr-1"></i> Payments</a>
+        <a class="btn btn-outline-dark" th:href="@{/profile}"><i class="fas fa-user mr-1"></i> Profile</a>
+    </div>
+
+    <div class="row">
+        <div th:replace="~{fragments/stat-card :: statCard('Revenue', ${totalRevenue}, 'fas fa-dollar-sign', ' bg-success', 'Today')}"></div>
+        <div th:replace="~{fragments/stat-card :: statCard('Bookings', ${totalBookings}, 'fas fa-ticket-alt', ' bg-info', 'All')}"></div>
+        <div th:replace="~{fragments/stat-card :: statCard('Occupancy', ${occupancyRate}, 'fas fa-chair', ' bg-warning', 'Average')}"></div>
+        <div th:replace="~{fragments/stat-card :: statCard('Refunds', ${pendingRefunds}, 'fas fa-undo', ' bg-danger', 'Pending')}"></div>
+    </div>
+
+    <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <span>Admin module directory</span>
+            <span class="badge badge-primary" th:text="${#lists.size(adminMenus)} + ' modules'">14 modules</span>
+        </div>
+        <div class="card-body">
+            <div class="module-directory">
+                <a class="module-tile" th:each="item : ${adminMenus}" th:href="${adminMenuUrls[item.key]}">
+                    <i class="module-icon" th:classappend="${item.icon}"></i>
+                    <span class="module-copy">
+                        <strong th:text="${item.label}">Module</strong>
+                        <span th:text="${adminMenuUrls[item.key]}">/module</span>
+                    </span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">Revenue chart</div>
+                <div class="card-body">
+                    <canvas id="revenueChart" height="116"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">Operations snapshot</div>
+                <div class="card-body">
+                    <ul class="ops-list">
+                        <li><span><i class="fas fa-database text-primary mr-2"></i>Total records</span><strong th:text="${totalItems}">0</strong></li>
+                        <li><span><i class="fas fa-check text-success mr-2"></i>Active</span><strong th:text="${activeItems}">0</strong></li>
+                        <li><span><i class="fas fa-clock text-warning mr-2"></i>Pending</span><strong th:text="${pendingItems}">0</strong></li>
+                        <li><span><i class="fas fa-exclamation-triangle text-danger mr-2"></i>Issues</span><strong th:text="${issueItems}">0</strong></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-6">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                    <span>Recent bookings</span>
+                    <a th:href="@{/admin/payments}" class="btn btn-sm btn-outline-primary">Open</a>
+                </div>
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Customer</th>
+                            <th>Route</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="booking : ${recentBookings}">
+                            <td th:text="${booking.bookingCode}">RJ</td>
+                            <td th:text="${booking.contactName}">Name</td>
+                            <td th:text="${booking.route}">Route</td>
+                            <td th:text="${booking.totalAmount}">0</td>
+                            <td><span th:replace="~{fragments/status-badge :: statusBadge(${booking.status})}"></span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-6">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                    <span>Managed modules</span>
+                    <a th:href="@{/admin/trains}" class="btn btn-sm btn-outline-primary">Open</a>
+                </div>
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                        <tr>
+                            <th>Train</th>
+                            <th>Route</th>
+                            <th>Departure</th>
+                            <th>Price</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="trip : ${trips}">
+                            <td th:text="${trip.train}">SE1</td>
+                            <td th:text="${trip.route}">Route</td>
+                            <td th:text="${trip.departureTime}">Time</td>
+                            <td th:text="${trip.basePrice}">0</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        new Chart(document.getElementById('revenueChart'), {
+            type: 'line',
+            data: {
+                labels: /*[[${chartLabels}]]*/ [],
+                datasets: [{
+                    label: 'Revenue',
+                    data: /*[[${chartData}]]*/ [],
+                    borderColor: '#00658d',
+                    backgroundColor: 'rgba(61, 190, 255, .14)',
+                    fill: true,
+                    tension: .35
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            }
+        });
+    </script>
 </section>
 </html>
-

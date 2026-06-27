@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Coach Form', ~{::section}, 'coaches')}">
+<section>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title" th:text="${coach.coachId == null ? 'Add Coach' : 'Edit Coach'}">Coach Form</h3>
+        </div>
+
+        <form th:action="@{/admin/coaches/save}" th:object="${coach}" method="post">
+            <div class="card-body">
+                <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+                <input type="hidden" th:field="*{coachId}">
+
+                <div class="form-group">
+                    <label for="train">Train</label>
+                    <select id="train" class="form-control" th:field="*{train.trainId}" required>
+                        <option value="">Select train</option>
+                        <option th:each="train : ${allTrains}"
+                                th:value="${train.trainId}"
+                                th:text="${train.trainCode + ' - ' + train.trainName}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="coachNumber">Coach Number</label>
+                    <input id="coachNumber" class="form-control" th:field="*{coachNumber}" required>
+                    <div class="text-danger small" th:if="${#fields.hasErrors('coachNumber')}" th:errors="*{coachNumber}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="coachType">Coach Type</label>
+                    <input id="coachType" class="form-control" th:field="*{coachType}" required>
+                    <div class="text-danger small" th:if="${#fields.hasErrors('coachType')}" th:errors="*{coachType}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="capacity">Capacity</label>
+                    <input id="capacity" type="number" min="1" class="form-control" th:field="*{capacity}" required>
+                    <div class="text-danger small" th:if="${#fields.hasErrors('capacity')}" th:errors="*{capacity}"></div>
+                </div>
+            </div>
+
+            <div class="card-footer d-flex justify-content-between">
+                <a class="btn btn-secondary" th:href="@{/admin/coaches(trainId=${selectedTrainId})}">Back</a>
+                <button class="btn btn-primary" type="submit">Save</button>
+            </div>
+        </form>
+    </div>
+</section>
+</html>

@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Train Management', ~{::section}, 'trains')}">
+<section>
+
+    <h2>Train Management</h2>
+
+    <div th:if="${successMessage}" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+    <div>
+        <a th:href="@{/admin/trains/new}">Add Train</a>
+    </div>
+
+    <table border="1">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Train Code</th>
+            <th>Train Name</th>
+            <th>Train Type</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="train : ${trains}">
+            <td th:text="${train.trainId}"></td>
+            <td th:text="${train.trainCode}"></td>
+            <td th:text="${train.trainName}"></td>
+            <td th:text="${train.trainType}"></td>
+
+            <td>
+                <span th:text="${train.status != null ? train.status.description : ''}"></span>
+            </td>
+
+            <td>
+                <a th:href="@{/admin/coaches(trainId=${train.trainId})}">Manage Coaches</a>
+
+                <a th:href="@{/admin/trains/edit/{id}(id=${train.trainId})}">Edit</a>
+
+                <a th:href="@{/admin/trains/delete/{id}(id=${train.trainId})}"
+                   onclick="return confirm('Delete this train?')">
+                    Delete
+                </a>
+            </td>
+        </tr>
+
+        <tr th:if="${#lists.isEmpty(trains)}">
+            <td colspan="6">No trains found.</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <br>
+
+    <a th:href="@{/admin}">Back to Dashboard</a>
+
+</section>
+</html>

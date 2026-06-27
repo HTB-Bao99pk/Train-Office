@@ -12,7 +12,7 @@ import java.util.List;
 @Table(
         name = "passengers",
         indexes = {
-                @Index(name = "idx_passengers_user", columnList = "user_id"),
+                @Index(name = "idx_passengers_booking", columnList = "booking_id"),
                 @Index(name = "idx_passengers_identity", columnList = "identity_number")
         }
 )
@@ -30,9 +30,9 @@ public class Passenger {
     private Long passengerId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "booking_id")
     @ToString.Exclude
-    private User user;
+    private Booking booking;
 
     @Column(name = "full_name", nullable = false, length = 100, columnDefinition = "NVARCHAR(100)")
     private String fullName;

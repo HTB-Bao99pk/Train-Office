@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("/routes")
+@RequestMapping("/admin/routes")
 public class RouteController {
 
     private final RouteService routeService;
@@ -27,7 +27,7 @@ public class RouteController {
 
         model.addAttribute("routes", routeService.getAllRoutes());
 
-        return "route/list";
+        return "routes/admin-list";
     }
 
     // ==========================
@@ -38,7 +38,7 @@ public class RouteController {
 
         model.addAttribute("route", new Route());
 
-        return "route/form";
+        return "routes/form";
     }
 
     // ==========================
@@ -52,8 +52,8 @@ public class RouteController {
                 model.addAttribute("route", route));
 
         return model.containsAttribute("route")
-                ? "route/form"
-                : "redirect:/routes";
+                ? "routes/form"
+                : "redirect:/admin/routes";
     }
 
     // ==========================
@@ -66,7 +66,7 @@ public class RouteController {
             RedirectAttributes redirectAttributes) {
 
         if (result.hasErrors()) {
-            return "route/form";
+            return "routes/form";
         }
 
         try {
@@ -86,7 +86,7 @@ public class RouteController {
             );
         }
 
-        return "redirect:/routes";
+        return "redirect:/admin/routes";
     }
 
     // ==========================
@@ -113,7 +113,7 @@ public class RouteController {
             );
         }
 
-        return "redirect:/routes";
+        return "redirect:/admin/routes";
     }
 
 }

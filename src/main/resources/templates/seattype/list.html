@@ -1,15 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{fragments/_admin_layout}">
-
-<head>
-    <title>Seat Type Management</title>
-</head>
-
-<body>
-
-<div layout:fragment="content">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Seat Type Management', ~{::section}, 'seat-types')}">
+<section>
 
     <div class="container-fluid">
 
@@ -158,8 +149,6 @@
 
     </div>
 
-</div>
-
-</body>
+</section>
 
 </html>

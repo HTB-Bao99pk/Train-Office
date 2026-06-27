@@ -1,15 +1,6 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{fragments/_admin_layout}">
-
-<head>
-
-    <title>Station Form</title>
-
-</head>
-
-<div layout:fragment="content">
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Station Form', ~{::section}, 'stations')}">
+<section>
 
     <div class="container">
 
@@ -39,7 +30,7 @@
 
                         </div>
 
-                        <form th:action="@{/stations/save}"
+                        <form th:action="@{/admin/stations/save}"
                               th:object="${station}"
                               method="post">
 
@@ -93,7 +84,7 @@
 
                             <div class="text-end">
 
-                                <a th:href="@{/stations}"
+                                <a th:href="@{/admin/stations}"
                                    class="btn btn-secondary">
 
                                     Cancel
@@ -120,6 +111,6 @@
 
     </div>
 
-</div>
+</section>
 
 </html>
