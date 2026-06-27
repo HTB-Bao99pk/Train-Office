@@ -1,12 +1,12 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layouts/customer-layout :: layout('Thanh toÃ¡n thÃ nh cÃ´ng', ~{::section}, 'payments')}">
+      th:replace="~{layouts/customer-layout :: layout('Thanh toán thành công', ~{::section}, 'payments')}">
 <section class="container customer-page">
     <div class="page-hero text-center">
         <span class="page-eyebrow">Payment completed</span>
-        <h1 class="page-title">Thanh toÃ¡n thÃ nh cÃ´ng</h1>
+        <h1 class="page-title">Thanh toán thành công</h1>
         <p class="page-subtitle mx-auto">
-            Giao dá»‹ch Ä‘Ã£ Ä‘Æ°á»£c ghi nháº­n. VÃ© vÃ  hÃ³a Ä‘Æ¡n cá»§a báº¡n Ä‘Ã£ sáºµn sÃ ng Ä‘á»ƒ xem láº¡i.
+            Giao dịch đã được ghi nhận. Vé và hóa đơn của bạn đã sẵn sàng để xem lại.
         </p>
     </div>
 
@@ -16,17 +16,17 @@
                  style="width:76px;height:76px;background:#dff4ff;color:#0b6fa4;font-size:38px">
                 <i class="bi bi-check2-circle"></i>
             </div>
-            <h2 class="fw-bold mb-2">Äáº·t vÃ© Ä‘Ã£ hoÃ n táº¥t</h2>
-            <p class="text-muted mb-4">Báº¡n cÃ³ thá»ƒ xem lá»‹ch sá»­ Ä‘áº·t vÃ©, in vÃ© hoáº·c kiá»ƒm tra hÃ³a Ä‘Æ¡n ngay bÃªn dÆ°á»›i.</p>
+            <h2 class="fw-bold mb-2">Đặt vé đã hoàn tất</h2>
+            <p class="text-muted mb-4">Bạn có thể xem lịch sử đặt vé, in vé hoặc kiểm tra hóa đơn ngay bên dưới.</p>
             <div class="d-flex flex-wrap justify-content-center gap-2">
                 <a class="btn btn-primary px-4" th:href="@{/profile}">
-                    <i class="bi bi-clock-history me-1"></i> Lá»‹ch sá»­ Ä‘áº·t vÃ©
+                    <i class="bi bi-clock-history me-1"></i> Lịch sử đặt vé
                 </a>
                 <a class="btn btn-outline-primary px-4" th:href="@{/profile}">
-                    <i class="bi bi-ticket-perforated me-1"></i> Xem vÃ©
+                    <i class="bi bi-ticket-perforated me-1"></i> Xem vé
                 </a>
                 <a class="btn btn-outline-primary px-4" th:href="@{/admin/payments}">
-                    <i class="bi bi-receipt me-1"></i> HÃ³a Ä‘Æ¡n
+                    <i class="bi bi-receipt me-1"></i> Hóa đơn
                 </a>
             </div>
         </div>

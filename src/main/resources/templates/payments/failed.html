@@ -1,12 +1,12 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layouts/customer-layout :: layout('Thanh toÃ¡n tháº¥t báº¡i', ~{::section}, 'payments')}">
+      th:replace="~{layouts/customer-layout :: layout('Thanh toán thất bại', ~{::section}, 'payments')}">
 <section class="container customer-page">
     <div class="page-hero text-center">
         <span class="page-eyebrow">Payment failed</span>
-        <h1 class="page-title">Thanh toÃ¡n chÆ°a hoÃ n táº¥t</h1>
+        <h1 class="page-title">Thanh toán chưa hoàn tất</h1>
         <p class="page-subtitle mx-auto">
-            Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng hoáº·c Ä‘Ã£ bá»‹ há»§y. Vui lÃ²ng kiá»ƒm tra láº¡i thÃ´ng tin vÃ  thá»­ thanh toÃ¡n láº¡i.
+            Giao dịch không thành công hoặc đã bị hủy. Vui lòng kiểm tra lại thông tin và thử thanh toán lại.
         </p>
     </div>
 
@@ -16,17 +16,17 @@
                  style="width:76px;height:76px;background:#ffdad6;color:#ba1a1a;font-size:38px">
                 <i class="bi bi-x-circle"></i>
             </div>
-            <h2 class="fw-bold mb-2">KhÃ´ng thá»ƒ xÃ¡c nháº­n thanh toÃ¡n</h2>
-            <p class="text-muted mb-4">Náº¿u tiá»n Ä‘Ã£ bá»‹ trá»«, hÃ£y lÆ°u láº¡i mÃ£ booking vÃ  liÃªn há»‡ há»— trá»£ Ä‘á»ƒ Ä‘á»‘i soÃ¡t.</p>
+            <h2 class="fw-bold mb-2">Không thể xác nhận thanh toán</h2>
+            <p class="text-muted mb-4">Nếu tiền đã bị trừ, hãy lưu lại mã booking và liên hệ hỗ trợ để đối soát.</p>
             <div class="d-flex flex-wrap justify-content-center gap-2">
                 <a class="btn btn-primary px-4" th:href="@{/admin/payments/1}">
-                    <i class="bi bi-arrow-repeat me-1"></i> Thá»­ láº¡i
+                    <i class="bi bi-arrow-repeat me-1"></i> Thử lại
                 </a>
                 <a class="btn btn-outline-primary px-4" th:href="@{/profile}">
-                    <i class="bi bi-clock-history me-1"></i> Kiá»ƒm tra booking
+                    <i class="bi bi-clock-history me-1"></i> Kiểm tra booking
                 </a>
                 <a class="btn btn-outline-primary px-4" th:href="@{/profile}">
-                    <i class="bi bi-search me-1"></i> TÃ¬m chuyáº¿n khÃ¡c
+                    <i class="bi bi-search me-1"></i> Tìm chuyến khác
                 </a>
             </div>
         </div>

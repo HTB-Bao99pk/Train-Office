@@ -46,6 +46,53 @@ CREATE INDEX idx_bookings_arrival_station ON dbo.bookings(arrival_station_id);
 -- that exact check/fix automatically every time the app starts.
 
 -- ---------------------------------------------------------------------
+-- 0b. REAL root cause of "Hà N?i" / "?" instead of Vietnamese text:
+--     these 5 columns have no `columnDefinition = "NVARCHAR(...)"` on
+--     their @Column annotation in the entity, so Hibernate created them
+--     as plain VARCHAR. VARCHAR cannot store Vietnamese tone-mark
+--     characters (ộ, ẵ, ư, ơ...) -> SQL Server silently replaces them
+--     with '?' the moment a row is written, no matter how the script is
+--     encoded or run. We convert the columns to NVARCHAR here so the
+--     UPDATE statements further below can actually store correct text.
+--     (Longer-term: add columnDefinition = "NVARCHAR(n)" to those fields
+--     in Station.java / Route.java / Train.java / Refund.java too, so a
+--     brand-new database created from scratch gets it right immediately.)
+-- ---------------------------------------------------------------------
+IF EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='stations' AND COLUMN_NAME='station_name' AND DATA_TYPE='varchar')
+ALTER TABLE stations ALTER COLUMN station_name NVARCHAR(120) NOT NULL;
+
+IF EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='stations' AND COLUMN_NAME='city' AND DATA_TYPE='varchar')
+    BEGIN
+        IF EXISTS (SELECT 1 FROM sys.indexes WHERE name='idx_stations_city' AND object_id=OBJECT_ID('dbo.stations'))
+            DROP INDEX idx_stations_city ON dbo.stations;
+        ALTER TABLE stations ALTER COLUMN city NVARCHAR(80) NOT NULL;
+        IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name='idx_stations_city' AND object_id=OBJECT_ID('dbo.stations'))
+        CREATE INDEX idx_stations_city ON dbo.stations(city);
+    END;
+
+IF EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='routes' AND COLUMN_NAME='route_name' AND DATA_TYPE='varchar')
+ALTER TABLE routes ALTER COLUMN route_name NVARCHAR(120) NOT NULL;
+
+IF EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='trains' AND COLUMN_NAME='train_name' AND DATA_TYPE='varchar')
+ALTER TABLE trains ALTER COLUMN train_name NVARCHAR(100) NOT NULL;
+
+IF EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='refunds' AND COLUMN_NAME='refund_reason' AND DATA_TYPE='varchar')
+ALTER TABLE refunds ALTER COLUMN refund_reason NVARCHAR(500) NOT NULL;
+
+-- Safety net: these 3 already declare columnDefinition="NVARCHAR(...)" in
+-- the entity, but ddl-auto=update never retro-converts a column that was
+-- already created as VARCHAR by an older version of the entity. Re-check
+-- them too so this script also self-heals that situation if it ever happens.
+IF EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='users' AND COLUMN_NAME='full_name' AND DATA_TYPE='varchar')
+ALTER TABLE users ALTER COLUMN full_name NVARCHAR(100) NULL;
+
+IF EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='bookings' AND COLUMN_NAME='booker_name' AND DATA_TYPE='varchar')
+ALTER TABLE bookings ALTER COLUMN booker_name NVARCHAR(100) NOT NULL;
+
+IF EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='passengers' AND COLUMN_NAME='full_name' AND DATA_TYPE='varchar')
+ALTER TABLE passengers ALTER COLUMN full_name NVARCHAR(100) NOT NULL;
+
+-- ---------------------------------------------------------------------
 -- 1. Users (1 admin + 4 customers, mixed statuses)
 -- ---------------------------------------------------------------------
 IF NOT EXISTS (SELECT 1 FROM users WHERE email = 'admin@gmail.local')
@@ -580,3 +627,64 @@ UNION ALL SELECT 'tickets', COUNT(*) FROM tickets
 UNION ALL SELECT 'payments', COUNT(*) FROM payments
 UNION ALL SELECT 'invoices', COUNT(*) FROM invoices
 UNION ALL SELECT 'refunds', COUNT(*) FROM refunds;
+
+-- =====================================================================
+-- 14. Data-repair pass: re-assert correct Vietnamese (Unicode) text.
+--     Harmless no-op if the rows above were just inserted correctly;
+--     fixes them if they already existed from an earlier run that was
+--     executed with the wrong file/console encoding (showed up as '?').
+-- =====================================================================
+-- ---- users ----
+UPDATE users SET full_name = N'Quản trị viên' WHERE email = 'admin@gmail.local';
+UPDATE users SET full_name = N'Nguyễn Văn An' WHERE email = 'customer1@railjet.local';
+UPDATE users SET full_name = N'Trần Thị Bình' WHERE email = 'customer2@railjet.local';
+UPDATE users SET full_name = N'Lê Văn Cường' WHERE email = 'customer3@railjet.local';
+UPDATE users SET full_name = N'Phạm Thị Dung' WHERE email = 'customer4@railjet.local';
+
+-- ---- stations ----
+UPDATE stations SET station_name = N'Hà Nội',     city = N'Hà Nội'              WHERE station_code = 'HAN';
+UPDATE stations SET station_name = N'Nam Định',   city = N'Nam Định'            WHERE station_code = 'NDH';
+UPDATE stations SET station_name = N'Vinh',       city = N'Nghệ An'             WHERE station_code = 'VIN';
+UPDATE stations SET station_name = N'Đồng Hới',   city = N'Quảng Bình'          WHERE station_code = 'DHO';
+UPDATE stations SET station_name = N'Huế',        city = N'Thừa Thiên Huế'      WHERE station_code = 'HUE';
+UPDATE stations SET station_name = N'Đà Nẵng',    city = N'Đà Nẵng'             WHERE station_code = 'DAD';
+UPDATE stations SET station_name = N'Nha Trang',  city = N'Khánh Hòa'           WHERE station_code = 'NTR';
+UPDATE stations SET station_name = N'Sài Gòn',    city = N'TP. Hồ Chí Minh'     WHERE station_code = 'SGN';
+
+-- ---- routes ----
+UPDATE routes SET route_name = N'Hà Nội - Sài Gòn'  WHERE route_code = 'R001';
+UPDATE routes SET route_name = N'Hà Nội - Đà Nẵng'  WHERE route_code = 'R002';
+
+-- ---- trains ----
+UPDATE trains SET train_name = N'SE1 - Hà Nội - Sài Gòn'   WHERE train_code = 'SE1';
+UPDATE trains SET train_name = N'SE3 - Hà Nội - Sài Gòn'   WHERE train_code = 'SE3';
+UPDATE trains SET train_name = N'SE19 - Hà Nội - Đà Nẵng'  WHERE train_code = 'SE19';
+UPDATE trains SET train_name = N'TN1 - Thống Nhất'         WHERE train_code = 'TN1';
+
+-- ---- passengers (match by identity_number, which is ASCII so it is safe to use as the key) ----
+UPDATE passengers SET full_name = N'Nguyễn Văn An'  WHERE identity_number = '012345678901';
+UPDATE passengers SET full_name = N'Trần Thị Bình'  WHERE identity_number = '012345678902';
+UPDATE passengers SET full_name = N'Lê Văn Cường'   WHERE identity_number = '012345678903';
+UPDATE passengers SET full_name = N'Phạm Thị Dung'  WHERE identity_number = '012345678904';
+UPDATE passengers SET full_name = N'Đỗ Thị Hoa'     WHERE identity_number = '012345678905';
+UPDATE passengers SET full_name = N'Vũ Văn Khoa'    WHERE identity_number = '012345678906';
+UPDATE passengers SET full_name = N'Hoàng Thị Mai'  WHERE identity_number = '012345678907';
+UPDATE passengers SET full_name = N'Ngô Văn Phúc'   WHERE identity_number = '012345678908';
+
+-- ---- bookings (booker_name; matched by booking_code which is ASCII) ----
+UPDATE bookings SET booker_name = N'Nguyễn Văn An'   WHERE booking_code IN ('BK0001','BK0005','BK0010');
+UPDATE bookings SET booker_name = N'Trần Thị Bình'   WHERE booking_code IN ('BK0002','BK0006');
+UPDATE bookings SET booker_name = N'Lê Văn Cường'    WHERE booking_code IN ('BK0003','BK0007');
+UPDATE bookings SET booker_name = N'Hoàng Thị Mai'   WHERE booking_code = 'BK0004';
+UPDATE bookings SET booker_name = N'Phạm Thị Dung'   WHERE booking_code = 'BK0008';
+UPDATE bookings SET booker_name = N'Ngô Văn Phúc'    WHERE booking_code = 'BK0009';
+
+-- ---- refunds ----
+UPDATE refunds SET refund_reason = N'Thay đổi kế hoạch công việc'    WHERE refund_code = 'RF0001';
+UPDATE refunds SET refund_reason = N'Đổi lịch trình cá nhân'         WHERE refund_code = 'RF0002';
+UPDATE refunds SET refund_reason = N'Chuyến đi bị hủy bởi nhà ga'    WHERE refund_code = 'RF0003';
+UPDATE refunds SET refund_reason = N'Hủy vé trễ hạn quy định'       WHERE refund_code = 'RF0004';
+
+-- ---- quick check ----
+SELECT route_id, route_code, route_name FROM routes;
+SELECT station_id, station_code, station_name, city FROM stations;

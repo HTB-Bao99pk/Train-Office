@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ÄÄƒng nháº­p | RailJet</title>
+    <title>Đăng nhập | RailJet</title>
     <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
     <style>
         :root {
@@ -318,18 +318,18 @@
     <nav class="auth-nav">
         <a class="brand" th:href="@{/profile}">RailJet</a>
         <div class="nav-actions">
-            <a th:href="@{/profile}">Äáº·t vÃ©</a>
-            <a href="#">Há»— trá»£</a>
-            <a th:href="@{/register}">ÄÄƒng kÃ½</a>
+            <a th:href="@{/profile}">Đặt vé</a>
+            <a href="#">Hỗ trợ</a>
+            <a th:href="@{/register}">Đăng ký</a>
         </div>
     </nav>
 
     <main class="auth-main">
         <section class="auth-card">
             <div class="text-center">
-                <div class="card-mark">ðŸš†</div>
-                <h1 class="auth-title">ÄÄƒng nháº­p - RailJet</h1>
-                <p class="auth-subtitle">ChÃ o má»«ng trá»Ÿ láº¡i. ÄÄƒng nháº­p Ä‘á»ƒ tiáº¿p tá»¥c quáº£n lÃ½ hÃ nh trÃ¬nh cá»§a báº¡n.</p>
+                <div class="card-mark">🚆</div>
+                <h1 class="auth-title">Đăng nhập - RailJet</h1>
+                <p class="auth-subtitle">Chào mừng trở lại. Đăng nhập để tiếp tục quản lý hành trình của bạn.</p>
             </div>
 
             <form th:action="@{/login}" method="post">
@@ -342,20 +342,20 @@
 
                 <div class="mb-3">
                     <div class="d-flex justify-content-between align-items-center">
-                        <label class="form-label" for="password">Máº­t kháº©u</label>
-                        <a class="small text-decoration-none fw-semibold" th:href="@{/login}">QuÃªn máº­t kháº©u?</a>
+                        <label class="form-label" for="password">Mật khẩu</label>
+                        <a class="small text-decoration-none fw-semibold" th:href="@{/login}">Quên mật khẩu?</a>
                     </div>
-                    <input id="password" type="password" name="password" class="form-control" placeholder="Nháº­p máº­t kháº©u" required>
+                    <input id="password" type="password" name="password" class="form-control" placeholder="Nhập mật khẩu" required>
                 </div>
 
                 <div class="form-check mb-4">
                     <input class="form-check-input" type="checkbox" id="remember">
-                    <label class="form-check-label" for="remember">Ghi nhá»› Ä‘Äƒng nháº­p</label>
+                    <label class="form-check-label" for="remember">Ghi nhớ đăng nhập</label>
                 </div>
 
-                <button class="btn btn-rail w-100" type="submit">ÄÄƒng nháº­p</button>
+                <button class="btn btn-rail w-100" type="submit">Đăng nhập</button>
 
-                <div class="divider">Hoáº·c tiáº¿p tá»¥c vá»›i</div>
+                <div class="divider">Hoặc tiếp tục với</div>
 
                 <div class="social-grid">
                     <button type="button" class="btn btn-outline-secondary">Google</button>
@@ -363,18 +363,18 @@
                 </div>
 
                 <div class="auth-footnote">
-                    ChÆ°a cÃ³ tÃ i khoáº£n?
-                    <a th:href="@{/register}" class="fw-bold text-decoration-none">ÄÄƒng kÃ½ ngay</a>
+                    Chưa có tài khoản?
+                    <a th:href="@{/register}" class="fw-bold text-decoration-none">Đăng ký ngay</a>
                 </div>
             </form>
         </section>
 
         <section class="auth-hero">
-            <span class="eyebrow">PHIÃŠN Báº¢N 2.0</span>
-            <h2 class="hero-title">Váº­n tá»‘c tá»‘i Æ°u.<br>HÃ nh trÃ¬nh hoÃ n háº£o.</h2>
+            <span class="eyebrow">PHIÊN BẢN 2.0</span>
+            <h2 class="hero-title">Vận tốc tối ưu.<br>Hành trình hoàn hảo.</h2>
             <p class="hero-copy">
-                Há»‡ thá»‘ng quáº£n lÃ½ hÃ nh trÃ¬nh RailJet giÃºp báº¡n Ä‘áº·t vÃ© nhanh hÆ¡n, theo dÃµi chuyáº¿n Ä‘i rÃµ rÃ ng hÆ¡n
-                vÃ  tá»‘i Æ°u má»i thao tÃ¡c trÃªn máº¡ng lÆ°á»›i Ä‘Æ°á»ng sáº¯t hiá»‡n Ä‘áº¡i.
+                Hệ thống quản lý hành trình RailJet giúp bạn đặt vé nhanh hơn, theo dõi chuyến đi rõ ràng hơn
+                và tối ưu mọi thao tác trên mạng lưới đường sắt hiện đại.
             </p>
             <div class="train-panel" aria-hidden="true">
                 <div class="train-body"></div>

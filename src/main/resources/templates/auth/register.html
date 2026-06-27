@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ÄÄƒng kÃ½ | RailJet</title>
+    <title>Đăng ký | RailJet</title>
     <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
     <style>
         :root {
@@ -267,46 +267,46 @@
     <nav class="auth-nav">
         <a class="brand" th:href="@{/profile}">RailJet</a>
         <div class="nav-actions">
-            <a th:href="@{/profile}">Äáº·t vÃ©</a>
-            <a href="#">Há»— trá»£</a>
-            <a th:href="@{/login}">ÄÄƒng nháº­p</a>
+            <a th:href="@{/profile}">Đặt vé</a>
+            <a href="#">Hỗ trợ</a>
+            <a th:href="@{/login}">Đăng nhập</a>
         </div>
     </nav>
 
     <main class="auth-main">
         <section class="auth-hero">
-            <h1 class="hero-title">HÃ nh trÃ¬nh cá»§a báº¡n<br><span>báº¯t Ä‘áº§u tá»« Ä‘Ã¢y.</span></h1>
+            <h1 class="hero-title">Hành trình của bạn<br><span>bắt đầu từ đây.</span></h1>
             <p class="hero-copy">
-                Tham gia máº¡ng lÆ°á»›i Ä‘Æ°á»ng sáº¯t hiá»‡n Ä‘áº¡i, Ä‘áº·t vÃ© nhanh hÆ¡n vÃ  quáº£n lÃ½ chuyáº¿n Ä‘i
-                cá»§a báº¡n trong má»™t tráº£i nghiá»‡m rÃµ rÃ ng, á»•n Ä‘á»‹nh.
+                Tham gia mạng lưới đường sắt hiện đại, đặt vé nhanh hơn và quản lý chuyến đi
+                của bạn trong một trải nghiệm rõ ràng, ổn định.
             </p>
 
             <div class="feature-grid">
                 <div class="feature-card">
-                    <div class="feature-icon">âš¡</div>
-                    <h2 class="feature-title">Tá»‘c Ä‘á»™ tá»‘i Ä‘a</h2>
-                    <p class="feature-desc">Quy trÃ¬nh Ä‘áº·t vÃ© gá»n, rÃµ bÆ°á»›c vÃ  dá»… kiá»ƒm tra.</p>
+                    <div class="feature-icon">⚡</div>
+                    <h2 class="feature-title">Tốc độ tối đa</h2>
+                    <p class="feature-desc">Quy trình đặt vé gọn, rõ bước và dễ kiểm tra.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">â—†</div>
-                    <h2 class="feature-title">Báº£o máº­t cao</h2>
-                    <p class="feature-desc">ThÃ´ng tin tÃ i khoáº£n vÃ  hÃ nh trÃ¬nh Ä‘Æ°á»£c quáº£n lÃ½ táº­p trung.</p>
+                    <div class="feature-icon">◆</div>
+                    <h2 class="feature-title">Bảo mật cao</h2>
+                    <p class="feature-desc">Thông tin tài khoản và hành trình được quản lý tập trung.</p>
                 </div>
             </div>
         </section>
 
         <section class="auth-card">
-            <h2 class="auth-title">ÄÄƒng kÃ½ tÃ i khoáº£n - RailJet</h2>
-            <p class="auth-subtitle">Äiá»n thÃ´ng tin bÃªn dÆ°á»›i Ä‘á»ƒ táº¡o tÃ i khoáº£n khÃ¡ch hÃ ng.</p>
+            <h2 class="auth-title">Đăng ký tài khoản - RailJet</h2>
+            <p class="auth-subtitle">Điền thông tin bên dưới để tạo tài khoản khách hàng.</p>
 
             <form th:action="@{/register}" method="post" th:object="${registerRequest}">
                 <div class="alert alert-danger" th:if="${error}" th:text="${error}">
-                    Email Ä‘Ã£ tá»“n táº¡i hoáº·c thÃ´ng tin Ä‘Äƒng kÃ½ khÃ´ng há»£p lá»‡.
+                    Email đã tồn tại hoặc thông tin đăng ký không hợp lệ.
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label" for="fullName">Há» vÃ  tÃªn</label>
-                    <input id="fullName" type="text" class="form-control" th:field="*{fullName}" placeholder="Nguyá»…n VÄƒn A" required>
+                    <label class="form-label" for="fullName">Họ và tên</label>
+                    <input id="fullName" type="text" class="form-control" th:field="*{fullName}" placeholder="Nguyễn Văn A" required>
                 </div>
 
                 <div class="mb-3">
@@ -317,12 +317,12 @@
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label" for="password">Máº­t kháº©u</label>
+                        <label class="form-label" for="password">Mật khẩu</label>
                         <input id="password" type="password" class="form-control" th:field="*{password}" required>
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label class="form-label" for="confirmPassword">XÃ¡c nháº­n máº­t kháº©u</label>
+                        <label class="form-label" for="confirmPassword">Xác nhận mật khẩu</label>
                         <input id="confirmPassword" type="password" class="form-control" th:field="*{confirmPassword}" required>
                         <div class="text-danger small mt-1" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
                     </div>
@@ -331,16 +331,16 @@
                 <div class="form-check mb-4">
                     <input class="form-check-input" type="checkbox" id="terms" required>
                     <label class="form-check-label" for="terms">
-                        TÃ´i Ä‘á»“ng Ã½ vá»›i cÃ¡c <a href="#">Ä‘iá»u khoáº£n</a> vÃ  <a href="#">Ä‘iá»u kiá»‡n</a> cá»§a RailJet.
+                        Tôi đồng ý với các <a href="#">điều khoản</a> và <a href="#">điều kiện</a> của RailJet.
                     </label>
                 </div>
 
-                <button type="submit" id="registerSubmitButton" class="btn btn-rail w-100">ÄÄƒng kÃ½</button>
+                <button type="submit" id="registerSubmitButton" class="btn btn-rail w-100">Đăng ký</button>
             </form>
 
             <div class="auth-footnote">
-                ÄÃ£ cÃ³ tÃ i khoáº£n?
-                <a th:href="@{/login}" class="fw-bold text-decoration-none">ÄÄƒng nháº­p ngay</a>
+                Đã có tài khoản?
+                <a th:href="@{/login}" class="fw-bold text-decoration-none">Đăng nhập ngay</a>
             </div>
         </section>
     </main>
@@ -354,7 +354,7 @@
                 <a href="#">Station Network</a>
                 <a href="#">Support</a>
             </div>
-            <span>Â© 2026 RailJet.</span>
+            <span>© 2026 RailJet.</span>
         </div>
     </footer>
 </div>
