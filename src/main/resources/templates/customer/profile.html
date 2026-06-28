@@ -8,10 +8,16 @@
             <h1 class="profile-page-title">Hồ sơ tài khoản</h1>
             <p class="profile-page-subtitle">Quản lý thông tin cá nhân và trạng thái tài khoản của bạn.</p>
         </div>
-        <a class="profile-primary-action" th:href="@{/booking/search}">
-            <i class="bi bi-search"></i>
-            Tìm chuyến tàu
-        </a>
+        <div class="d-flex flex-wrap gap-2">
+            <a class="profile-ghost-action" th:href="@{/profile/change-password}">
+                <i class="bi bi-key"></i>
+                Change Password
+            </a>
+            <a class="profile-primary-action" th:href="@{/booking/search}">
+                <i class="bi bi-search"></i>
+                Tìm chuyến tàu
+            </a>
+        </div>
     </div>
 
     <div class="profile-velocity-grid">
@@ -153,39 +159,5 @@
         </div>
     </div>
 
-    <div class="profile-detail-card mt-4">
-        <div class="profile-detail-header">
-            <div>
-                <span class="profile-label">Account security</span>
-                <h3>Change password</h3>
-            </div>
-            <span class="profile-detail-icon">
-                <i class="bi bi-key"></i>
-            </span>
-        </div>
-
-        <form th:action="@{/profile/password}" method="post" th:object="${profileForm}" autocomplete="off">
-            <div class="profile-form-grid">
-                <div class="profile-form-field">
-                    <label class="profile-label" for="currentPassword">Current password</label>
-                    <input id="currentPassword" class="form-control" type="password" th:field="*{currentPassword}">
-                </div>
-                <div class="profile-form-field">
-                    <label class="profile-label" for="newPassword">New password</label>
-                    <input id="newPassword" class="form-control" type="password" th:field="*{newPassword}">
-                </div>
-                <div class="profile-form-field">
-                    <label class="profile-label" for="confirmPassword">Confirm password</label>
-                    <input id="confirmPassword" class="form-control" type="password" th:field="*{confirmPassword}">
-                </div>
-            </div>
-            <div class="profile-form-actions">
-                <button type="submit" class="profile-secondary-action">
-                    <i class="bi bi-check2-circle"></i>
-                    Change password
-                </button>
-            </div>
-        </form>
-    </div>
 </section>
 </html>

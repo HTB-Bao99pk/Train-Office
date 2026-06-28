@@ -26,6 +26,11 @@
                         <i class="bi bi-person-circle me-1"></i>Hồ sơ
                     </a>
                 </li>
+                <li class="nav-item" th:if="${session.currentUser != null}">
+                    <a class="nav-link" th:classappend="${activeMenu == 'profile'} ? ' active'" th:href="@{/profile/change-password}">
+                        <i class="bi bi-shield-lock me-1"></i>Change Password
+                    </a>
+                </li>
 
                 <li class="nav-item ms-lg-3" th:if="${session.currentUser == null}">
                     <a class="btn btn-outline-primary btn-sm auth-nav-button" th:href="@{/register}">Đăng ký</a>
@@ -66,6 +71,11 @@
                         <li>
                             <a class="dropdown-item" th:href="@{/profile}">
                                 <i class="bi bi-person-circle me-2"></i>Hồ sơ
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" th:href="@{/profile/change-password}">
+                                <i class="bi bi-shield-lock me-2"></i>Change Password
                             </a>
                         </li>
                         <li><hr class="dropdown-divider"></li>
