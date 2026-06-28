@@ -1,6 +1,7 @@
 package com.hsf302.trainoffice.controller;
 
 import com.hsf302.trainoffice.dto.ProfileForm;
+import com.hsf302.trainoffice.dto.ResetPasswordRequest;
 import com.hsf302.trainoffice.entity.User;
 import com.hsf302.trainoffice.service.UserService;
 import jakarta.servlet.http.HttpSession;
@@ -59,27 +60,95 @@ public class ProfileController {
         return "redirect:/profile";
     }
 
-    @PostMapping("/profile/password")
-    public String changePassword(@ModelAttribute("profileForm") ProfileForm profileForm,
-                                 HttpSession session,
-                                 RedirectAttributes redirectAttributes) {
-        User user = currentUser(session);
+    @GetMapping("/change-password")
+    public String showChangePassword(Model model){
+
+        model.addAttribute(
+                "changePasswordForm",
+                new ResetPasswordRequest());
+
+        return "customer/change-password";
+    }
+
+    @PostMapping("/change-password")
+    public String changePassword(
+            @Valid
+            @ModelAttribute("changePasswordForm")
+            ResetPasswordRequest request,
+            BindingResult bindingResult,
+            HttpSession session,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
+        User user = (User) session.getAttribute("currentUser");
+
         if (user == null) {
             return "redirect:/login";
         }
-
-        boolean changed = userService.changePassword(
-                user.getUserId(),
-                profileForm.getCurrentPassword(),
-                profileForm.getNewPassword(),
-                profileForm.getConfirmPassword());
-
-        if (changed) {
-            redirectAttributes.addFlashAttribute("successMessage", "Doi mat khau thanh cong.");
-        } else {
-            redirectAttributes.addFlashAttribute("errorMessage", "Mat khau hien tai hoac mat khau moi khong hop le.");
+        // Lỗi validate (@NotBlank, @Size,...)
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("errorMessage",
+                    "Please correct the highlighted errors.");
+            return "customer/change-password";
         }
-        return "redirect:/profile";
+
+        // Confirm password không khớp
+        if (!request.getNewPassword().equals(request.getConfirmNewPassword())) {
+
+            bindingResult.rejectValue(
+                    "confirmNewPassword",
+                    "error.confirmNewPassword",
+                    "Confirm password does not match.");
+
+            model.addAttribute("errorMessage",
+                    "Confirm password does not match.");
+
+            return "customer/change-password";
+        }
+
+        // Password mới trùng password cũ
+        if (request.getCurrentPassword().equals(request.getNewPassword())) {
+
+            bindingResult.rejectValue(
+                    "newPassword",
+                    "error.newPassword",
+                    "New password must be different from current password.");
+
+            model.addAttribute("errorMessage",
+                    "New password must be different from current password.");
+
+            return "customer/change-password";
+        }
+
+        boolean success = userService.changePassword(
+                user.getUserId(),
+                request.getCurrentPassword(),
+                request.getNewPassword());
+
+        // Sai password hiện tại
+        if (!success) {
+
+            bindingResult.rejectValue(
+                    "currentPassword",
+                    "error.currentPassword",
+                    "Current password is incorrect.");
+
+            model.addAttribute("errorMessage",
+                    "Current password is incorrect.");
+
+            return "customer/change-password";
+        }
+
+        // Cập nhật session
+        session.setAttribute("currentUser",
+                userService.findById(user.getUserId()));
+
+        // Thành công
+        redirectAttributes.addFlashAttribute(
+                "successMessage",
+                "Password changed successfully.");
+
+        return "redirect:/change-password";
     }
 
     private User currentUser(HttpSession session) {

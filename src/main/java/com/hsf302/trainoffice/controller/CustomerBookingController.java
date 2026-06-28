@@ -1,19 +1,10 @@
 package com.hsf302.trainoffice.controller;
 
 import com.hsf302.trainoffice.common.enums.Gender;
-import com.hsf302.trainoffice.dto.BookingConfirmationView;
-import com.hsf302.trainoffice.dto.BookingSession;
-import com.hsf302.trainoffice.dto.PassengerInfoForm;
-import com.hsf302.trainoffice.dto.SeatSelectionForm;
-import com.hsf302.trainoffice.dto.TripSearchForm;
-import com.hsf302.trainoffice.dto.TripSegment;
+import com.hsf302.trainoffice.dto.*;
 import com.hsf302.trainoffice.entity.Booking;
 import com.hsf302.trainoffice.entity.User;
-import com.hsf302.trainoffice.service.BookingFlowService;
-import com.hsf302.trainoffice.service.BookingService;
-import com.hsf302.trainoffice.service.StationService;
-import com.hsf302.trainoffice.service.TicketService;
-import com.hsf302.trainoffice.service.TrainTripService;
+import com.hsf302.trainoffice.service.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -37,17 +28,19 @@ public class CustomerBookingController {
     private final BookingService bookingService;
     private final BookingFlowService bookingFlowService;
     private final TicketService ticketService;
+    private final UserService userService;
 
     public CustomerBookingController(TrainTripService trainTripService,
                                      StationService stationService,
                                      BookingService bookingService,
                                      BookingFlowService bookingFlowService,
-                                     TicketService ticketService) {
+                                     TicketService ticketService, UserService userService) {
         this.trainTripService = trainTripService;
         this.stationService = stationService;
         this.bookingService = bookingService;
         this.bookingFlowService = bookingFlowService;
         this.ticketService = ticketService;
+        this.userService = userService;
     }
 
     @GetMapping("/booking/search")
@@ -237,6 +230,7 @@ public class CustomerBookingController {
         }
     }
 
+
     @PostMapping("/booking/{bookingId}/cancel")
     public String cancel(@PathVariable Long bookingId,
                          HttpSession session,
@@ -296,4 +290,5 @@ public class CustomerBookingController {
                 + "&arrivalStationId=" + form.getArrivalStationId()
                 + "&passengerCount=" + form.getPassengerCount();
     }
+
 }

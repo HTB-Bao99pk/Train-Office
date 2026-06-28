@@ -7,6 +7,7 @@ import com.hsf302.trainoffice.dto.RegisterRequest;
 import com.hsf302.trainoffice.entity.User;
 import com.hsf302.trainoffice.repository.UserRepository;
 import com.hsf302.trainoffice.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +17,18 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-    public UserServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     @Override
@@ -46,11 +55,6 @@ public class UserServiceImpl implements UserService {
         if (confirmPassword == null || !confirmPassword.equals(password)) {
             return false;
         }
-        if (!registerRequest.getPassword()
-                .equals(registerRequest.getConfirmPassword())) {
-            return false;
-        }
-
 
         User user = new User();
 
@@ -147,18 +151,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean changePassword(Long userId, String currentPassword, String newPassword, String confirmPassword) {
-        if (currentPassword == null || currentPassword.isBlank()
-                || newPassword == null || newPassword.isBlank()
-                || confirmPassword == null || !confirmPassword.equals(newPassword)) {
-            return false;
+    public void resetPassword(String email, String password) {
+        User user = userRepository.findByEmail(email);
+        if(user == null){
+            throw new RuntimeException("User not found");
         }
-        User user = getUserById(userId).orElse(null);
-        if (user == null || !currentPassword.equals(user.getPassword())) {
-            return false;
-        }
-        user.setPassword(newPassword);
+
+        user.setPassword(password);
+
         userRepository.save(user);
+    }
+
+    @Override
+    public boolean changePassword(Long userId,
+                                  String currentPassword,
+                                  String newPassword) {
+
+        User user = userRepository.findById(userId).orElse(null);
+
+        if (user == null) {
+            return false;
+        }
+
+        if (!user.getPassword().equals(currentPassword)) {
+            return false;
+        }
+
+        user.setPassword(newPassword);
+
+        userRepository.save(user);
+
         return true;
     }
 

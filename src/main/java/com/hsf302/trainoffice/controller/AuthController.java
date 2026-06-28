@@ -1,10 +1,12 @@
 package com.hsf302.trainoffice.controller;
 
 import com.hsf302.trainoffice.dto.RegisterRequest;
+import com.hsf302.trainoffice.dto.ResetPasswordRequest;
 import com.hsf302.trainoffice.entity.User;
 import com.hsf302.trainoffice.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,16 +14,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class AuthController {
 
-    private final UserService userService;
-
-    public AuthController(UserService userService) {
-        this.userService = userService;
-    }
-
+    @Autowired
+    private UserService userService;
 
     //Login !!!!! ======================
     @GetMapping("/login")
@@ -70,19 +69,38 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    String register(@Valid @ModelAttribute RegisterRequest registerRequest,
-                    BindingResult bindingResult,
-                    Model model) {
+    public String register(@Valid @ModelAttribute RegisterRequest registerRequest,
+                           BindingResult bindingResult) {
+
         if (bindingResult.hasErrors()) {
             return "auth/register";
         }
-        if (userService.register(registerRequest)) {
-            return "redirect:/login";
-        } else {
-            model.addAttribute("registerRequest", registerRequest);
-            model.addAttribute("error", "Email da ton tai hoac thong tin dang ky khong hop le.");
+
+        if (!registerRequest.getPassword()
+                .equals(registerRequest.getConfirmPassword())) {
+
+            bindingResult.rejectValue(
+                    "confirmPassword",
+                    "error.confirmPassword",
+                    "Mật khẩu xác nhận không khớp");
+
             return "auth/register";
         }
+
+        if (userService.existsByEmail(registerRequest.getEmail())) {
+
+            bindingResult.rejectValue(
+                    "email",
+                    "error.email",
+                    "Email đã tồn tại");
+
+            return "auth/register";
+        }
+
+        userService.register(registerRequest);
+
+        return "redirect:/login";
     }
+
 
 }

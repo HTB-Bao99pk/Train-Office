@@ -10,6 +10,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
+    boolean existsByEmail(String email);
+
+    User findById(Long id);
+
     boolean register(RegisterRequest registerRequest);
 
     User login(String email, String pwd);
@@ -26,5 +30,7 @@ public interface UserService {
 
     User updateProfile(Long userId, ProfileForm profileForm);
 
-    boolean changePassword(Long userId, String currentPassword, String newPassword, String confirmPassword);
+    void resetPassword(String email, String password);
+
+    boolean changePassword(Long userId, String currentPassword, String newPassword);
 }
