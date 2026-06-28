@@ -22,10 +22,21 @@ body{
     linear-gradient(180deg,#f8fbff 0%,var(--rail-bg) 100%);
   color:var(--rail-text);
 }
+a{color:var(--rail-secondary)}
+a:hover{color:var(--rail-primary)}
+.table{--bs-table-color:var(--rail-text);--bs-table-border-color:var(--rail-border);margin-bottom:0}
+.table thead th{background:var(--rail-primary);color:#fff;border-bottom:0;font-size:12px;text-transform:uppercase;white-space:nowrap}
+.table tbody td{vertical-align:middle}
+.table-responsive{border-radius:8px}
+.alert{border-radius:8px;border:1px solid transparent;font-weight:700}
+.alert-danger{background:var(--rail-danger-soft);border-color:#ffb4ab;color:#7a1111}
+.alert-success{background:#dcfce7;border-color:#86efac;color:#166534}
 .velocity-progress{position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--rail-accent),var(--rail-secondary));z-index:1100}
 
 .customer-navbar{position:sticky;top:3px;z-index:1090;min-height:72px;background:rgba(255,255,255,.88);border-bottom:1px solid rgba(217,227,239,.85);box-shadow:none;backdrop-filter:blur(10px)}
 .customer-navbar .navbar-brand{color:var(--rail-primary);font-size:26px;font-weight:800}
+.customer-navbar .navbar-toggler{border:1px solid var(--rail-border);border-radius:8px}
+.customer-navbar .navbar-toggler:focus{box-shadow:0 0 0 .2rem rgba(47,184,246,.18)}
 .customer-navbar .nav-link{position:relative;color:var(--rail-muted);font-weight:800}
 .customer-navbar .nav-link.active,.customer-navbar .nav-link:hover{color:var(--rail-primary)}
 .customer-navbar .nav-link.active:after{content:"";position:absolute;left:.5rem;right:.5rem;bottom:.1rem;height:2px;background:var(--rail-accent);border-radius:999px}
@@ -38,6 +49,7 @@ body{
 .railjet-main{min-height:72vh;padding:36px 0 52px}
 .railjet-card{background:rgba(255,255,255,.92);border:1px solid var(--rail-border);border-radius:8px;box-shadow:0 18px 48px rgba(7,26,51,.08);backdrop-filter:blur(8px)}
 .railjet-card .card-header{background:#fff;border-bottom:1px solid var(--rail-border);font-weight:800;color:var(--rail-primary)}
+.railjet-card .card-body{min-width:0}
 .form-control,.form-select{min-height:50px;border-radius:6px;border-color:#cbd7e6;padding:10px 14px}
 .form-control:focus,.form-select:focus{border-color:var(--rail-accent);box-shadow:0 0 0 .2rem rgba(47,184,246,.18)}
 .form-label,label{font-weight:700;color:var(--rail-primary)}
@@ -174,6 +186,10 @@ body{
 .booking-timeline{display:grid;gap:14px}
 .booking-history-card{display:grid;grid-template-columns:160px minmax(0,1fr) 180px;gap:20px;align-items:center;padding:20px;background:#fff;border:1px solid var(--rail-border);border-radius:8px}
 .detail-grid{display:grid;grid-template-columns:360px minmax(0,1fr);gap:24px}
+.booking-history-card strong,.summary-box strong,.summary-line strong{word-break:break-word}
+.booking-history-card:hover{border-color:var(--rail-accent);box-shadow:0 14px 36px rgba(7,26,51,.08)}
+.trip-price:after,.summary-line.total strong:after{content:" VND";font-size:12px;color:var(--rail-muted);font-weight:800}
+.card-header .seat-legend{font-size:13px}
 
 /* Profile */
 .profile-velocity-page{max-width:1280px;padding-left:24px;padding-right:24px}
@@ -245,6 +261,9 @@ body{
   .profile-summary-card{min-height:auto}
   .seat-selection-grid,.detail-grid,.booking-history-card{grid-template-columns:1fr}
   .booking-progress{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .customer-navbar .navbar-nav{align-items:stretch!important;padding:12px 0}
+  .customer-navbar .nav-link.active:after{display:none}
+  .customer-navbar .nav-link{padding:.75rem 0}
 }
 
 @media(max-width:768px){
@@ -272,6 +291,17 @@ body{
   .booking-progress{grid-template-columns:1fr 1fr}
   .passenger-form-grid{grid-template-columns:1fr}
   .booking-search-card{margin-top:0}
+  .booking-hero,.page-hero{padding:26px 20px}
+  .page-hero:after{display:none}
+  .page-title{font-size:32px;line-height:38px}
+  .trip-time-line{grid-template-columns:1fr;gap:10px}
+  .route-line{min-height:24px;width:2px;height:100%;justify-self:start;margin-left:5px}
+  .route-line:before{left:-4px;top:0}
+  .route-line:after{left:-4px;right:auto;top:auto;bottom:0}
+  .trip-time-line .text-end{text-align:left!important}
+  .seat-map-grid{grid-template-columns:repeat(auto-fill,minmax(58px,1fr))}
+  .seat-choice-box{min-height:66px}
+  .booking-actions .btn{width:100%}
 }
 
 @media(max-width:576px){
@@ -280,4 +310,6 @@ body{
   .profile-ticket-route{flex-direction:column;align-items:stretch;gap:12px}
   .profile-ticket-station{text-align:left!important}
   .profile-route-line{min-height:28px}
+  .auth-nav-button{width:100%;margin-top:6px}
+  .booking-progress-item{font-size:12px}
 }

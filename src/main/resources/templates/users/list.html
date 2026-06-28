@@ -13,6 +13,36 @@
     <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
 
     <div class="card">
+        <div class="card-header">
+            <form class="row g-2" method="get" th:action="@{/admin/users}">
+                <div class="col-md-4">
+                    <input class="form-control" name="keyword" th:value="${keyword}" placeholder="Search email or full name">
+                </div>
+                <div class="col-md-3">
+                    <select class="form-control" name="role">
+                        <option value="">All roles</option>
+                        <option th:each="role : ${roles}"
+                                th:value="${role}"
+                                th:text="${role}"
+                                th:selected="${role == selectedRole}"></option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-control" name="status">
+                        <option value="">All statuses</option>
+                        <option th:each="status : ${statuses}"
+                                th:value="${status}"
+                                th:text="${status}"
+                                th:selected="${status == selectedStatus}"></option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-outline-primary w-100" type="submit">
+                        <i class="fas fa-search mr-1"></i> Search
+                    </button>
+                </div>
+            </form>
+        </div>
         <div class="card-body table-responsive p-0">
             <table class="table table-hover mb-0">
                 <thead>
@@ -42,6 +72,7 @@
                             <i class="fas fa-edit"></i>
                         </a>
                         <a class="btn btn-sm btn-danger"
+                           th:if="${session.currentUser == null or session.currentUser.userId != user.userId}"
                            th:href="@{/admin/users/delete/{id}(id=${user.userId})}"
                            onclick="return confirm('Delete this user?')">
                             <i class="fas fa-trash"></i>

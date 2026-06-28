@@ -30,6 +30,18 @@
                     <td th:text="${user.fullName}">User</td>
                 </tr>
                 <tr>
+                    <th>Identity number</th>
+                    <td th:text="${user.identityNumber ?: '-'}">-</td>
+                </tr>
+                <tr>
+                    <th>Date of birth</th>
+                    <td th:text="${user.dateOfBirth != null ? #temporals.format(user.dateOfBirth, 'dd/MM/yyyy') : '-'}">-</td>
+                </tr>
+                <tr>
+                    <th>Gender</th>
+                    <td th:text="${user.gender ?: '-'}">-</td>
+                </tr>
+                <tr>
                     <th>Role</th>
                     <td th:text="${user.role}">CUSTOMER</td>
                 </tr>

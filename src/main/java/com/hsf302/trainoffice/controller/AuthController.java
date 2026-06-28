@@ -4,8 +4,10 @@ import com.hsf302.trainoffice.dto.RegisterRequest;
 import com.hsf302.trainoffice.entity.User;
 import com.hsf302.trainoffice.service.UserService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,10 +32,12 @@ public class AuthController {
     @PostMapping("/login")
     public String login(@RequestParam("email") String email,
                         @RequestParam("password") String pwd,
+                        Model model,
                         HttpSession session) {
         User user = userService.login(email, pwd);
 
         if (user == null) {
+            model.addAttribute("error", "Email or password is incorrect, or the account is not active.");
             return "auth/login";
         }
 
@@ -66,7 +70,12 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    String register(@ModelAttribute RegisterRequest registerRequest, Model model) {
+    String register(@Valid @ModelAttribute RegisterRequest registerRequest,
+                    BindingResult bindingResult,
+                    Model model) {
+        if (bindingResult.hasErrors()) {
+            return "auth/register";
+        }
         if (userService.register(registerRequest)) {
             return "redirect:/login";
         } else {

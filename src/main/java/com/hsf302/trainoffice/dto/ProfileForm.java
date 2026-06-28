@@ -23,4 +23,10 @@ public class ProfileForm {
     private LocalDate dateOfBirth;
 
     private Gender gender;
+
+    private String currentPassword;
+
+    private String newPassword;
+
+    private String confirmPassword;
 }

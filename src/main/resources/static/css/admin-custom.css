@@ -14,6 +14,7 @@
 
 *{font-family:Inter,"Segoe UI",Arial,sans-serif;letter-spacing:0}
 body{color:var(--navy-dark)}
+body.sidebar-mini{font-size:15px}
 .main-sidebar{background:var(--navy-dark)!important}
 .brand-link{min-height:72px;background:var(--dark-slate);color:#fff!important;border-bottom:0!important;font-weight:800}
 .brand-link .brand-text{font-weight:800!important}
@@ -40,6 +41,7 @@ body{color:var(--navy-dark)}
 .velocity-eyebrow{display:inline-flex;align-items:center;min-height:28px;padding:0 10px;margin-bottom:8px;background:var(--accent-blue);color:#fff;border-radius:999px;font-size:12px;font-weight:800;text-transform:uppercase}
 .velocity-heading-action{min-width:132px}
 .velocity-admin-container{max-width:1280px}
+.velocity-admin-content{padding-bottom:28px}
 .velocity-admin-topbar{min-height:64px;background:rgba(255,255,255,.9)!important;backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
 .velocity-admin-topbar .nav-link{font-weight:800;color:var(--navy-dark)}
 .velocity-admin-topbar .nav-link:hover{color:var(--primary-blue)}
@@ -50,6 +52,8 @@ body{color:var(--navy-dark)}
 .breadcrumb-item a{font-weight:700;color:var(--primary-blue)}
 .card{border:1px solid var(--border);border-radius:8px;box-shadow:0 18px 48px rgba(7,26,51,.08);overflow:hidden}
 .card-header{background:#fff;border-bottom:1px solid var(--border);font-weight:800;color:var(--navy-dark)}
+.card-title{font-weight:900;color:var(--navy-dark)}
+.card-tools .btn{margin-left:4px}
 .card-footer{background:#fff;border-top:1px solid var(--border)}
 .small-box{border-radius:8px;box-shadow:0 12px 28px rgba(7,26,51,.10)}
 .small-box .inner h3{font-weight:900}
@@ -65,11 +69,12 @@ body{color:var(--navy-dark)}
 .ops-list li:last-child{border-bottom:0}
 .table{color:var(--navy-dark)}
 .table thead th{background:var(--navy-dark);color:#fff;border:0;white-space:nowrap}
-.table tbody td{vertical-align:middle}
+.table tbody td{vertical-align:middle;word-break:break-word}
 .table-hover tbody tr:hover{background:#f8fbff}
 .table td .btn,.table th .btn{margin:1px}
 .table .btn-sm{width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;padding:0}
 .form-control,.custom-select,.form-select{min-height:42px;border-radius:6px;border-color:#cbd7e6}
+.form-control[readonly],.form-control:disabled,.custom-select:disabled,.form-select:disabled{background:#eef4fb;color:#526174}
 .form-control:focus,.custom-select:focus,.form-select:focus{border-color:var(--accent-blue);box-shadow:0 0 0 .2rem rgba(47,184,246,.16)}
 label,.form-label{font-weight:800;color:var(--navy-dark)}
 .input-group-text{border-color:#cbd7e6;background:#f8fbff;color:var(--primary-blue);font-weight:800}
@@ -88,6 +93,8 @@ label,.form-label{font-weight:800;color:var(--navy-dark)}
 .seat-map-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:10px}
 .seat{border:1px solid #dbe3ef;border-radius:8px;padding:10px;background:#fff;color:var(--primary-blue);font-weight:800}
 .railjet-toast,.railjet-modal{border-radius:8px;border:0;box-shadow:0 20px 50px rgba(13,27,42,.18)}
+.dataTables_wrapper .row{row-gap:12px}
+.dataTables_wrapper .form-control,.dataTables_wrapper .custom-select{min-height:36px}
 
 @media(max-width:768px){
   .velocity-heading-inner{align-items:flex-start;flex-direction:column}
@@ -95,4 +102,7 @@ label,.form-label{font-weight:800;color:var(--navy-dark)}
   .content-header h1{font-size:26px}
   .card-header .row,.card-body .row{row-gap:.75rem}
   .table-responsive{border-radius:0 0 8px 8px}
+  .card-header{padding:.85rem 1rem}
+  .table thead th,.table tbody td{white-space:nowrap}
+  .btn-group,.card-tools{display:flex;flex-wrap:wrap;gap:6px}
 }

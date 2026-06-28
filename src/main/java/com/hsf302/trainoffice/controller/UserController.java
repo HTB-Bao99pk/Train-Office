@@ -4,6 +4,7 @@ import com.hsf302.trainoffice.common.enums.UserRole;
 import com.hsf302.trainoffice.common.enums.UserStatus;
 import com.hsf302.trainoffice.entity.User;
 import com.hsf302.trainoffice.service.UserService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -24,8 +26,15 @@ public class UserController {
     }
 
     @GetMapping
-    public String listUsers(Model model) {
-        model.addAttribute("users", userService.getAllUsers());
+    public String listUsers(@RequestParam(required = false) String keyword,
+                            @RequestParam(required = false) UserRole role,
+                            @RequestParam(required = false) UserStatus status,
+                            Model model) {
+        model.addAttribute("users", userService.searchUsers(keyword, role, status));
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("selectedRole", role);
+        model.addAttribute("selectedStatus", status);
+        addFormOptions(model);
         return "users/list";
     }
 
@@ -64,16 +73,29 @@ public class UserController {
     }
 
     @PostMapping("/save")
-    public String saveUser(@ModelAttribute("user") User user, RedirectAttributes redirectAttributes) {
-        userService.saveUser(user);
-        redirectAttributes.addFlashAttribute("successMessage", "User saved successfully.");
-        return "redirect:/admin/users";
+    public String saveUser(@ModelAttribute("user") User user,
+                           Model model,
+                           RedirectAttributes redirectAttributes) {
+        try {
+            userService.saveUser(user);
+            redirectAttributes.addFlashAttribute("successMessage", "User saved successfully.");
+            return "redirect:/admin/users";
+        } catch (IllegalArgumentException ex) {
+            model.addAttribute("errorMessage", ex.getMessage());
+            model.addAttribute("user", user);
+            addFormOptions(model);
+            return "users/form";
+        }
     }
 
     @GetMapping("/delete/{id}")
     public String deleteUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        userService.deleteUser(id);
-        redirectAttributes.addFlashAttribute("successMessage", "User deleted successfully.");
+        try {
+            userService.deleteUser(id);
+            redirectAttributes.addFlashAttribute("successMessage", "User deleted successfully.");
+        } catch (DataIntegrityViolationException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Cannot delete user because it has related bookings.");
+        }
         return "redirect:/admin/users";
     }
 

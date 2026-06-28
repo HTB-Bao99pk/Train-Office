@@ -66,6 +66,12 @@
             font-weight: 600;
         }
 
+        .nav-disabled {
+            color: var(--rail-muted);
+            font-weight: 600;
+            cursor: not-allowed;
+        }
+
         .auth-main {
             width: min(1220px, calc(100% - 40px));
             margin: 0 auto;
@@ -220,9 +226,11 @@
             font-size: 13px;
         }
 
-        .footer-links a {
+        .footer-links a,
+        .footer-links span {
             color: #fff;
             text-decoration: none;
+            opacity: .82;
         }
 
         @media (max-width: 992px) {
@@ -265,10 +273,10 @@
 <body>
 <div class="auth-shell">
     <nav class="auth-nav">
-        <a class="brand" th:href="@{/profile}">RailJet</a>
+        <a class="brand" th:href="@{/booking/search}">RailJet</a>
         <div class="nav-actions">
-            <a th:href="@{/profile}">Đặt vé</a>
-            <a href="#">Hỗ trợ</a>
+            <a th:href="@{/booking/search}">Đặt vé</a>
+            <span class="nav-disabled" aria-disabled="true">Hỗ trợ</span>
             <a th:href="@{/login}">Đăng nhập</a>
         </div>
     </nav>
@@ -307,6 +315,7 @@
                 <div class="mb-3">
                     <label class="form-label" for="fullName">Họ và tên</label>
                     <input id="fullName" type="text" class="form-control" th:field="*{fullName}" placeholder="Nguyễn Văn A" required>
+                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
                 </div>
 
                 <div class="mb-3">
@@ -319,6 +328,7 @@
                     <div class="col-md-6 mb-3">
                         <label class="form-label" for="password">Mật khẩu</label>
                         <input id="password" type="password" class="form-control" th:field="*{password}" required>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
                     </div>
 
                     <div class="col-md-6 mb-3">
@@ -331,7 +341,7 @@
                 <div class="form-check mb-4">
                     <input class="form-check-input" type="checkbox" id="terms" required>
                     <label class="form-check-label" for="terms">
-                        Tôi đồng ý với các <a href="#">điều khoản</a> và <a href="#">điều kiện</a> của RailJet.
+                        Tôi đồng ý với các <span class="text-muted fw-semibold">điều khoản</span> và <span class="text-muted fw-semibold">điều kiện</span> của RailJet.
                     </label>
                 </div>
 
@@ -349,10 +359,10 @@
         <div class="auth-footer-inner">
             <strong>RailJet</strong>
             <div class="footer-links">
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
-                <a href="#">Station Network</a>
-                <a href="#">Support</a>
+                <span>Privacy Policy</span>
+                <span>Terms of Service</span>
+                <span>Station Network</span>
+                <span>Support</span>
             </div>
             <span>© 2026 RailJet.</span>
         </div>

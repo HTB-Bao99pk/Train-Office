@@ -2,6 +2,7 @@ package com.hsf302.trainoffice.service.impl;
 
 import com.hsf302.trainoffice.common.enums.UserRole;
 import com.hsf302.trainoffice.common.enums.UserStatus;
+import com.hsf302.trainoffice.dto.ProfileForm;
 import com.hsf302.trainoffice.dto.RegisterRequest;
 import com.hsf302.trainoffice.entity.User;
 import com.hsf302.trainoffice.repository.UserRepository;
@@ -81,12 +82,21 @@ public class UserServiceImpl implements UserService {
        if (email == null || pwd == null) {
            return null;
        }
-        return userRepository.findByEmailAndPassword(email.trim().toLowerCase(), pwd);
+        User user = userRepository.findByEmailAndPassword(email.trim().toLowerCase(), pwd);
+        if (user == null || user.getStatus() != UserStatus.ACTIVE) {
+            return null;
+        }
+        return user;
     }
 
     @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public List<User> searchUsers(String keyword, UserRole role, UserStatus status) {
+        return userRepository.search(blankToNull(keyword), role, status);
     }
 
     @Override
@@ -99,9 +109,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User saveUser(User user) {
+        validateUser(user);
         if (user.getUserId() != null) {
             userRepository.findById(user.getUserId()).ifPresent(existing -> {
                 user.setCreatedAt(existing.getCreatedAt());
+                if (user.getPassword() == null || user.getPassword().isBlank()) {
+                    user.setPassword(existing.getPassword());
+                }
             });
         }
         if (user.getEmail() != null) {
@@ -119,5 +133,61 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
+    }
+
+    @Override
+    public User updateProfile(Long userId, ProfileForm profileForm) {
+        User user = getUserById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        user.setFullName(profileForm.getFullName().trim());
+        user.setIdentityNumber(blankToNull(profileForm.getIdentityNumber()));
+        user.setDateOfBirth(profileForm.getDateOfBirth());
+        user.setGender(profileForm.getGender());
+        return userRepository.save(user);
+    }
+
+    @Override
+    public boolean changePassword(Long userId, String currentPassword, String newPassword, String confirmPassword) {
+        if (currentPassword == null || currentPassword.isBlank()
+                || newPassword == null || newPassword.isBlank()
+                || confirmPassword == null || !confirmPassword.equals(newPassword)) {
+            return false;
+        }
+        User user = getUserById(userId).orElse(null);
+        if (user == null || !currentPassword.equals(user.getPassword())) {
+            return false;
+        }
+        user.setPassword(newPassword);
+        userRepository.save(user);
+        return true;
+    }
+
+    private void validateUser(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("User is required.");
+        }
+        if (user.getEmail() == null || user.getEmail().isBlank()) {
+            throw new IllegalArgumentException("Email is required.");
+        }
+        String email = user.getEmail().trim().toLowerCase();
+        boolean duplicate = user.getUserId() == null
+                ? userRepository.existsByEmail(email)
+                : userRepository.existsByEmailAndUserIdNot(email, user.getUserId());
+        if (duplicate) {
+            throw new IllegalArgumentException("Email already exists.");
+        }
+        if (user.getUserId() == null && (user.getPassword() == null || user.getPassword().isBlank())) {
+            throw new IllegalArgumentException("Password is required.");
+        }
+        if (user.getPassword() != null && user.getPassword().length() > 255) {
+            throw new IllegalArgumentException("Password is too long.");
+        }
+    }
+
+    private String blankToNull(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        return value.trim();
     }
 }

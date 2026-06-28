@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/admin-layout :: layout('Passenger form', ~{::section}, 'passengers')}">
+<section>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h4 mb-0" th:text="${passenger.passengerId == null ? 'Create passenger' : 'Edit passenger'}">Passenger form</h2>
+        <a class="btn btn-secondary" th:href="@{/admin/passengers}">
+            <i class="fas fa-arrow-left mr-1"></i> Back
+        </a>
+    </div>
+
+    <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+    <div class="card">
+        <form th:action="@{/admin/passengers/save}" th:object="${passenger}" method="post">
+            <input type="hidden" th:field="*{passengerId}">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Full name</label>
+                        <input class="form-control" th:field="*{fullName}" maxlength="100" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Identity number</label>
+                        <input class="form-control" th:field="*{identityNumber}" maxlength="30">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Date of birth</label>
+                        <input class="form-control" th:field="*{dateOfBirth}" type="date">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Gender</label>
+                        <select class="form-control" th:field="*{gender}">
+                            <option value="">Select gender</option>
+                            <option th:each="gender : ${genders}" th:value="${gender}" th:text="${gender}"></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer text-right">
+                <button class="btn btn-primary" type="submit">
+                    <i class="fas fa-save mr-1"></i> Save
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+</html>

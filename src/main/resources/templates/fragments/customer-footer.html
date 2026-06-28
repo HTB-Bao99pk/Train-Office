@@ -8,7 +8,7 @@
             <div class="footer-links">
                 <a th:href="@{/booking/search}">Tìm chuyến</a>
                 <a th:href="@{/booking/history}">Đặt chỗ của tôi</a>
-                <a th:href="@{/profile}">Hồ sơ</a>
+                <a th:href="@{/profile}" th:if="${session.currentUser != null}">Hồ sơ</a>
                 <a th:href="@{/logout}" th:if="${session.currentUser != null}">Đăng xuất</a>
             </div>
             <span class="footer-copy">© 2026 RailJet.</span>

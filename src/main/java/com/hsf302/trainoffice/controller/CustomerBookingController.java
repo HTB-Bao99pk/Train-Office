@@ -195,14 +195,14 @@ public class CustomerBookingController {
     }
 
     @GetMapping("/booking/history")
-    public String history(HttpSession session, Model model) {
+    public String history(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
         Object sessionUser = session.getAttribute("currentUser");
         if (sessionUser instanceof User user) {
             model.addAttribute("recentBookings", bookingService.getBookingsForUser(user));
-        } else {
-            model.addAttribute("recentBookings", List.of());
+            return "booking/history";
         }
-        return "booking/history";
+        redirectAttributes.addFlashAttribute("error", "Please log in to view booking history");
+        return "redirect:/login";
     }
 
     @GetMapping("/booking/{bookingId}")

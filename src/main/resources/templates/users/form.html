@@ -9,6 +9,8 @@
         </a>
     </div>
 
+    <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
     <div class="card">
         <form th:action="@{/admin/users/save}" th:object="${user}" method="post">
             <input type="hidden" th:field="*{userId}">
@@ -20,7 +22,9 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Password</label>
-                        <input class="form-control" th:field="*{password}" type="text" required>
+                        <input class="form-control" th:field="*{password}" type="text"
+                               th:required="${user.userId == null}"
+                               th:placeholder="${user.userId == null ? 'Required for new user' : 'Leave blank to keep current password'}">
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Full name</label>

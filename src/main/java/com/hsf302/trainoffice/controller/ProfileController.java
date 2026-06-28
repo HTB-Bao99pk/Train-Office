@@ -2,7 +2,7 @@ package com.hsf302.trainoffice.controller;
 
 import com.hsf302.trainoffice.dto.ProfileForm;
 import com.hsf302.trainoffice.entity.User;
-import com.hsf302.trainoffice.repository.UserRepository;
+import com.hsf302.trainoffice.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -15,10 +15,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class ProfileController {
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public ProfileController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public ProfileController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping("/profile")
@@ -52,14 +52,33 @@ public class ProfileController {
             return "customer/profile";
         }
 
-        user.setFullName(profileForm.getFullName().trim());
-        user.setIdentityNumber(blankToNull(profileForm.getIdentityNumber()));
-        user.setDateOfBirth(profileForm.getDateOfBirth());
-        user.setGender(profileForm.getGender());
-        userRepository.save(user);
+        user = userService.updateProfile(user.getUserId(), profileForm);
 
         session.setAttribute("currentUser", user);
         redirectAttributes.addFlashAttribute("successMessage", "Cap nhat profile thanh cong.");
+        return "redirect:/profile";
+    }
+
+    @PostMapping("/profile/password")
+    public String changePassword(@ModelAttribute("profileForm") ProfileForm profileForm,
+                                 HttpSession session,
+                                 RedirectAttributes redirectAttributes) {
+        User user = currentUser(session);
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        boolean changed = userService.changePassword(
+                user.getUserId(),
+                profileForm.getCurrentPassword(),
+                profileForm.getNewPassword(),
+                profileForm.getConfirmPassword());
+
+        if (changed) {
+            redirectAttributes.addFlashAttribute("successMessage", "Doi mat khau thanh cong.");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Mat khau hien tai hoac mat khau moi khong hop le.");
+        }
         return "redirect:/profile";
     }
 
@@ -68,7 +87,7 @@ public class ProfileController {
         if (!(sessionUser instanceof User user) || user.getUserId() == null) {
             return null;
         }
-        return userRepository.findById(user.getUserId()).orElse(null);
+        return userService.getUserById(user.getUserId()).orElse(null);
     }
 
     private ProfileForm toForm(User user) {
@@ -80,10 +99,4 @@ public class ProfileController {
         return form;
     }
 
-    private String blankToNull(String value) {
-        if (value == null || value.isBlank()) {
-            return null;
-        }
-        return value.trim();
-    }
 }
