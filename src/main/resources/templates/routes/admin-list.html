@@ -34,7 +34,7 @@
             <th>Route Code</th>
             <th>Route Name</th>
             <th>Distance (km)</th>
-            <th width="180">Action</th>
+            <th width="260">Action</th>
         </tr>
         </thead>
 
@@ -55,6 +55,11 @@
                 <a class="btn btn-warning btn-sm"
                    th:href="@{'/admin/routes/edit/' + ${route.routeId}}">
                     Edit
+                </a>
+
+                <a class="btn btn-info btn-sm"
+                   th:href="@{/admin/routes/{routeId}/stations(routeId=${route.routeId})}">
+                    Stations
                 </a>
 
                 <a class="btn btn-danger btn-sm"
