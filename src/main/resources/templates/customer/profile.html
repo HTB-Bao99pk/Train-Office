@@ -50,12 +50,8 @@
                 </span>
             </div>
 
-            <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}" role="alert">
-                Cập nhật hồ sơ thành công.
-            </div>
-            <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}" role="alert">
-                Vui lòng kiểm tra lại thông tin hồ sơ.
-            </div>
+            <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}" role="alert"></div>
+            <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}" role="alert"></div>
 
             <form th:action="@{/profile}" method="post" th:object="${profileForm}" autocomplete="off" accept-charset="UTF-8">
                 <div class="profile-form-grid">
@@ -88,12 +84,12 @@
                         <label class="profile-label" for="profileFullName">Họ và tên</label>
                         <input id="profileFullName" class="form-control" th:field="*{fullName}" maxlength="100"
                                placeholder="Nhập họ tên của bạn" required>
-                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}">Lỗi</div>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
                     </div>
                     <div class="profile-form-field">
                         <label class="profile-label" for="profileDateOfBirth">Ngày sinh</label>
                         <input id="profileDateOfBirth" class="form-control" type="date" th:field="*{dateOfBirth}">
-                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('dateOfBirth')}" th:errors="*{dateOfBirth}">Lỗi</div>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('dateOfBirth')}" th:errors="*{dateOfBirth}"></div>
                     </div>
                     <div class="profile-form-field">
                         <label class="profile-label" for="profileGender">Giới tính</label>
@@ -103,13 +99,13 @@
                             <option value="FEMALE">Nữ</option>
                             <option value="OTHER">Khác</option>
                         </select>
-                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}">Lỗi</div>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}"></div>
                     </div>
                     <div class="profile-form-field">
                         <label class="profile-label" for="profileIdentityNumber">Số giấy tờ</label>
                         <input id="profileIdentityNumber" class="form-control" th:field="*{identityNumber}" maxlength="30"
                                placeholder="CCCD/CMND/Hộ chiếu">
-                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('identityNumber')}" th:errors="*{identityNumber}">Lỗi</div>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('identityNumber')}" th:errors="*{identityNumber}"></div>
                     </div>
                     <div class="profile-form-field">
                         <label class="profile-label" for="profileUpdatedAt">Cập nhật lúc</label>

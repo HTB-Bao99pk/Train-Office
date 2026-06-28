@@ -252,6 +252,24 @@ a:hover{color:var(--rail-primary)}
 .profile-route-line i{padding:0 10px;color:var(--rail-secondary);font-size:20px}
 .profile-ticket-actions{display:flex;flex-direction:column;gap:10px;min-width:180px}
 
+.auth-panel{width:min(1220px,calc(100% - 24px));margin:0 auto}
+.auth-alert{border-radius:8px;font-weight:700}
+.auth-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.auth-form-note{color:var(--rail-muted);font-size:14px;line-height:1.55}
+.auth-link{font-weight:800;text-decoration:none}
+.auth-link:hover{text-decoration:underline}
+.profile-summary-card .profile-summary-body h2{font-size:clamp(24px,2.8vw,30px)}
+.profile-detail-card .alert{margin-bottom:18px}
+.profile-form-field .form-control,.profile-form-field .form-select{background:#fff}
+.profile-form-field .form-control::placeholder{color:#8a95a7}
+.profile-form-field .text-danger{line-height:1.35}
+.profile-detail-card,.profile-summary-card,.profile-ticket-card{transition:box-shadow .2s ease,border-color .2s ease}
+.profile-detail-card:hover,.profile-summary-card:hover,.profile-ticket-card:hover{box-shadow:0 14px 32px rgba(26,43,60,.08)}
+.auth-card .alert{border-radius:8px}
+.auth-card .btn{min-height:50px}
+.profile-page-header .profile-primary-action,
+.profile-page-header .profile-ghost-action{min-width:168px}
+
 @media(max-width:992px){
   .booking-hero{grid-template-columns:1fr}
   .trip-result-grid{grid-template-columns:1fr}
@@ -287,6 +305,7 @@ a:hover{color:var(--rail-primary)}
   .profile-ticket-route{width:100%;align-items:center}
   .profile-ticket-actions{min-width:0}
   .user-name{max-width:8rem}
+  .auth-form-grid{grid-template-columns:1fr}
   .booking-shell{width:min(100% - 24px,1180px)}
   .booking-progress{grid-template-columns:1fr 1fr}
   .passenger-form-grid{grid-template-columns:1fr}
@@ -312,4 +331,6 @@ a:hover{color:var(--rail-primary)}
   .profile-route-line{min-height:28px}
   .auth-nav-button{width:100%;margin-top:6px}
   .booking-progress-item{font-size:12px}
+  .profile-page-header .profile-primary-action,
+  .profile-page-header .profile-ghost-action{width:100%;min-width:0}
 }

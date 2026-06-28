@@ -1,25 +1,25 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layouts/customer-layout :: layout('Chọn ghế', ~{::section}, 'booking')}">
+      th:replace="~{layouts/customer-layout :: layout('Select Seats', ~{::section}, 'booking')}">
 <section class="booking-shell booking-section">
     <div class="booking-progress">
-        <div class="booking-progress-item done"><span>1</span>Tìm kiếm</div>
-        <div class="booking-progress-item done"><span>2</span>Chọn chuyến</div>
-        <div class="booking-progress-item active"><span>3</span>Chọn ghế</div>
-        <div class="booking-progress-item"><span>4</span>Hành khách</div>
-        <div class="booking-progress-item"><span>5</span>Xác nhận</div>
-        <div class="booking-progress-item"><span>6</span>Hoàn tất</div>
+        <div class="booking-progress-item done"><span>1</span>Search</div>
+        <div class="booking-progress-item done"><span>2</span>Select trip</div>
+        <div class="booking-progress-item active"><span>3</span>Select seats</div>
+        <div class="booking-progress-item"><span>4</span>Passengers</div>
+        <div class="booking-progress-item"><span>5</span>Confirm</div>
+        <div class="booking-progress-item"><span>6</span>Done</div>
     </div>
 
     <div class="page-hero compact-hero">
-        <span class="page-eyebrow">Chọn ghế</span>
-        <h1 class="page-title">Sơ đồ ghế theo chuyến</h1>
+        <span class="page-eyebrow">Seat map</span>
+        <h1 class="page-title">Choose your seats</h1>
         <p class="page-subtitle">
-            <strong th:text="${trip.train != null ? trip.train.trainName : 'Chuyến tàu'}">SE1</strong>
+            <strong th:text="${trip.train != null ? trip.train.trainName : 'Train trip'}">SE1</strong>
             <span> · </span>
-            <span th:text="${segment.departureStop.station.stationName}">Hà Nội</span>
-            <span> đến </span>
-            <span th:text="${segment.arrivalStop.station.stationName}">Đà Nẵng</span>
+            <span th:text="${segment.departureStop.station.stationName}">Ha Noi</span>
+            <span> to </span>
+            <span th:text="${segment.arrivalStop.station.stationName}">Da Nang</span>
         </p>
     </div>
 
@@ -33,17 +33,17 @@
 
         <div class="seat-selection-grid">
             <div class="railjet-card card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <span>Chọn đúng <strong th:text="*{passengerCount}">1</strong> ghế</span>
+                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <span>Select exactly <strong th:text="*{passengerCount}">1</strong> seats</span>
                     <div class="seat-legend mb-0">
-                        <span><i class="seat-dot available"></i>Trống</span>
-                        <span><i class="seat-dot selected"></i>Đang chọn</span>
-                        <span><i class="seat-dot booked"></i>Đã đặt</span>
+                        <span><i class="seat-dot available"></i>Available</span>
+                        <span><i class="seat-dot selected"></i>Selected</span>
+                        <span><i class="seat-dot booked"></i>Booked</span>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="coach-shell">
-                        <div class="coach-head">Sơ đồ toa</div>
+                        <div class="coach-head">Coach layout</div>
                         <div class="seat-map-grid">
                             <label class="seat-choice" th:each="item : ${seats}">
                                 <input type="checkbox" th:field="*{seatIds}" th:value="${item.seat.seatId}" th:disabled="${!item.available}">
@@ -52,7 +52,7 @@
                                         <span th:text="${item.seat.coach.coachNumber}">A</span>
                                         <span th:text="${item.seat.seatNumber}">01</span>
                                     </span>
-                                    <small th:text="${item.seat.seatType}">Ghế mềm</small>
+                                    <small th:text="${item.seat.seatType}">Standard</small>
                                 </span>
                             </label>
                         </div>
@@ -61,28 +61,28 @@
             </div>
 
             <aside class="railjet-card card sticky-summary">
-                <div class="card-header">Tóm tắt lựa chọn</div>
+                <div class="card-header">Selection summary</div>
                 <div class="card-body">
                     <div class="summary-box mb-3">
-                        <span class="summary-label">Hành trình</span>
+                        <span class="summary-label">Route</span>
                         <strong>
-                            <span th:text="${segment.departureStop.station.stationName}">Hà Nội</span>
+                            <span th:text="${segment.departureStop.station.stationName}">Ha Noi</span>
                             <span> → </span>
-                            <span th:text="${segment.arrivalStop.station.stationName}">Đà Nẵng</span>
+                            <span th:text="${segment.arrivalStop.station.stationName}">Da Nang</span>
                         </strong>
-                        <small th:text="${trip.departureTime}">Ngày khởi hành</small>
+                        <small th:text="${trip.departureTime}">Departure date</small>
                     </div>
                     <div class="summary-line">
-                        <span>Số hành khách</span>
+                        <span>Passengers</span>
                         <strong th:text="*{passengerCount}">1</strong>
                     </div>
                     <div class="summary-line">
-                        <span>Giá cơ bản</span>
+                        <span>Base price</span>
                         <strong th:text="${trip.basePrice}">0</strong>
                     </div>
                     <div class="booking-actions mt-4">
-                        <button class="btn btn-primary w-100" type="submit">Tiếp tục</button>
-                        <a class="btn btn-outline-primary w-100" th:href="@{/booking/search}">Quay lại tìm kiếm</a>
+                        <button class="btn btn-primary w-100" type="submit">Continue</button>
+                        <a class="btn btn-outline-primary w-100" th:href="@{/booking/search}">Back to search</a>
                     </div>
                 </div>
             </aside>

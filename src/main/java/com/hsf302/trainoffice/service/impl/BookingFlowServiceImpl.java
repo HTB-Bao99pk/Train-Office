@@ -82,6 +82,28 @@ public class BookingFlowServiceImpl implements BookingFlowService {
     }
 
     @Override
+    public PassengerInfoForm createPassengerInfoForm(int passengerCount, User user) {
+        PassengerInfoForm form = createPassengerInfoForm(passengerCount);
+        if (user == null) {
+            return form;
+        }
+
+        String contactName = firstNonBlank(user.getFullName(), user.getEmail());
+        form.setContactName(contactName);
+        form.setContactEmail(user.getEmail());
+
+        if (!form.getPassengers().isEmpty()) {
+            PassengerBookingRequest firstPassenger = form.getPassengers().get(0);
+            firstPassenger.setFullName(user.getFullName());
+            firstPassenger.setIdentityNumber(user.getIdentityNumber());
+            firstPassenger.setDateOfBirth(user.getDateOfBirth());
+            firstPassenger.setGender(user.getGender());
+        }
+
+        return form;
+    }
+
+    @Override
     public void savePassengerInfo(BookingSession bookingSession, PassengerInfoForm form) {
         if (bookingSession == null) {
             throw new IllegalArgumentException("Booking session is required");
@@ -194,5 +216,12 @@ public class BookingFlowServiceImpl implements BookingFlowService {
             throw new IllegalArgumentException("One or more selected seats do not exist");
         }
         return selectedSeats;
+    }
+
+    private String firstNonBlank(String first, String fallback) {
+        if (first != null && !first.isBlank()) {
+            return first;
+        }
+        return fallback;
     }
 }

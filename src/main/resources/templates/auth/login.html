@@ -6,321 +6,123 @@
     <title>Đăng nhập | RailJet</title>
     <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
     <style>
-        :root {
-            --rail-navy: #071a33;
-            --rail-blue: #0b6fa4;
-            --rail-sky: #2fb8f6;
-            --rail-bg: #f3f7fb;
-            --rail-muted: #657287;
-            --rail-line: #d9e3ef;
+        :root{
+            --rail-navy:#071a33;
+            --rail-blue:#0b6fa4;
+            --rail-sky:#2fb8f6;
+            --rail-bg:#f3f7fb;
+            --rail-muted:#657287;
+            --rail-line:#d9e3ef;
         }
-
-        * {
-            letter-spacing: 0;
-        }
-
-        body {
-            min-height: 100vh;
-            margin: 0;
-            color: var(--rail-navy);
+        *{letter-spacing:0}
+        body{
+            min-height:100vh;
+            margin:0;
+            color:var(--rail-navy);
             background:
-                linear-gradient(120deg, rgba(11, 111, 164, .08), transparent 38%),
-                linear-gradient(180deg, #f8fbff 0%, var(--rail-bg) 100%);
-            font-family: "Segoe UI", Arial, sans-serif;
+                linear-gradient(120deg,rgba(11,111,164,.08),transparent 38%),
+                linear-gradient(180deg,#f8fbff 0%,var(--rail-bg) 100%);
+            font-family:"Segoe UI",Arial,sans-serif;
         }
-
-        .auth-shell {
-            min-height: 100vh;
-            display: grid;
-            grid-template-rows: auto 1fr;
+        .auth-shell{min-height:100vh;display:grid;grid-template-rows:auto 1fr}
+        .auth-nav{
+            min-height:72px;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:16px;
+            padding:16px clamp(20px,4vw,56px);
+            background:rgba(255,255,255,.86);
+            border-bottom:1px solid rgba(217,227,239,.85);
+            backdrop-filter:blur(10px);
         }
-
-        .auth-nav {
-            height: 72px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 clamp(20px, 4vw, 56px);
-            background: rgba(255, 255, 255, .86);
-            border-bottom: 1px solid rgba(217, 227, 239, .85);
-            backdrop-filter: blur(10px);
+        .brand{color:var(--rail-navy);font-size:26px;font-weight:800;text-decoration:none}
+        .nav-actions{display:flex;align-items:center;gap:18px;font-size:14px;flex-wrap:wrap}
+        .nav-actions a{color:var(--rail-navy);text-decoration:none;font-weight:700}
+        .nav-disabled{color:var(--rail-muted);font-weight:600;cursor:not-allowed}
+        .auth-main{
+            width:min(1220px,calc(100% - 40px));
+            margin:0 auto;
+            padding:44px 0 52px;
+            display:grid;
+            grid-template-columns:minmax(360px,520px) 1fr;
+            gap:clamp(36px,6vw,92px);
+            align-items:center;
         }
-
-        .brand {
-            color: var(--rail-navy);
-            font-size: 26px;
-            font-weight: 800;
-            text-decoration: none;
+        .auth-card{
+            background:#fff;
+            border:1px solid rgba(217,227,239,.95);
+            border-top:4px solid var(--rail-sky);
+            border-radius:10px;
+            box-shadow:0 18px 48px rgba(7,26,51,.10);
+            padding:clamp(28px,4vw,42px);
         }
-
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            font-size: 14px;
+        .card-mark{
+            width:56px;height:56px;display:inline-flex;align-items:center;justify-content:center;
+            color:#fff;background:var(--rail-navy);border-radius:10px;font-size:28px;margin-bottom:18px
         }
-
-        .nav-actions a {
-            color: var(--rail-navy);
-            text-decoration: none;
-            font-weight: 600;
+        .auth-title{margin:0;font-size:clamp(28px,3vw,36px);font-weight:900}
+        .auth-subtitle{margin:8px 0 28px;color:var(--rail-muted);font-size:15px;line-height:1.6}
+        .form-label{color:var(--rail-navy);font-size:13px;font-weight:700;text-transform:uppercase}
+        .form-control{
+            min-height:50px;border-color:#cbd7e6;border-radius:8px;padding:10px 14px
         }
-
-        .nav-disabled {
-            color: var(--rail-muted);
-            font-weight: 600;
-            cursor: not-allowed;
+        .form-control:focus{border-color:var(--rail-sky);box-shadow:0 0 0 .2rem rgba(47,184,246,.18)}
+        .btn-rail{
+            min-height:52px;color:#fff;background:var(--rail-navy);border:0;border-radius:8px;font-weight:800
         }
-
-        .auth-main {
-            width: min(1220px, calc(100% - 40px));
-            margin: 0 auto;
-            padding: 44px 0 52px;
-            display: grid;
-            grid-template-columns: minmax(360px, 520px) 1fr;
-            gap: clamp(36px, 6vw, 92px);
-            align-items: center;
+        .btn-rail:hover{color:#fff;background:#10284a}
+        .divider{
+            display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;margin:24px 0;
+            color:var(--rail-muted);font-size:12px;font-weight:700;text-transform:uppercase
         }
-
-        .auth-card {
-            background: #fff;
-            border: 1px solid rgba(217, 227, 239, .95);
-            border-top: 4px solid var(--rail-sky);
-            border-radius: 8px;
-            box-shadow: 0 18px 48px rgba(7, 26, 51, .10);
-            padding: clamp(28px, 4vw, 42px);
+        .divider::before,.divider::after{content:"";height:1px;background:var(--rail-line)}
+        .social-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+        .social-grid .btn{min-height:44px;border-radius:8px;font-weight:700}
+        .social-grid .btn:disabled{opacity:.55;cursor:not-allowed}
+        .auth-hero{min-width:0}
+        .eyebrow{
+            display:inline-flex;align-items:center;min-height:32px;padding:0 14px;color:#fff;background:var(--rail-sky);
+            border-radius:999px;font-size:12px;font-weight:800;text-transform:uppercase
         }
-
-        .card-mark {
-            width: 56px;
-            height: 56px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            background: var(--rail-navy);
-            border-radius: 8px;
-            font-size: 28px;
-            margin-bottom: 18px;
-        }
-
-        .auth-title {
-            margin: 0;
-            font-size: clamp(28px, 3vw, 36px);
-            font-weight: 800;
-        }
-
-        .auth-subtitle {
-            margin: 8px 0 28px;
-            color: var(--rail-muted);
-            font-size: 15px;
-        }
-
-        .form-label {
-            color: var(--rail-navy);
-            font-size: 13px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .form-control {
-            min-height: 50px;
-            border-color: #cbd7e6;
-            border-radius: 6px;
-        }
-
-        .form-control:focus {
-            border-color: var(--rail-sky);
-            box-shadow: 0 0 0 .2rem rgba(47, 184, 246, .18);
-        }
-
-        .btn-rail {
-            min-height: 52px;
-            color: #fff;
-            background: var(--rail-navy);
-            border: 0;
-            border-radius: 6px;
-            font-weight: 800;
-        }
-
-        .btn-rail:hover {
-            color: #fff;
-            background: #10284a;
-        }
-
-        .divider {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            align-items: center;
-            gap: 14px;
-            margin: 24px 0;
-            color: var(--rail-muted);
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .divider::before,
-        .divider::after {
-            content: "";
-            height: 1px;
-            background: var(--rail-line);
-        }
-
-        .social-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .social-grid .btn {
-            min-height: 44px;
-            border-radius: 6px;
-            font-weight: 600;
-        }
-
-        .social-grid .btn:disabled {
-            opacity: .55;
-            cursor: not-allowed;
-        }
-
-        .auth-hero {
-            min-width: 0;
-        }
-
-        .eyebrow {
-            display: inline-flex;
-            align-items: center;
-            min-height: 32px;
-            padding: 0 14px;
-            color: #fff;
-            background: var(--rail-sky);
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 800;
-        }
-
-        .hero-title {
-            max-width: 720px;
-            margin: 18px 0 18px;
-            font-size: clamp(44px, 5.5vw, 76px);
-            line-height: 1.02;
-            font-weight: 900;
-        }
-
-        .hero-copy {
-            max-width: 760px;
-            color: #3f4b60;
-            font-size: clamp(16px, 1.5vw, 20px);
-            line-height: 1.65;
-        }
-
-        .train-panel {
-            position: relative;
-            min-height: 230px;
-            margin-top: 34px;
-            overflow: hidden;
-            border-radius: 8px;
+        .hero-title{max-width:720px;margin:18px 0 18px;font-size:clamp(44px,5.5vw,76px);line-height:1.02;font-weight:900}
+        .hero-copy{max-width:760px;color:#3f4b60;font-size:clamp(16px,1.5vw,20px);line-height:1.65}
+        .train-panel{
+            position:relative;min-height:230px;margin-top:34px;overflow:hidden;border-radius:10px;
             background:
-                linear-gradient(180deg, rgba(255, 255, 255, .88), rgba(255, 255, 255, .64)),
-                linear-gradient(135deg, #dff4ff, #f7fbff);
-            border: 1px solid rgba(217, 227, 239, .9);
-            box-shadow: 0 18px 42px rgba(7, 26, 51, .08);
+                linear-gradient(180deg,rgba(255,255,255,.88),rgba(255,255,255,.64)),
+                linear-gradient(135deg,#dff4ff,#f7fbff);
+            border:1px solid rgba(217,227,239,.9);box-shadow:0 18px 42px rgba(7,26,51,.08)
         }
-
-        .train-body {
-            position: absolute;
-            left: 9%;
-            right: 9%;
-            bottom: 72px;
-            height: 76px;
-            background: var(--rail-navy);
-            border-radius: 16px 42px 14px 14px;
+        .train-body{
+            position:absolute;left:9%;right:9%;bottom:72px;height:76px;background:var(--rail-navy);
+            border-radius:16px 42px 14px 14px
         }
-
-        .train-body::before {
-            content: "";
-            position: absolute;
-            left: 28px;
-            right: 100px;
-            top: 18px;
-            height: 22px;
-            background: repeating-linear-gradient(90deg, #eaf8ff 0 42px, transparent 42px 56px);
-            border-radius: 5px;
+        .train-body::before{
+            content:"";position:absolute;left:28px;right:100px;top:18px;height:22px;
+            background:repeating-linear-gradient(90deg,#eaf8ff 0 42px,transparent 42px 56px);border-radius:5px
         }
-
-        .train-body::after {
-            content: "";
-            position: absolute;
-            right: 26px;
-            top: 18px;
-            width: 46px;
-            height: 26px;
-            background: var(--rail-sky);
-            border-radius: 20px 28px 8px 8px;
+        .train-body::after{
+            content:"";position:absolute;right:26px;top:18px;width:46px;height:26px;background:var(--rail-sky);border-radius:20px 28px 8px 8px
         }
-
-        .rail-line {
-            position: absolute;
-            left: 6%;
-            right: 6%;
-            bottom: 48px;
-            height: 4px;
-            background: var(--rail-navy);
-            box-shadow: 0 18px 0 rgba(7, 26, 51, .22);
+        .rail-line{
+            position:absolute;left:6%;right:6%;bottom:48px;height:4px;background:var(--rail-navy);box-shadow:0 18px 0 rgba(7,26,51,.22)
         }
-
-        .rail-line::after {
-            content: "";
-            position: absolute;
-            inset: 12px 0 auto;
-            height: 22px;
-            background: repeating-linear-gradient(90deg, transparent 0 36px, rgba(7, 26, 51, .24) 36px 42px);
+        .rail-line::after{
+            content:"";position:absolute;inset:12px 0 auto;height:22px;
+            background:repeating-linear-gradient(90deg,transparent 0 36px,rgba(7,26,51,.24) 36px 42px)
         }
-
-        .auth-footnote {
-            margin-top: 26px;
-            text-align: center;
-            font-size: 14px;
+        .auth-footnote{margin-top:26px;text-align:center;font-size:14px}
+        @media (max-width: 992px){
+            .auth-main{grid-template-columns:1fr;padding-top:28px}
+            .auth-hero{order:-1}
+            .train-panel{min-height:180px}
         }
-
-        @media (max-width: 992px) {
-            .auth-main {
-                grid-template-columns: 1fr;
-                padding-top: 28px;
-            }
-
-            .auth-hero {
-                order: -1;
-            }
-
-            .train-panel {
-                min-height: 180px;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .auth-nav {
-                height: auto;
-                padding-top: 16px;
-                padding-bottom: 16px;
-                align-items: flex-start;
-                gap: 12px;
-                flex-direction: column;
-            }
-
-            .nav-actions {
-                gap: 12px;
-                flex-wrap: wrap;
-            }
-
-            .auth-main {
-                width: min(100% - 24px, 1220px);
-            }
-
-            .social-grid {
-                grid-template-columns: 1fr;
-            }
+        @media (max-width: 576px){
+            .auth-nav{height:auto;padding-top:16px;padding-bottom:16px;align-items:flex-start;flex-direction:column}
+            .nav-actions{gap:12px}
+            .auth-main{width:min(100% - 24px,1220px)}
+            .social-grid{grid-template-columns:1fr}
         }
     </style>
 </head>
@@ -338,9 +140,9 @@
     <main class="auth-main">
         <section class="auth-card">
             <div class="text-center">
-                <div class="card-mark">🚆</div>
-                <h1 class="auth-title">Đăng nhập - RailJet</h1>
-                <p class="auth-subtitle">Chào mừng trở lại. Đăng nhập để tiếp tục quản lý hành trình của bạn.</p>
+                <div class="card-mark"><i class="bi bi-person-lock"></i></div>
+                <h1 class="auth-title">Đăng nhập RailJet</h1>
+                <p class="auth-subtitle">Trở lại để tiếp tục đặt vé, xem lịch sử booking, và quản lý tài khoản.</p>
             </div>
 
             <form th:action="@{/login}" method="post">
@@ -381,11 +183,11 @@
         </section>
 
         <section class="auth-hero">
-            <span class="eyebrow">PHIÊN BẢN 2.0</span>
-            <h2 class="hero-title">Vận tốc tối ưu.<br>Hành trình hoàn hảo.</h2>
+            <span class="eyebrow">Rail booking</span>
+            <h2 class="hero-title">Vận tốc tối ưu.<br>Hành trình rõ ràng.</h2>
             <p class="hero-copy">
-                Hệ thống quản lý hành trình RailJet giúp bạn đặt vé nhanh hơn, theo dõi chuyến đi rõ ràng hơn
-                và tối ưu mọi thao tác trên mạng lưới đường sắt hiện đại.
+                RailJet keeps the booking flow tight and readable so you can move from search to booking
+                without losing context.
             </p>
             <div class="train-panel" aria-hidden="true">
                 <div class="train-body"></div>

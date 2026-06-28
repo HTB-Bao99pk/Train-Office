@@ -1,77 +1,85 @@
-﻿<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Route Management', ~{::section}, 'routes')}">
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/admin-layout :: layout('Route Management', ~{::section}, 'routes')}">
 <section>
-
-    <div class="d-flex justify-content-between mb-3">
-        <h2>Route Management</h2>
-
+    <div class="admin-page-hero">
         <div>
-            <a th:href="@{/admin/routes/new}" class="btn btn-primary">
-                Add Route
-            </a>
+            <span class="admin-page-kicker"><i class="fas fa-route mr-1"></i> Route Infrastructure</span>
+            <h2>Route Management</h2>
+            <p>Manage railway routes and define the ordered stations for each route.</p>
+        </div>
+        <a th:href="@{/admin/routes/new}" class="btn btn-primary">
+            <i class="fas fa-plus mr-1"></i> Add Route
+        </a>
+    </div>
+
+    <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+    <div class="card admin-table-card">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <div>
+                <span class="admin-card-title">Route Directory</span>
+                <small th:text="${#lists.size(routes)} + ' routes available'">0 routes available</small>
+            </div>
+            <span class="badge badge-primary">Routes</span>
+        </div>
+        <div class="card-body table-responsive p-0">
+            <table class="table table-hover mb-0">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Route</th>
+                    <th>Code</th>
+                    <th>Distance</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="route : ${routes}">
+                    <td><span class="text-muted" th:text="'#' + ${route.routeId}">#1</span></td>
+                    <td>
+                        <div class="admin-identity">
+                            <span class="admin-avatar"><i class="fas fa-route"></i></span>
+                            <span>
+                                <strong th:text="${route.routeName}">Route</strong>
+                                <small>Manage station order</small>
+                            </span>
+                        </div>
+                    </td>
+                    <td><span class="badge badge-primary admin-badge-soft" th:text="${route.routeCode}">HN-SG</span></td>
+                    <td>
+                        <span th:text="${route.distanceKm}">0</span>
+                        <span class="text-muted">km</span>
+                    </td>
+                    <td class="text-right">
+                        <a class="btn btn-sm btn-outline-info"
+                           th:href="@{/admin/routes/{routeId}/stations(routeId=${route.routeId})}">
+                            <i class="fas fa-list-ol"></i><span>Manage Stations</span>
+                        </a>
+                        <a class="btn btn-sm btn-outline-warning"
+                           th:href="@{'/admin/routes/edit/' + ${route.routeId}}">
+                            <i class="fas fa-edit"></i><span>Edit</span>
+                        </a>
+                        <a class="btn btn-sm btn-outline-danger"
+                           onclick="return confirm('Delete this route?')"
+                           th:href="@{'/admin/routes/delete/' + ${route.routeId}}">
+                            <i class="fas fa-trash"></i><span>Delete</span>
+                        </a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(routes)}">
+                    <td colspan="5">
+                        <div class="admin-empty-state">
+                            <i class="fas fa-route"></i>
+                            <strong>No routes found</strong>
+                            <span>Create a route before assigning stations.</span>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
-
-    <div class="alert alert-success"
-         th:if="${successMessage}"
-         th:text="${successMessage}">
-    </div>
-
-    <div class="alert alert-danger"
-         th:if="${errorMessage}"
-         th:text="${errorMessage}">
-    </div>
-
-    <table class="table table-bordered table-hover">
-
-        <thead class="table-dark">
-        <tr>
-            <th>ID</th>
-            <th>Route Code</th>
-            <th>Route Name</th>
-            <th>Distance (km)</th>
-            <th width="260">Action</th>
-        </tr>
-        </thead>
-
-        <tbody>
-
-        <tr th:each="route : ${routes}">
-
-            <td th:text="${route.routeId}"></td>
-
-            <td th:text="${route.routeCode}"></td>
-
-            <td th:text="${route.routeName}"></td>
-
-            <td th:text="${route.distanceKm}"></td>
-
-            <td>
-
-                <a class="btn btn-warning btn-sm"
-                   th:href="@{'/admin/routes/edit/' + ${route.routeId}}">
-                    Edit
-                </a>
-
-                <a class="btn btn-info btn-sm"
-                   th:href="@{/admin/routes/{routeId}/stations(routeId=${route.routeId})}">
-                    Stations
-                </a>
-
-                <a class="btn btn-danger btn-sm"
-                   onclick="return confirm('Delete this route?')"
-                   th:href="@{'/admin/routes/delete/' + ${route.routeId}}">
-                    Delete
-                </a>
-
-            </td>
-
-        </tr>
-
-        </tbody>
-
-    </table>
-
 </section>
-
 </html>

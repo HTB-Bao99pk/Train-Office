@@ -126,7 +126,9 @@ public class CustomerBookingController {
         }
         if (!model.containsAttribute("passengerInfoForm")) {
             PassengerInfoForm form = bookingSession.getPassengerInfo() == null
-                    ? bookingFlowService.createPassengerInfoForm(bookingSession.getPassengerCount())
+                    ? bookingFlowService.createPassengerInfoForm(
+                            bookingSession.getPassengerCount(),
+                            currentUser(session))
                     : bookingSession.getPassengerInfo();
             model.addAttribute("passengerInfoForm", form);
         }
@@ -281,6 +283,11 @@ public class CustomerBookingController {
     private BookingSession getBookingSession(HttpSession session) {
         Object value = session.getAttribute(BOOKING_SESSION_KEY);
         return value instanceof BookingSession bookingSession ? bookingSession : null;
+    }
+
+    private User currentUser(HttpSession session) {
+        Object sessionUser = session.getAttribute("currentUser");
+        return sessionUser instanceof User user ? user : null;
     }
 
     private String redirectToSeatSelection(SeatSelectionForm form) {

@@ -18,6 +18,8 @@ public interface BookingFlowService {
 
     PassengerInfoForm createPassengerInfoForm(int passengerCount);
 
+    PassengerInfoForm createPassengerInfoForm(int passengerCount, User user);
+
     void savePassengerInfo(BookingSession bookingSession, PassengerInfoForm form);
 
     BookingConfirmationView buildConfirmation(BookingSession bookingSession);

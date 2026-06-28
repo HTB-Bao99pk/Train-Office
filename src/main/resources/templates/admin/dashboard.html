@@ -2,24 +2,60 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layouts/admin-layout :: layout('Dashboard', ~{::section}, 'dashboard')}">
 <section>
-    <div class="d-flex flex-wrap gap-2 mb-3">
-        <a class="btn btn-primary" th:href="@{/admin/users}"><i class="fas fa-users mr-1"></i> Users</a>
-        <a class="btn btn-info" th:href="@{/admin/trains}"><i class="fas fa-train mr-1"></i> Master data</a>
-        <a class="btn btn-success" th:href="@{/admin/payments}"><i class="fas fa-credit-card mr-1"></i> Payments</a>
-        <a class="btn btn-outline-dark" th:href="@{/profile}"><i class="fas fa-user mr-1"></i> Profile</a>
+    <div class="dashboard-hero mb-4">
+        <div>
+            <span class="dashboard-kicker"><i class="fas fa-train mr-1"></i> Train-Office Control Center</span>
+            <h2>Railway Operations Dashboard</h2>
+            <p>Monitor master data, train trips, bookings, and payment activity from one clean admin workspace.</p>
+        </div>
+        <div class="dashboard-actions">
+            <a class="btn btn-light" th:href="@{/admin/trips}"><i class="fas fa-calendar-alt mr-1"></i> Manage Trips</a>
+            <a class="btn btn-outline-light" th:href="@{/admin/stations}"><i class="fas fa-map-marker-alt mr-1"></i> Stations</a>
+        </div>
     </div>
 
-    <div class="row">
-        <div th:replace="~{fragments/stat-card :: statCard('Revenue', ${totalRevenue}, 'fas fa-dollar-sign', ' bg-success', 'Today')}"></div>
-        <div th:replace="~{fragments/stat-card :: statCard('Bookings', ${totalBookings}, 'fas fa-ticket-alt', ' bg-info', 'All')}"></div>
-        <div th:replace="~{fragments/stat-card :: statCard('Occupancy', ${occupancyRate}, 'fas fa-chair', ' bg-warning', 'Average')}"></div>
-        <div th:replace="~{fragments/stat-card :: statCard('Refunds', ${pendingRefunds}, 'fas fa-undo', ' bg-danger', 'Pending')}"></div>
+    <div class="row dashboard-stat-grid">
+        <div class="col-lg-3 col-md-6">
+            <div class="dashboard-stat-card stat-revenue">
+                <span class="dashboard-stat-icon"><i class="fas fa-dollar-sign"></i></span>
+                <span class="dashboard-stat-label">Revenue</span>
+                <strong th:text="${totalRevenue}">0 VND</strong>
+                <small>Today</small>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="dashboard-stat-card stat-bookings">
+                <span class="dashboard-stat-icon"><i class="fas fa-ticket-alt"></i></span>
+                <span class="dashboard-stat-label">Bookings</span>
+                <strong th:text="${totalBookings}">0</strong>
+                <small>All records</small>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="dashboard-stat-card stat-occupancy">
+                <span class="dashboard-stat-icon"><i class="fas fa-chair"></i></span>
+                <span class="dashboard-stat-label">Occupancy</span>
+                <strong th:text="${occupancyRate}">0%</strong>
+                <small>Average</small>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="dashboard-stat-card stat-refunds">
+                <span class="dashboard-stat-icon"><i class="fas fa-undo"></i></span>
+                <span class="dashboard-stat-label">Pending refunds</span>
+                <strong th:text="${pendingRefunds}">0</strong>
+                <small>Needs review</small>
+            </div>
+        </div>
     </div>
 
-    <div class="card">
+    <div class="card dashboard-card">
         <div class="card-header d-flex align-items-center justify-content-between">
-            <span>Admin module directory</span>
-            <span class="badge badge-primary" th:text="${#lists.size(adminMenus)} + ' modules'">14 modules</span>
+            <div>
+                <span class="dashboard-card-title">Master Data & Operations</span>
+                <small>Quick access to working admin modules</small>
+            </div>
+            <span class="badge badge-primary" th:text="${#lists.size(adminMenus)} + ' modules'">9 modules</span>
         </div>
         <div class="card-body">
             <div class="module-directory">
@@ -36,16 +72,27 @@
 
     <div class="row">
         <div class="col-lg-8">
-            <div class="card">
-                <div class="card-header">Revenue chart</div>
+            <div class="card dashboard-card">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="dashboard-card-title">Revenue Overview</span>
+                        <small>Payment trend placeholder for admin review</small>
+                    </div>
+                    <span class="badge badge-info">Live UI</span>
+                </div>
                 <div class="card-body">
-                    <canvas id="revenueChart" height="116"></canvas>
+                    <div class="dashboard-chart-wrap">
+                        <canvas id="revenueChart" height="116"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-lg-4">
-            <div class="card">
-                <div class="card-header">Operations snapshot</div>
+            <div class="card dashboard-card">
+                <div class="card-header">
+                    <span class="dashboard-card-title">Operations Snapshot</span>
+                    <small>Current system summary</small>
+                </div>
                 <div class="card-body">
                     <ul class="ops-list">
                         <li><span><i class="fas fa-database text-primary mr-2"></i>Total records</span><strong th:text="${totalItems}">0</strong></li>
@@ -60,10 +107,13 @@
 
     <div class="row">
         <div class="col-xl-6">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between">
-                    <span>Recent bookings</span>
-                    <a th:href="@{/admin/payments}" class="btn btn-sm btn-outline-primary">Open</a>
+            <div class="card dashboard-card">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="dashboard-card-title">Recent Activity</span>
+                        <small>Latest booking records</small>
+                    </div>
+                    <a th:href="@{/admin/payments}" class="btn btn-sm btn-outline-primary"><i class="fas fa-external-link-alt mr-1"></i> Open</a>
                 </div>
                 <div class="card-body table-responsive p-0">
                     <table class="table table-hover mb-0">
@@ -84,6 +134,9 @@
                             <td th:text="${booking.totalAmount}">0</td>
                             <td><span th:replace="~{fragments/status-badge :: statusBadge(${booking.status})}"></span></td>
                         </tr>
+                        <tr th:if="${recentBookings == null or #lists.isEmpty(recentBookings)}">
+                            <td colspan="5" class="text-center text-muted py-4">No recent bookings.</td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
@@ -91,10 +144,13 @@
         </div>
 
         <div class="col-xl-6">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between">
-                    <span>Managed modules</span>
-                    <a th:href="@{/admin/trains}" class="btn btn-sm btn-outline-primary">Open</a>
+            <div class="card dashboard-card">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="dashboard-card-title">Upcoming Trips</span>
+                        <small>Trip schedule preview</small>
+                    </div>
+                    <a th:href="@{/admin/trips}" class="btn btn-sm btn-outline-primary"><i class="fas fa-external-link-alt mr-1"></i> Open</a>
                 </div>
                 <div class="card-body table-responsive p-0">
                     <table class="table table-hover mb-0">
@@ -112,6 +168,9 @@
                             <td th:text="${trip.route}">Route</td>
                             <td th:text="${trip.departureTime}">Time</td>
                             <td th:text="${trip.basePrice}">0</td>
+                        </tr>
+                        <tr th:if="${trips == null or #lists.isEmpty(trips)}">
+                            <td colspan="4" class="text-center text-muted py-4">No trips to display.</td>
                         </tr>
                         </tbody>
                     </table>

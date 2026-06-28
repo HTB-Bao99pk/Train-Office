@@ -1,10 +1,36 @@
-﻿<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Detail Stations / Nhà ga', ~{::section}, 'stations')}">
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/admin-layout :: layout('Station Detail', ~{::section}, 'stations')}">
 <section>
-<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="card"><div class="card-header d-flex justify-content-between"><span>Stations / Nhà ga detail / Chi tiết</span><span th:replace="~{fragments/status-badge :: statusBadge(${detail.status})}"></span></div><div class="card-body table-responsive"><table class="table table-bordered"><tr><th>stationId</th><td th:text="${detail.stationId}">stationId</td></tr>
-<tr><th>stationCode</th><td th:text="${detail.stationCode}">stationCode</td></tr>
-<tr><th>stationName</th><td th:text="${detail.stationName}">stationName</td></tr>
-<tr><th>city</th><td th:text="${detail.city}">city</td></tr></table></div><div class="card-footer"><a class="btn btn-secondary" th:href="@{'/admin/stations'}">Back</a> <a class="btn btn-warning" th:href="@{'/admin/stations/' + ${detail.id} + '/edit'}">Edit</a></div></div>
+    <div class="admin-page-hero">
+        <div>
+            <span class="admin-page-kicker"><i class="fas fa-map-marker-alt mr-1"></i> Station Detail</span>
+            <h2 th:text="${detail.stationName}">Station</h2>
+            <p th:text="${detail.city}">City</p>
+        </div>
+        <div class="admin-page-actions">
+            <a class="btn btn-outline-primary" th:href="@{/admin/stations}">
+                <i class="fas fa-arrow-left mr-1"></i> Back
+            </a>
+            <a class="btn btn-warning" th:href="@{'/admin/stations/edit/' + ${detail.stationId}}">
+                <i class="fas fa-edit mr-1"></i> Edit
+            </a>
+        </div>
+    </div>
+
+    <div class="card admin-detail-card">
+        <div class="card-header">
+            <span class="admin-card-title">Station Information</span>
+            <small>Infrastructure reference data</small>
+        </div>
+        <div class="card-body">
+            <dl class="admin-detail-grid">
+                <dt>ID</dt><dd th:text="${detail.stationId}">1</dd>
+                <dt>Code</dt><dd th:text="${detail.stationCode}">HN</dd>
+                <dt>Name</dt><dd th:text="${detail.stationName}">Ha Noi</dd>
+                <dt>City</dt><dd th:text="${detail.city}">Ha Noi</dd>
+            </dl>
+        </div>
+    </div>
 </section>
 </html>
-

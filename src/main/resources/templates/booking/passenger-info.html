@@ -1,39 +1,42 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layouts/customer-layout :: layout('Thông tin hành khách', ~{::section}, 'booking')}">
+      th:replace="~{layouts/customer-layout :: layout('Passenger Information', ~{::section}, 'booking')}">
 <section class="booking-shell booking-section">
     <div class="booking-progress">
-        <div class="booking-progress-item done"><span>1</span>Tìm kiếm</div>
-        <div class="booking-progress-item done"><span>2</span>Chọn chuyến</div>
-        <div class="booking-progress-item done"><span>3</span>Chọn ghế</div>
-        <div class="booking-progress-item active"><span>4</span>Hành khách</div>
-        <div class="booking-progress-item"><span>5</span>Xác nhận</div>
-        <div class="booking-progress-item"><span>6</span>Hoàn tất</div>
+        <div class="booking-progress-item done"><span>1</span>Search</div>
+        <div class="booking-progress-item done"><span>2</span>Select trip</div>
+        <div class="booking-progress-item done"><span>3</span>Select seats</div>
+        <div class="booking-progress-item active"><span>4</span>Passengers</div>
+        <div class="booking-progress-item"><span>5</span>Confirm</div>
+        <div class="booking-progress-item"><span>6</span>Done</div>
     </div>
 
     <div class="page-hero compact-hero">
-        <span class="page-eyebrow">Hành khách</span>
-        <h1 class="page-title">Thông tin liên hệ và hành khách</h1>
-        <p class="page-subtitle">Nhập chính xác thông tin để tạo booking và phát hành vé sau khi thanh toán.</p>
+        <span class="page-eyebrow">Passengers</span>
+        <h1 class="page-title">Contact and passenger details</h1>
+        <p class="page-subtitle">When logged in, contact details are prefilled to make booking faster. All fields remain editable.</p>
     </div>
 
     <form th:action="@{/booking/passenger-info}" th:object="${passengerInfoForm}" method="post">
         <div class="row g-4">
             <div class="col-lg-4">
                 <div class="railjet-card card sticky-summary">
-                    <div class="card-header">Thông tin liên hệ</div>
+                    <div class="card-header">Contact details</div>
                     <div class="card-body">
                         <div class="mb-3">
-                            <label class="form-label" for="contactName">Họ tên liên hệ</label>
+                            <label class="form-label" for="contactName">Contact name</label>
                             <input id="contactName" class="form-control" type="text" th:field="*{contactName}" required>
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('contactName')}" th:errors="*{contactName}"></div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label" for="contactPhone">Số điện thoại</label>
+                            <label class="form-label" for="contactPhone">Phone number</label>
                             <input id="contactPhone" class="form-control" type="text" th:field="*{contactPhone}" required>
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('contactPhone')}" th:errors="*{contactPhone}"></div>
                         </div>
                         <div class="mb-0">
                             <label class="form-label" for="contactEmail">Email</label>
                             <input id="contactEmail" class="form-control" type="email" th:field="*{contactEmail}" required>
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('contactEmail')}" th:errors="*{contactEmail}"></div>
                         </div>
                     </div>
                 </div>
@@ -43,24 +46,24 @@
                 <div class="booking-section">
                     <div class="passenger-card" th:each="passenger, stat : *{passengers}">
                         <div class="passenger-index" th:text="${stat.count}">1</div>
-                        <h2 class="h5 fw-bold mb-3" th:text="'Hành khách ' + ${stat.count}">Hành khách 1</h2>
+                        <h2 class="h5 fw-bold mb-3" th:text="'Passenger ' + ${stat.count}">Passenger 1</h2>
                         <div class="passenger-form-grid">
                             <div>
-                                <label class="form-label">Họ và tên</label>
+                                <label class="form-label">Full name</label>
                                 <input class="form-control" type="text" th:field="*{passengers[__${stat.index}__].fullName}" required>
                             </div>
                             <div>
-                                <label class="form-label">Số giấy tờ</label>
+                                <label class="form-label">Identity number</label>
                                 <input class="form-control" type="text" th:field="*{passengers[__${stat.index}__].identityNumber}" required>
                             </div>
                             <div>
-                                <label class="form-label">Ngày sinh</label>
+                                <label class="form-label">Date of birth</label>
                                 <input class="form-control" type="date" th:field="*{passengers[__${stat.index}__].dateOfBirth}" required>
                             </div>
                             <div>
-                                <label class="form-label">Giới tính</label>
+                                <label class="form-label">Gender</label>
                                 <select class="form-select" th:field="*{passengers[__${stat.index}__].gender}">
-                                    <option value="">Chọn giới tính</option>
+                                    <option value="">Select gender</option>
                                     <option th:each="gender : ${genders}" th:value="${gender}" th:text="${gender}"></option>
                                 </select>
                             </div>
@@ -68,8 +71,8 @@
                     </div>
 
                     <div class="booking-actions justify-content-end">
-                        <a class="btn btn-outline-primary" th:href="@{/booking/search}">Hủy</a>
-                        <button class="btn btn-primary" type="submit">Tiếp tục xác nhận</button>
+                        <a class="btn btn-outline-primary" th:href="@{/booking/search}">Cancel</a>
+                        <button class="btn btn-primary" type="submit">Continue to confirmation</button>
                     </div>
                 </div>
             </div>

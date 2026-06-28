@@ -32,11 +32,13 @@ public class AdminDashboardController {
     private List<Map<String, String>> adminMenus() {
         return List.of(
                 Map.of("key", "users", "label", "Users", "icon", " fas fa-users"),
+                Map.of("key", "passengers", "label", "Passengers", "icon", " fas fa-user-friends"),
                 Map.of("key", "stations", "label", "Stations", "icon", " fas fa-map-marker-alt"),
                 Map.of("key", "routes", "label", "Routes", "icon", " fas fa-route"),
                 Map.of("key", "trains", "label", "Trains", "icon", " fas fa-train"),
                 Map.of("key", "coaches", "label", "Coaches", "icon", " fas fa-subway"),
                 Map.of("key", "seats", "label", "Seats", "icon", " fas fa-chair"),
+                Map.of("key", "trips", "label", "Trips", "icon", " fas fa-calendar-alt"),
                 Map.of("key", "payments", "label", "Payments", "icon", " fas fa-credit-card")
         );
     }
@@ -44,11 +46,13 @@ public class AdminDashboardController {
     private Map<String, String> adminMenuUrls() {
         return Map.ofEntries(
                 Map.entry("users", "/admin/users"),
+                Map.entry("passengers", "/admin/passengers"),
                 Map.entry("stations", "/admin/stations"),
                 Map.entry("routes", "/admin/routes"),
                 Map.entry("trains", "/admin/trains"),
                 Map.entry("coaches", "/admin/coaches"),
                 Map.entry("seats", "/admin/seats"),
+                Map.entry("trips", "/admin/trips"),
                 Map.entry("payments", "/admin/payments")
         );
     }
