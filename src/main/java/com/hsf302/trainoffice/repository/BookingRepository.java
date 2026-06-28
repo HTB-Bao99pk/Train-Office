@@ -32,6 +32,16 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByUser_UserIdOrderByBookingDateDesc(Long userId);
 
     @EntityGraph(attributePaths = {
+            "trainTrip",
+            "trainTrip.train",
+            "trainTrip.route",
+            "departureStation",
+            "arrivalStation"
+    })
+    List<Booking> findByUserIsNullAndBookerEmailIgnoreCaseAndBookerPhoneOrderByBookingDateDesc(String bookerEmail,
+                                                                                               String bookerPhone);
+
+    @EntityGraph(attributePaths = {
             "user",
             "trainTrip",
             "trainTrip.train",

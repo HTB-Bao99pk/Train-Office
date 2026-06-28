@@ -16,7 +16,11 @@ public interface BookingService {
 
     List<Booking> getBookingsForUser(User user);
 
+    List<Booking> findGuestBookings(String email, String phone);
+
     List<Passenger> getPassengersForBooking(Long bookingId);
 
     Booking cancelPendingBooking(Long bookingId, User user);
+
+    Booking cancelPendingGuestBooking(Long bookingId);
 }
