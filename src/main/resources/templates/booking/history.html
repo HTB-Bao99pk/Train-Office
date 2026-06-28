@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layouts/customer-layout :: layout('Booking History', ~{::section}, 'history')}">
+      th:replace="~{layouts/customer-layout :: layout(${guestMode == true} ? 'Guest Booking Results' : 'Booking History', ~{::section}, 'history')}">
 <section class="booking-shell booking-section">
     <div class="page-hero compact-hero">
         <span class="page-eyebrow">My bookings</span>
-        <h1 class="page-title">Booking history</h1>
-        <p class="page-subtitle">Track booking code, route segment, trip date, status, and total amount.</p>
+        <h1 class="page-title" th:text="${guestMode == true} ? 'Guest Booking Results' : 'Booking history'">Booking history</h1>
+        <p class="page-subtitle" th:text="${guestMode == true} ? 'Bookings matching your verified guest contact information.' : 'Track booking code, route segment, trip date, status, and total amount.'">Track booking code, route segment, trip date, status, and total amount.</p>
     </div>
 
     <div class="booking-timeline" th:if="${recentBookings != null and !#lists.isEmpty(recentBookings)}">
@@ -30,7 +30,8 @@
             <div class="text-lg-end">
                 <span class="rail-badge status-pending" th:text="${booking.bookingStatus}">PENDING_PAYMENT</span>
                 <div class="mt-3">
-                    <a class="btn btn-sm btn-primary" th:href="@{/booking/{bookingId}(bookingId=${booking.bookingId})}">
+                    <a class="btn btn-sm btn-primary"
+                       th:href="${guestMode == true} ? @{/booking/guest/{bookingId}(bookingId=${booking.bookingId})} : @{/booking/{bookingId}(bookingId=${booking.bookingId})}">
                         Detail
                     </a>
                 </div>
@@ -40,9 +41,9 @@
 
     <div class="empty-state" th:if="${recentBookings == null or #lists.isEmpty(recentBookings)}">
         <i class="bi bi-calendar2-x"></i>
-        <h2>No bookings yet</h2>
-        <p>Your bookings will appear here after they are created.</p>
-        <a class="btn btn-primary" th:href="@{/booking/search}">Search trip</a>
+        <h2 th:text="${guestMode == true} ? 'No guest bookings found' : 'No bookings yet'">No bookings yet</h2>
+        <p th:text="${guestMode == true} ? 'Try again with the email and phone number used for booking.' : 'Your bookings will appear here after they are created.'">Your bookings will appear here after they are created.</p>
+        <a class="btn btn-primary" th:href="${guestMode == true} ? @{/booking/lookup} : @{/booking/search}" th:text="${guestMode == true} ? 'Back to lookup' : 'Search trip'">Search trip</a>
     </div>
 </section>
 </html>

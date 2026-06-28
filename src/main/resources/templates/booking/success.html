@@ -28,6 +28,21 @@
                 </div>
             </div>
 
+            <div class="summary-box my-4 text-start" th:if="${booking != null and booking.user == null}">
+                <div class="summary-line">
+                    <span>Guest booking access</span>
+                    <strong>Use these details later</strong>
+                </div>
+                <div class="summary-line">
+                    <span>Email</span>
+                    <strong th:text="${booking.bookerEmail}">guest@example.com</strong>
+                </div>
+                <div class="summary-line">
+                    <span>Phone</span>
+                    <strong th:text="${booking.bookerPhone}">0123456789</strong>
+                </div>
+            </div>
+
             <div class="booking-actions justify-content-center">
                 <a class="btn btn-outline-primary" th:href="@{/booking/history}">
                     View my bookings

@@ -97,6 +97,17 @@ public class BookingServiceImpl implements com.hsf302.trainoffice.service.Bookin
 
     @Override
     @Transactional(readOnly = true)
+    public List<Booking> findGuestBookings(String email, String phone) {
+        if (email == null || email.isBlank() || phone == null || phone.isBlank()) {
+            throw new IllegalArgumentException("Email and phone are required");
+        }
+        return bookingRepository.findByUserIsNullAndBookerEmailIgnoreCaseAndBookerPhoneOrderByBookingDateDesc(
+                email.trim(),
+                phone.trim());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<Passenger> getPassengersForBooking(Long bookingId) {
         return passengerRepository.findByBooking_BookingIdOrderByPassengerIdAsc(bookingId);
     }
@@ -110,6 +121,26 @@ public class BookingServiceImpl implements com.hsf302.trainoffice.service.Bookin
         Booking booking = getBookingById(bookingId);
         if (booking.getUser() == null || !booking.getUser().getUserId().equals(user.getUserId())) {
             throw new IllegalArgumentException("Booking does not belong to current user");
+        }
+        if (booking.getBookingStatus() != BookingStatus.PENDING_PAYMENT) {
+            throw new IllegalArgumentException("Only pending payment bookings can be cancelled");
+        }
+
+        booking.setBookingStatus(BookingStatus.CANCELLED);
+        List<Ticket> tickets = ticketRepository.findByBooking_BookingIdOrderByTicketIdAsc(bookingId);
+        for (Ticket ticket : tickets) {
+            ticket.setTicketStatus(TicketStatus.CANCELLED);
+        }
+        ticketRepository.saveAll(tickets);
+        return bookingRepository.save(booking);
+    }
+
+    @Override
+    @Transactional
+    public Booking cancelPendingGuestBooking(Long bookingId) {
+        Booking booking = getBookingById(bookingId);
+        if (booking.getUser() != null) {
+            throw new IllegalArgumentException("Booking does not belong to a guest");
         }
         if (booking.getBookingStatus() != BookingStatus.PENDING_PAYMENT) {
             throw new IllegalArgumentException("Only pending payment bookings can be cancelled");

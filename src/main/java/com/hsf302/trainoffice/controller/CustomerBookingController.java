@@ -17,11 +17,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 public class CustomerBookingController {
     private static final String BOOKING_SESSION_KEY = "bookingSession";
+    private static final String GUEST_BOOKING_IDS_SESSION_KEY = "verifiedGuestBookingIds";
 
     private final TrainTripService trainTripService;
     private final StationService stationService;
@@ -200,8 +204,40 @@ public class CustomerBookingController {
             model.addAttribute("recentBookings", bookingService.getBookingsForUser(user));
             return "booking/history";
         }
-        redirectAttributes.addFlashAttribute("error", "Please log in to view booking history");
-        return "redirect:/login";
+        return "redirect:/booking/lookup";
+    }
+
+    @GetMapping("/booking/lookup")
+    public String lookup() {
+        return "booking/lookup";
+    }
+
+    @PostMapping("/booking/lookup")
+    public String findGuestBookings(@RequestParam String email,
+                                    @RequestParam String phone,
+                                    HttpSession session,
+                                    Model model) {
+        session.removeAttribute(GUEST_BOOKING_IDS_SESSION_KEY);
+        try {
+            List<Booking> bookings = bookingService.findGuestBookings(email, phone);
+            if (bookings.isEmpty()) {
+                model.addAttribute("error", "No guest bookings found for this email and phone");
+                model.addAttribute("email", email);
+                model.addAttribute("phone", phone);
+                return "booking/lookup";
+            }
+            session.setAttribute(GUEST_BOOKING_IDS_SESSION_KEY, bookings.stream()
+                    .map(Booking::getBookingId)
+                    .collect(Collectors.toCollection(HashSet::new)));
+            model.addAttribute("recentBookings", bookings);
+            model.addAttribute("guestMode", true);
+            return "booking/history";
+        } catch (IllegalArgumentException ex) {
+            model.addAttribute("error", ex.getMessage());
+            model.addAttribute("email", email);
+            model.addAttribute("phone", phone);
+            return "booking/lookup";
+        }
     }
 
     @GetMapping("/booking/{bookingId}")
@@ -249,6 +285,49 @@ public class CustomerBookingController {
         return "redirect:/booking/" + bookingId;
     }
 
+    @GetMapping("/booking/guest/{bookingId}")
+    public String guestDetail(@PathVariable Long bookingId,
+                              HttpSession session,
+                              Model model,
+                              RedirectAttributes redirectAttributes) {
+        if (!isVerifiedGuestBooking(session, bookingId)) {
+            redirectAttributes.addFlashAttribute("error", "Please verify your guest booking first");
+            return "redirect:/booking/lookup";
+        }
+        try {
+            Booking booking = bookingService.getBookingById(bookingId);
+            if (booking.getUser() != null) {
+                redirectAttributes.addFlashAttribute("error", "Booking does not belong to a guest");
+                return "redirect:/booking/lookup";
+            }
+            model.addAttribute("booking", booking);
+            model.addAttribute("passengers", bookingService.getPassengersForBooking(bookingId));
+            model.addAttribute("tickets", ticketService.getTicketsByBookingId(bookingId));
+            model.addAttribute("guestMode", true);
+            return "booking/detail";
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("error", ex.getMessage());
+            return "redirect:/booking/lookup";
+        }
+    }
+
+    @PostMapping("/booking/guest/{bookingId}/cancel")
+    public String guestCancel(@PathVariable Long bookingId,
+                              HttpSession session,
+                              RedirectAttributes redirectAttributes) {
+        if (!isVerifiedGuestBooking(session, bookingId)) {
+            redirectAttributes.addFlashAttribute("error", "Please verify your guest booking first");
+            return "redirect:/booking/lookup";
+        }
+        try {
+            bookingService.cancelPendingGuestBooking(bookingId);
+            redirectAttributes.addFlashAttribute("successMessage", "Booking cancelled successfully");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/booking/guest/" + bookingId;
+    }
+
     private String showTripResults(TripSearchForm form, BindingResult bindingResult, Model model) {
         model.addAttribute("stations", stationService.getAllStations());
         if (bindingResult.hasErrors()) {
@@ -282,6 +361,11 @@ public class CustomerBookingController {
     private User currentUser(HttpSession session) {
         Object sessionUser = session.getAttribute("currentUser");
         return sessionUser instanceof User user ? user : null;
+    }
+
+    private boolean isVerifiedGuestBooking(HttpSession session, Long bookingId) {
+        Object value = session.getAttribute(GUEST_BOOKING_IDS_SESSION_KEY);
+        return value instanceof Set<?> bookingIds && bookingIds.contains(bookingId);
     }
 
     private String redirectToSeatSelection(SeatSelectionForm form) {
