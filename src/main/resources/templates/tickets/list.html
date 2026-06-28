@@ -1,33 +1,56 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/customer-layout :: layout('Vé của tôi', ~{::section}, 'tickets')}">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: layout('My Tickets', ~{::section}, 'tickets')}">
 <section class="container customer-page">
     <div class="page-hero">
-        <span class="page-eyebrow">Vé tàu</span>
-        <h1 class="page-title">Danh sách vé</h1>
-        <p class="page-subtitle">Xem vé đã tạo, trạng thái và mở chi tiết để in vé khi cần.</p>
+        <span class="page-eyebrow">Train tickets</span>
+        <h1 class="page-title">Ticket list</h1>
+        <p class="page-subtitle">View tickets created from your bookings and open detail or print pages.</p>
     </div>
+
+    <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
 
     <div class="railjet-card card">
         <div class="card-body table-responsive p-0">
             <table class="table table-hover mb-0">
                 <thead>
                 <tr>
-                    <th>Mã vé</th>
-                    <th>Hành khách</th>
-                    <th>Ghế</th>
-                    <th>Giá</th>
-                    <th>Trạng thái</th>
-                    <th class="text-end">Thao tác</th>
+                    <th>Ticket code</th>
+                    <th>Booking</th>
+                    <th>Passenger</th>
+                    <th>Route</th>
+                    <th>Seat</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th class="text-end">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="ticket : ${tickets}">
                     <td class="fw-bold" th:text="${ticket.ticketCode}">RJ-T001</td>
-                    <td th:text="${ticket.passenger}">Nguyễn Văn A</td>
-                    <td th:text="${ticket.seat}">A1</td>
-                    <td th:text="${ticket.price}">450,000 VND</td>
-                    <td><span th:replace="~{fragments/status-badge :: statusBadge(${ticket.status})}"></span></td>
-                    <td class="text-end"><a class="btn btn-sm btn-primary" th:href="@{/tickets/1}">Chi tiết</a></td>
+                    <td th:text="${ticket.booking != null ? ticket.booking.bookingNumber : '-'}">RJ0001</td>
+                    <td th:text="${ticket.passenger != null ? ticket.passenger.fullName : '-'}">Passenger</td>
+                    <td>
+                        <span th:text="${ticket.booking != null and ticket.booking.departureStation != null ? ticket.booking.departureStation.stationName : '-'}">Ha Noi</span>
+                        <span> -> </span>
+                        <span th:text="${ticket.booking != null and ticket.booking.arrivalStation != null ? ticket.booking.arrivalStation.stationName : '-'}">Sai Gon</span>
+                    </td>
+                    <td>
+                        <span th:text="${ticket.seat != null ? ticket.seat.seatNumber : '-'}">A1</span>
+                        <small class="text-muted d-block"
+                               th:text="${ticket.seat != null and ticket.seat.coach != null ? 'Coach ' + ticket.seat.coach.coachNumber : ''}">
+                            Coach 1
+                        </small>
+                    </td>
+                    <td th:text="${ticket.ticketPrice}">0</td>
+                    <td><span class="rail-badge" th:text="${ticket.ticketStatus}">BOOKED</span></td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-primary" th:href="@{/tickets/{id}(id=${ticket.ticketId})}">Detail</a>
+                        <a class="btn btn-sm btn-primary" th:href="@{/tickets/{id}/print(id=${ticket.ticketId})}">Print</a>
+                    </td>
+                </tr>
+                <tr th:if="${tickets == null or #lists.isEmpty(tickets)}">
+                    <td colspan="8" class="text-center text-muted py-4">No tickets yet.</td>
                 </tr>
                 </tbody>
             </table>

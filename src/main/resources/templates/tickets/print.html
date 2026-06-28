@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>In vé | RailJet</title>
+    <title>Print Ticket | RailJet</title>
     <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
     <style>
         :root{--rail-navy:#071a33;--rail-sky:#2fb8f6;--rail-border:#d9e3ef}
@@ -13,28 +13,56 @@
         .ticket-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
         .ticket-cell{border:1px solid var(--rail-border);border-radius:8px;padding:16px}
         .ticket-cell span{display:block;color:#657287;font-size:13px}
-        .ticket-cell strong{display:block;margin-top:4px;font-size:18px}
+        .ticket-cell strong{display:block;margin-top:4px;font-size:18px;word-break:break-word}
         @media print{body{background:#fff}.d-print-none{display:none!important}.ticket-card{box-shadow:none}}
         @media(max-width:640px){.ticket-grid{grid-template-columns:1fr}}
     </style>
 </head>
 <body>
 <main class="ticket-print">
-    <button class="btn btn-primary d-print-none mb-3" onclick="window.print()">
-        In vé
-    </button>
+    <div class="d-print-none mb-3 d-flex gap-2">
+        <button class="btn btn-primary" onclick="window.print()">Print Ticket</button>
+        <a class="btn btn-outline-secondary" th:href="@{/tickets/{id}(id=${ticket.ticketId})}">Back</a>
+    </div>
     <div class="ticket-card">
         <div class="d-flex justify-content-between align-items-start gap-3">
             <div>
                 <h1 class="fw-bold mb-1">RailJet Ticket</h1>
-                <p class="text-muted mb-0">Mã vé <strong>RJ-T001</strong></p>
+                <p class="text-muted mb-0">
+                    Ticket code <strong th:text="${ticket.ticketCode}">RJ-T001</strong>
+                </p>
             </div>
-            <strong>CONFIRMED</strong>
+            <strong th:text="${ticket.ticketStatus}">BOOKED</strong>
         </div>
         <div class="ticket-grid">
-            <div class="ticket-cell"><span>Hành khách</span><strong>Nguyễn Văn A</strong></div>
-            <div class="ticket-cell"><span>Tuyến</span><strong>Hà Nội - Sài Gòn</strong></div>
-            <div class="ticket-cell"><span>Ghế</span><strong>A1</strong></div>
+            <div class="ticket-cell">
+                <span>Passenger</span>
+                <strong th:text="${ticket.passenger != null ? ticket.passenger.fullName : '-'}">Passenger</strong>
+            </div>
+            <div class="ticket-cell">
+                <span>Route</span>
+                <strong>
+                    <span th:text="${ticket.booking != null and ticket.booking.departureStation != null ? ticket.booking.departureStation.stationName : '-'}">Ha Noi</span>
+                    <span> - </span>
+                    <span th:text="${ticket.booking != null and ticket.booking.arrivalStation != null ? ticket.booking.arrivalStation.stationName : '-'}">Sai Gon</span>
+                </strong>
+            </div>
+            <div class="ticket-cell">
+                <span>Seat</span>
+                <strong th:text="${ticket.seat != null ? ticket.seat.seatNumber : '-'}">A1</strong>
+            </div>
+            <div class="ticket-cell">
+                <span>Coach</span>
+                <strong th:text="${ticket.seat != null and ticket.seat.coach != null ? ticket.seat.coach.coachNumber : '-'}">1</strong>
+            </div>
+            <div class="ticket-cell">
+                <span>Train</span>
+                <strong th:text="${ticket.trainTrip != null and ticket.trainTrip.train != null ? ticket.trainTrip.train.trainName : '-'}">SE1</strong>
+            </div>
+            <div class="ticket-cell">
+                <span>Departure</span>
+                <strong th:text="${ticket.trainTrip != null ? ticket.trainTrip.departureTime : '-'}">2026-06-28T08:00</strong>
+            </div>
         </div>
     </div>
 </main>

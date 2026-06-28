@@ -1,46 +1,59 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Train Trips</title>
-</head>
-<body>
-<h1>Train Trips</h1>
-<p><a th:href="@{/admin/trips/create}">Create trip</a></p>
-<p th:if="${success}" th:text="${success}"></p>
-<p th:if="${error}" th:text="${error}"></p>
-<table>
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Train</th>
-        <th>Route</th>
-        <th>Departure</th>
-        <th>Arrival</th>
-        <th>Base price</th>
-        <th>Status</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="trip : ${trips}">
-        <td th:text="${trip.tripId}"></td>
-        <td th:text="${trip.train != null ? trip.train.trainName : ''}"></td>
-        <td th:text="${trip.route != null ? trip.route.routeName : ''}"></td>
-        <td th:text="${trip.departureTime}"></td>
-        <td th:text="${trip.arrivalTime}"></td>
-        <td th:text="${trip.basePrice}"></td>
-        <td th:text="${trip.status}"></td>
-        <td>
-            <a th:href="@{/admin/trips/{id}(id=${trip.tripId})}">Detail</a>
-            <a th:href="@{/admin/trips/{id}/edit(id=${trip.tripId})}">Edit</a>
-            <a th:href="@{/admin/trips/{id}/stations(id=${trip.tripId})}">Stations</a>
-            <form th:action="@{/admin/trips/{id}/cancel(id=${trip.tripId})}" method="post" style="display:inline">
-                <button type="submit">Cancel</button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
-</body>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/admin-layout :: layout('Train Trips', ~{::section}, 'trips')}">
+<section>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2 class="mb-1">Train Trips</h2>
+            <div class="text-muted">Manage scheduled train trips and their station stops.</div>
+        </div>
+        <a class="btn btn-primary" th:href="@{/admin/trips/create}">
+            <i class="fas fa-plus mr-1"></i>Create Trip
+        </a>
+    </div>
+
+    <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
+    <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+    <div class="card">
+        <div class="card-body table-responsive p-0">
+            <table class="table table-hover mb-0">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Train</th>
+                    <th>Route</th>
+                    <th>Departure</th>
+                    <th>Arrival</th>
+                    <th>Base price</th>
+                    <th>Status</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="trip : ${trips}">
+                    <td th:text="${trip.tripId}">1</td>
+                    <td th:text="${trip.train != null ? trip.train.trainName : '-'}">SE1</td>
+                    <td th:text="${trip.route != null ? trip.route.routeName : '-'}">North South</td>
+                    <td th:text="${trip.departureTime}">2026-06-28T08:00</td>
+                    <td th:text="${trip.arrivalTime}">2026-06-28T18:00</td>
+                    <td th:text="${trip.basePrice}">0</td>
+                    <td><span class="badge badge-info" th:text="${trip.status}">SCHEDULED</span></td>
+                    <td class="text-right">
+                        <a class="btn btn-sm btn-info" th:href="@{/admin/trips/{id}(id=${trip.tripId})}">Detail</a>
+                        <a class="btn btn-sm btn-warning" th:href="@{/admin/trips/{id}/edit(id=${trip.tripId})}">Edit</a>
+                        <a class="btn btn-sm btn-primary" th:href="@{/admin/trips/{id}/stations(id=${trip.tripId})}">Stations</a>
+                        <form th:action="@{/admin/trips/{id}/cancel(id=${trip.tripId})}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Cancel this trip?')">Cancel</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${trips == null or #lists.isEmpty(trips)}">
+                    <td colspan="8" class="text-center text-muted py-4">No train trips found.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
 </html>

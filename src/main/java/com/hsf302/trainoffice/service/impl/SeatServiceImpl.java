@@ -29,13 +29,30 @@ public class SeatServiceImpl implements SeatService {
 
     @Override
     public Seat saveSeat(Seat seat) {
+        if (seat.getCoach() == null || seat.getCoach().getCoachId() == null) {
+            throw new IllegalStateException("Coach is required for seat");
+        }
+        if (seat.getSeatNumber() == null || seat.getSeatNumber().isBlank()) {
+            throw new IllegalStateException("Seat number is required");
+        }
+
+        Long coachId = seat.getCoach().getCoachId();
+        String seatNumber = seat.getSeatNumber();
+
         if (seat.getSeatId() == null) {
-            if (seatRepository.existsByCoachAndSeatNumber(seat.getCoach(), seat.getSeatNumber())) {
-                throw new IllegalStateException(
-                        "Số ghế '" + seat.getSeatNumber()
-                                + "' đã tồn tại trên toa '"
-                                + seat.getCoach().getCoachNumber() + "'."
-                );
+            if (seatRepository.existsByCoach_CoachIdAndSeatNumber(coachId, seatNumber)) {
+                throw new IllegalStateException("Seat number already exists in this coach");
+            }
+        } else {
+            Optional<Seat> existing = seatRepository.findById(seat.getSeatId());
+            if (existing.isPresent()) {
+                Seat oldSeat = existing.get();
+                boolean changedCoach = !oldSeat.getCoach().getCoachId().equals(coachId);
+                boolean changedNumber = !oldSeat.getSeatNumber().equals(seatNumber);
+                if ((changedCoach || changedNumber)
+                        && seatRepository.existsByCoach_CoachIdAndSeatNumber(coachId, seatNumber)) {
+                    throw new IllegalStateException("Seat number already exists in this coach");
+                }
             }
         }
         return seatRepository.save(seat);

@@ -24,24 +24,20 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @EntityGraph(attributePaths = {
             "trainTrip",
+            "trainTrip.train",
+            "trainTrip.route",
             "departureStation",
-            "arrivalStation",
-            "tickets",
-            "payments"
+            "arrivalStation"
     })
     List<Booking> findByUser_UserIdOrderByBookingDateDesc(Long userId);
 
     @EntityGraph(attributePaths = {
             "user",
             "trainTrip",
+            "trainTrip.train",
+            "trainTrip.route",
             "departureStation",
-            "arrivalStation",
-            "passengers",
-            "tickets",
-            "tickets.passenger",
-            "tickets.seat",
-            "tickets.seat.coach",
-            "payments"
+            "arrivalStation"
     })
-    Optional<Booking> findWithDetailsByBookingId(Long bookingId);
+    Optional<Booking> findBasicDetailsByBookingId(Long bookingId);
 }

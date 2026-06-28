@@ -1,27 +1,28 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layouts/customer-layout :: layout('Lịch sử đặt chỗ', ~{::section}, 'history')}">
+      th:replace="~{layouts/customer-layout :: layout('Booking History', ~{::section}, 'history')}">
 <section class="booking-shell booking-section">
     <div class="page-hero compact-hero">
-        <span class="page-eyebrow">Đặt chỗ của tôi</span>
-        <h1 class="page-title">Lịch sử booking</h1>
-        <p class="page-subtitle">Theo dõi các booking đã tạo, trạng thái thanh toán và thông tin hành trình.</p>
+        <span class="page-eyebrow">My bookings</span>
+        <h1 class="page-title">Booking history</h1>
+        <p class="page-subtitle">Track your booking code, route segment, trip date, status, and total amount.</p>
     </div>
 
     <div class="booking-timeline" th:if="${recentBookings != null and !#lists.isEmpty(recentBookings)}">
         <article class="booking-history-card" th:each="booking : ${recentBookings}">
             <div>
-                <span class="summary-label">Mã booking</span>
+                <span class="summary-label">Booking code</span>
                 <strong th:text="${booking.bookingNumber}">RJ0001</strong>
+                <small class="text-muted d-block mt-1" th:text="${booking.bookingDate}">2026-06-28T08:00</small>
             </div>
             <div>
                 <h2 class="h5 fw-bold mb-1">
-                    <span th:text="${booking.departureStation != null ? booking.departureStation.stationName : '-'}">Hà Nội</span>
-                    <span> → </span>
-                    <span th:text="${booking.arrivalStation != null ? booking.arrivalStation.stationName : '-'}">Đà Nẵng</span>
+                    <span th:text="${booking.departureStation != null ? booking.departureStation.stationName : '-'}">Ha Noi</span>
+                    <span> -> </span>
+                    <span th:text="${booking.arrivalStation != null ? booking.arrivalStation.stationName : '-'}">Sai Gon</span>
                 </h2>
                 <p class="text-muted mb-0">
-                    <span th:text="${booking.bookerName}">Nguyễn Văn A</span>
+                    <span th:text="${booking.trainTrip != null and booking.trainTrip.train != null ? booking.trainTrip.train.trainName : 'Train trip'}">SE1</span>
                     <span> · </span>
                     <span th:text="${booking.totalAmount}">0</span>
                 </p>
@@ -29,7 +30,9 @@
             <div class="text-lg-end">
                 <span class="rail-badge status-pending" th:text="${booking.bookingStatus}">PENDING_PAYMENT</span>
                 <div class="mt-3">
-                    <a class="btn btn-sm btn-primary" th:href="@{/booking/{bookingId}(bookingId=${booking.bookingId})}">Chi tiết</a>
+                    <a class="btn btn-sm btn-primary" th:href="@{/booking/{bookingId}(bookingId=${booking.bookingId})}">
+                        Detail
+                    </a>
                 </div>
             </div>
         </article>
@@ -37,9 +40,9 @@
 
     <div class="empty-state" th:if="${recentBookings == null or #lists.isEmpty(recentBookings)}">
         <i class="bi bi-calendar2-x"></i>
-        <h2>Chưa có booking nào</h2>
-        <p>Các booking của bạn sẽ hiển thị tại đây sau khi được tạo.</p>
-        <a class="btn btn-primary" th:href="@{/booking/search}">Tìm chuyến tàu</a>
+        <h2>No bookings yet</h2>
+        <p>Your bookings will appear here after they are created.</p>
+        <a class="btn btn-primary" th:href="@{/booking/search}">Search trip</a>
     </div>
 </section>
 </html>

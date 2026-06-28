@@ -13,6 +13,8 @@ import java.util.Optional;
 public interface PassengerRepository extends JpaRepository<Passenger, Long> {
     Optional<Passenger> findFirstByBooking_BookingId(Long bookingId);
 
+    List<Passenger> findByBooking_BookingIdOrderByPassengerIdAsc(Long bookingId);
+
     @Query("""
             select p from Passenger p
             left join fetch p.booking

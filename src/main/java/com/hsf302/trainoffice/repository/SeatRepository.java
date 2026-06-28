@@ -11,6 +11,8 @@ import java.util.List;
 public interface SeatRepository extends JpaRepository<Seat, Long> {
     boolean existsByCoachAndSeatNumber(Coach coach, String seatNumber);
 
+    boolean existsByCoach_CoachIdAndSeatNumber(Long coachId, String seatNumber);
+
     @Query("""
             select s
             from Seat s

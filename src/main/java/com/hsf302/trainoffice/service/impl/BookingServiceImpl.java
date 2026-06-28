@@ -82,7 +82,7 @@ public class BookingServiceImpl implements com.hsf302.trainoffice.service.Bookin
     @Override
     @Transactional(readOnly = true)
     public Booking getBookingById(Long bookingId) {
-        return bookingRepository.findWithDetailsByBookingId(bookingId)
+        return bookingRepository.findBasicDetailsByBookingId(bookingId)
                 .orElseThrow(() -> new IllegalArgumentException("Booking does not exist"));
     }
 
@@ -93,6 +93,35 @@ public class BookingServiceImpl implements com.hsf302.trainoffice.service.Bookin
             throw new IllegalArgumentException("User is required");
         }
         return bookingRepository.findByUser_UserIdOrderByBookingDateDesc(user.getUserId());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Passenger> getPassengersForBooking(Long bookingId) {
+        return passengerRepository.findByBooking_BookingIdOrderByPassengerIdAsc(bookingId);
+    }
+
+    @Override
+    @Transactional
+    public Booking cancelPendingBooking(Long bookingId, User user) {
+        if (user == null || user.getUserId() == null) {
+            throw new IllegalArgumentException("User is required");
+        }
+        Booking booking = getBookingById(bookingId);
+        if (booking.getUser() == null || !booking.getUser().getUserId().equals(user.getUserId())) {
+            throw new IllegalArgumentException("Booking does not belong to current user");
+        }
+        if (booking.getBookingStatus() != BookingStatus.PENDING_PAYMENT) {
+            throw new IllegalArgumentException("Only pending payment bookings can be cancelled");
+        }
+
+        booking.setBookingStatus(BookingStatus.CANCELLED);
+        List<Ticket> tickets = ticketRepository.findByBooking_BookingIdOrderByTicketIdAsc(bookingId);
+        for (Ticket ticket : tickets) {
+            ticket.setTicketStatus(TicketStatus.CANCELLED);
+        }
+        ticketRepository.saveAll(tickets);
+        return bookingRepository.save(booking);
     }
 
     private Booking createBooking(CreateBookingRequest request, User user) {

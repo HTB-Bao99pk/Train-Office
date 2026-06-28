@@ -29,6 +29,33 @@ public class CoachServiceImpl implements CoachService {
 
     @Override
     public Coach saveCoach(Coach coach) {
+        if (coach.getTrain() == null || coach.getTrain().getTrainId() == null) {
+            throw new IllegalStateException("Train is required for coach");
+        }
+
+        Long trainId = coach.getTrain().getTrainId();
+        String coachNumber = coach.getCoachNumber();
+
+        if (coachNumber == null || coachNumber.isBlank()) {
+            throw new IllegalStateException("Coach number is required");
+        }
+
+        if (coach.getCoachId() == null) {
+            if (coachRepository.existsByTrain_TrainIdAndCoachNumber(trainId, coachNumber)) {
+                throw new IllegalStateException("Coach number already exists in this train");
+            }
+        } else {
+            Optional<Coach> existing = coachRepository.findById(coach.getCoachId());
+            if (existing.isPresent()) {
+                Coach oldCoach = existing.get();
+                boolean changedTrain = !oldCoach.getTrain().getTrainId().equals(trainId);
+                boolean changedNumber = !oldCoach.getCoachNumber().equals(coachNumber);
+                if ((changedTrain || changedNumber)
+                        && coachRepository.existsByTrain_TrainIdAndCoachNumber(trainId, coachNumber)) {
+                    throw new IllegalStateException("Coach number already exists in this train");
+                }
+            }
+        }
         return coachRepository.save(coach);
     }
 

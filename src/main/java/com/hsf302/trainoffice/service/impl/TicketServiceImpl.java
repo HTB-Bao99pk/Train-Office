@@ -4,6 +4,7 @@ import com.hsf302.trainoffice.common.enums.TicketStatus;
 import com.hsf302.trainoffice.entity.Seat;
 import com.hsf302.trainoffice.entity.Ticket;
 import com.hsf302.trainoffice.entity.TrainTrip;
+import com.hsf302.trainoffice.entity.User;
 import com.hsf302.trainoffice.repository.SeatRepository;
 import com.hsf302.trainoffice.repository.TicketRepository;
 import com.hsf302.trainoffice.repository.TrainTripRepository;
@@ -75,5 +76,21 @@ public class TicketServiceImpl implements TicketService {
     @Transactional(readOnly = true)
     public Optional<Ticket> getTicketById(Long ticketId) {
         return ticketRepository.findById(ticketId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Ticket> getTicketsForUser(User user) {
+        if (user == null || user.getUserId() == null) {
+            throw new IllegalArgumentException("User is required");
+        }
+        return ticketRepository.findByBooking_User_UserIdOrderByTicketIdAsc(user.getUserId());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Ticket getTicketDetails(Long ticketId) {
+        return ticketRepository.findWithDetailsByTicketId(ticketId)
+                .orElseThrow(() -> new IllegalArgumentException("Ticket does not exist"));
     }
 }

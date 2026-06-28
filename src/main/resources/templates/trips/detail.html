@@ -1,22 +1,52 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Train Trip Detail</title>
-</head>
-<body>
-<h1>Train Trip Detail</h1>
-<dl th:object="${trip}">
-    <dt>ID</dt><dd th:text="*{tripId}"></dd>
-    <dt>Train</dt><dd th:text="*{train != null ? train.trainName : ''}"></dd>
-    <dt>Route</dt><dd th:text="*{route != null ? route.routeName : ''}"></dd>
-    <dt>Departure</dt><dd th:text="*{departureTime}"></dd>
-    <dt>Arrival</dt><dd th:text="*{arrivalTime}"></dd>
-    <dt>Base price</dt><dd th:text="*{basePrice}"></dd>
-    <dt>Status</dt><dd th:text="*{status}"></dd>
-</dl>
-<a th:href="@{/admin/trips/{id}/edit(id=${trip.tripId})}">Edit</a>
-<a th:href="@{/admin/trips/{id}/stations(id=${trip.tripId})}">Stations</a>
-<a th:href="@{/admin/trips}">Back</a>
-</body>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/admin-layout :: layout('Train Trip Detail', ~{::section}, 'trips')}">
+<section>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2 class="mb-1">Train Trip Detail</h2>
+            <div class="text-muted">Review trip schedule and manage station stops.</div>
+        </div>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-secondary" th:href="@{/admin/trips}">Back</a>
+            <a class="btn btn-warning" th:href="@{/admin/trips/{id}/edit(id=${trip.tripId})}">Edit</a>
+            <a class="btn btn-primary" th:href="@{/admin/trips/{id}/stations(id=${trip.tripId})}">Stations</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="row" th:object="${trip}">
+                <div class="col-md-4 mb-3">
+                    <div class="text-muted small text-uppercase font-weight-bold">Trip ID</div>
+                    <div class="h5 mb-0" th:text="*{tripId}">1</div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="text-muted small text-uppercase font-weight-bold">Train</div>
+                    <div class="h5 mb-0" th:text="*{train != null ? train.trainName : '-'}">SE1</div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="text-muted small text-uppercase font-weight-bold">Route</div>
+                    <div class="h5 mb-0" th:text="*{route != null ? route.routeName : '-'}">North South</div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="text-muted small text-uppercase font-weight-bold">Departure</div>
+                    <div th:text="*{departureTime}">2026-06-28T08:00</div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="text-muted small text-uppercase font-weight-bold">Arrival</div>
+                    <div th:text="*{arrivalTime}">2026-06-28T18:00</div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="text-muted small text-uppercase font-weight-bold">Base price</div>
+                    <div th:text="*{basePrice}">0</div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="text-muted small text-uppercase font-weight-bold">Status</div>
+                    <span class="badge badge-info" th:text="*{status}">SCHEDULED</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 </html>

@@ -4,4 +4,6 @@ import com.hsf302.trainoffice.entity.Coach;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CoachRepository extends JpaRepository<Coach, Long> {
+
+    boolean existsByTrain_TrainIdAndCoachNumber(Long trainId, String coachNumber);
 }

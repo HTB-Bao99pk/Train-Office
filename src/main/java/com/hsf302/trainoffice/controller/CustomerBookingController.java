@@ -12,6 +12,7 @@ import com.hsf302.trainoffice.entity.User;
 import com.hsf302.trainoffice.service.BookingFlowService;
 import com.hsf302.trainoffice.service.BookingService;
 import com.hsf302.trainoffice.service.StationService;
+import com.hsf302.trainoffice.service.TicketService;
 import com.hsf302.trainoffice.service.TrainTripService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -35,15 +36,18 @@ public class CustomerBookingController {
     private final StationService stationService;
     private final BookingService bookingService;
     private final BookingFlowService bookingFlowService;
+    private final TicketService ticketService;
 
     public CustomerBookingController(TrainTripService trainTripService,
                                      StationService stationService,
                                      BookingService bookingService,
-                                     BookingFlowService bookingFlowService) {
+                                     BookingFlowService bookingFlowService,
+                                     TicketService ticketService) {
         this.trainTripService = trainTripService;
         this.stationService = stationService;
         this.bookingService = bookingService;
         this.bookingFlowService = bookingFlowService;
+        this.ticketService = ticketService;
     }
 
     @GetMapping("/booking/search")
@@ -211,19 +215,42 @@ public class CustomerBookingController {
                          Model model,
                          RedirectAttributes redirectAttributes) {
         Object sessionUser = session.getAttribute("currentUser");
-        if (!(sessionUser instanceof User)) {
+        if (!(sessionUser instanceof User user)) {
             redirectAttributes.addFlashAttribute("error", "Please log in to view booking detail");
             return "redirect:/booking/search";
         }
         try {
             Booking booking = bookingService.getBookingById(bookingId);
+            if (booking.getUser() == null || !booking.getUser().getUserId().equals(user.getUserId())) {
+                redirectAttributes.addFlashAttribute("error", "Booking does not belong to current user");
+                return "redirect:/booking/history";
+            }
             model.addAttribute("booking", booking);
-            model.addAttribute("tickets", booking.getTickets());
+            model.addAttribute("passengers", bookingService.getPassengersForBooking(bookingId));
+            model.addAttribute("tickets", ticketService.getTicketsByBookingId(bookingId));
             return "booking/detail";
         } catch (IllegalArgumentException ex) {
             redirectAttributes.addFlashAttribute("error", ex.getMessage());
             return "redirect:/booking/history";
         }
+    }
+
+    @PostMapping("/booking/{bookingId}/cancel")
+    public String cancel(@PathVariable Long bookingId,
+                         HttpSession session,
+                         RedirectAttributes redirectAttributes) {
+        Object sessionUser = session.getAttribute("currentUser");
+        if (!(sessionUser instanceof User user)) {
+            redirectAttributes.addFlashAttribute("error", "Please log in to cancel booking");
+            return "redirect:/login";
+        }
+        try {
+            bookingService.cancelPendingBooking(bookingId, user);
+            redirectAttributes.addFlashAttribute("successMessage", "Booking cancelled successfully");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/booking/" + bookingId;
     }
 
     private String showTripResults(TripSearchForm form, BindingResult bindingResult, Model model) {

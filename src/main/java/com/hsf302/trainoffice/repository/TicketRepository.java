@@ -2,12 +2,14 @@ package com.hsf302.trainoffice.repository;
 
 import com.hsf302.trainoffice.common.enums.TicketStatus;
 import com.hsf302.trainoffice.entity.Ticket;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
     @Query("""
@@ -50,5 +52,41 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
                                   @Param("arrivalOrder") Integer arrivalOrder,
                                   @Param("activeStatuses") Collection<TicketStatus> activeStatuses);
 
+    @EntityGraph(attributePaths = {
+            "passenger",
+            "seat",
+            "seat.coach",
+            "trainTrip",
+            "trainTrip.train"
+    })
     List<Ticket> findByBooking_BookingIdOrderByTicketIdAsc(Long bookingId);
+
+    @EntityGraph(attributePaths = {
+            "booking",
+            "booking.trainTrip",
+            "booking.trainTrip.train",
+            "booking.departureStation",
+            "booking.arrivalStation",
+            "trainTrip",
+            "trainTrip.train",
+            "passenger",
+            "seat",
+            "seat.coach"
+    })
+    List<Ticket> findByBooking_User_UserIdOrderByTicketIdAsc(Long userId);
+
+    @EntityGraph(attributePaths = {
+            "booking",
+            "booking.user",
+            "booking.trainTrip",
+            "booking.trainTrip.train",
+            "booking.departureStation",
+            "booking.arrivalStation",
+            "trainTrip",
+            "trainTrip.train",
+            "passenger",
+            "seat",
+            "seat.coach"
+    })
+    Optional<Ticket> findWithDetailsByTicketId(Long ticketId);
 }
