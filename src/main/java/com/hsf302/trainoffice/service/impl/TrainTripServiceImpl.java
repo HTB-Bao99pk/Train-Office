@@ -1,6 +1,7 @@
 package com.hsf302.trainoffice.service.impl;
 
 import com.hsf302.trainoffice.common.enums.TripStatus;
+import com.hsf302.trainoffice.dto.CustomerTripView;
 import com.hsf302.trainoffice.dto.TripSearchForm;
 import com.hsf302.trainoffice.dto.TripSearchResult;
 import com.hsf302.trainoffice.dto.TripSegment;
@@ -16,6 +17,7 @@ import com.hsf302.trainoffice.service.TrainTripService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -141,5 +143,51 @@ public class TrainTripServiceImpl implements TrainTripService {
                 .orElseThrow(() -> new IllegalArgumentException("Route does not exist"));
         trainTrip.setTrain(train);
         trainTrip.setRoute(route);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CustomerTripView> getCustomerTripsByDate(LocalDate departureDate) {
+        LocalDate date = departureDate != null ? departureDate : LocalDate.now();
+
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end = start.plusDays(1);
+
+        return trainTripRepository
+                .findByStatusAndDepartureTimeGreaterThanEqualAndDepartureTimeLessThanOrderByDepartureTimeAsc(
+                        TripStatus.SCHEDULED,
+                        start,
+                        end
+                )
+                .stream()
+                .map(this::toCustomerTripView)
+                .toList();
+    }
+    private CustomerTripView toCustomerTripView(TrainTrip trip) {
+        List<TripStation> stations = tripStationRepository
+                .findByTrainTrip_TripIdOrderByStationOrderAsc(trip.getTripId());
+
+        if (stations.size() < 2) {
+            return new CustomerTripView(
+                    trip,
+                    null,
+                    null,
+                    null,
+                    null,
+                    false
+            );
+        }
+
+        TripStation departureStop = stations.get(0);
+        TripStation arrivalStop = stations.get(stations.size() - 1);
+
+        return new CustomerTripView(
+                trip,
+                departureStop.getStation(),
+                arrivalStop.getStation(),
+                departureStop.getStation().getStationId(),
+                arrivalStop.getStation().getStationId(),
+                true
+        );
     }
 }

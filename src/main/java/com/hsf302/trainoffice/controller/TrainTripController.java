@@ -5,13 +5,13 @@ import com.hsf302.trainoffice.entity.TrainTrip;
 import com.hsf302.trainoffice.service.RouteService;
 import com.hsf302.trainoffice.service.TrainService;
 import com.hsf302.trainoffice.service.TrainTripService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.time.LocalDate;
 
 @Controller
 public class TrainTripController {
@@ -120,5 +120,18 @@ public class TrainTripController {
         model.addAttribute("trains", trainService.getAllTrains());
         model.addAttribute("routes", routeService.getAllRoutes());
         model.addAttribute("statuses", TripStatus.values());
+    }
+
+    @GetMapping("/booking/all-trips")
+    public String allTrips(@RequestParam(value = "departureDate", required = false)
+                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate departureDate,
+                           Model model) {
+
+        LocalDate selectedDate = departureDate != null ? departureDate : LocalDate.now();
+
+        model.addAttribute("selectedDate", selectedDate);
+        model.addAttribute("trips", trainTripService.getCustomerTripsByDate(selectedDate));
+
+        return "booking/all-trips";
     }
 }

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
+import org.springframework.validation.BindingResult;
 @Controller
 @RequestMapping("/admin/users")
 public class UserController {
@@ -41,8 +41,13 @@ public class UserController {
 
     @GetMapping({"/new", "/create"})
     public String showCreateForm(Model model) {
-        model.addAttribute("user", new User());
+        User user = new User();
+        user.setRole(UserRole.CUSTOMER);
+        user.setStatus(UserStatus.ACTIVE);
+
+        model.addAttribute("user", user);
         addFormOptions(model);
+
         return "users/form";
     }
 
@@ -75,8 +80,15 @@ public class UserController {
 
     @PostMapping("/save")
     public String saveUser(@Valid @ModelAttribute("user") User user,
+                           BindingResult bindingResult,
                            Model model,
                            RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            addFormOptions(model);
+            return "users/form";
+        }
+
         try {
             userService.saveUser(user);
             redirectAttributes.addFlashAttribute("successMessage", "User saved successfully.");
