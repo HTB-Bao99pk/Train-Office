@@ -4,8 +4,11 @@ import com.hsf302.trainoffice.common.enums.PaymentMethod;
 import com.hsf302.trainoffice.common.enums.PaymentStatus;
 import com.hsf302.trainoffice.entity.Booking;
 import com.hsf302.trainoffice.entity.Payment;
+import com.hsf302.trainoffice.entity.User;
 import com.hsf302.trainoffice.repository.BookingRepository;
 import com.hsf302.trainoffice.service.PaymentService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,22 +16,30 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/admin/payments")
 public class PaymentController {
 
     private final PaymentService paymentService;
     private final BookingRepository bookingRepository;
 
-    public PaymentController(PaymentService paymentService, BookingRepository bookingRepository) {
+    public PaymentController(PaymentService paymentService,
+                             BookingRepository bookingRepository) {
         this.paymentService = paymentService;
         this.bookingRepository = bookingRepository;
     }
 
-    @GetMapping
+    // =========================================================
+    // ADMIN PAYMENT MANAGEMENT
+    // URL: /admin/payments
+    // View folder: templates/payments/
+    // =========================================================
+
+    @GetMapping("/admin/payments")
     public String listPayments(
             Model model,
             @RequestParam(value = "status", required = false) PaymentStatus status,
@@ -52,13 +63,7 @@ public class PaymentController {
         return "payments/list";
     }
 
-    private void addCommonAttributes(Model model) {
-        model.addAttribute("allBookings", bookingRepository.findAll());
-        model.addAttribute("paymentMethods", PaymentMethod.values());
-        model.addAttribute("paymentStatuses", PaymentStatus.values());
-    }
-
-    @GetMapping("/new")
+    @GetMapping("/admin/payments/new")
     public String showCreateForm(
             Model model,
             @RequestParam(value = "bookingId", required = false) Long bookingId
@@ -75,7 +80,7 @@ public class PaymentController {
         return "payments/create";
     }
 
-    @GetMapping("/edit/{id}")
+    @GetMapping("/admin/payments/edit/{id}")
     public String showEditForm(
             @PathVariable("id") Long id,
             Model model,
@@ -94,7 +99,7 @@ public class PaymentController {
         return "payments/edit";
     }
 
-    @PostMapping("/save")
+    @PostMapping("/admin/payments/save")
     public String savePayment(
             @Valid @ModelAttribute("payment") Payment payment,
             BindingResult result,
@@ -137,7 +142,7 @@ public class PaymentController {
         }
     }
 
-    @GetMapping("/detail/{id}")
+    @GetMapping("/admin/payments/detail/{id}")
     public String showPaymentDetail(
             @PathVariable("id") Long id,
             Model model,
@@ -155,7 +160,7 @@ public class PaymentController {
         return "payments/detail";
     }
 
-    @GetMapping("/success/{id}")
+    @GetMapping("/admin/payments/success/{id}")
     public String markPaymentSuccess(
             @PathVariable("id") Long id,
             RedirectAttributes redirectAttributes
@@ -167,10 +172,10 @@ public class PaymentController {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi cập nhật payment: " + e.getMessage());
         }
 
-            return "redirect:/admin/payments";
+        return "redirect:/admin/payments";
     }
 
-    @GetMapping("/failed/{id}")
+    @GetMapping("/admin/payments/failed/{id}")
     public String markPaymentFailed(
             @PathVariable("id") Long id,
             RedirectAttributes redirectAttributes
@@ -182,10 +187,10 @@ public class PaymentController {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi cập nhật payment: " + e.getMessage());
         }
 
-            return "redirect:/admin/payments";
+        return "redirect:/admin/payments";
     }
 
-    @GetMapping("/delete/{id}")
+    @GetMapping("/admin/payments/delete/{id}")
     public String deletePayment(
             @PathVariable("id") Long id,
             RedirectAttributes redirectAttributes
@@ -198,5 +203,141 @@ public class PaymentController {
         }
 
         return "redirect:/admin/payments";
+    }
+
+    private void addCommonAttributes(Model model) {
+        model.addAttribute("allBookings", bookingRepository.findAll());
+        model.addAttribute("paymentMethods", PaymentMethod.values());
+        model.addAttribute("paymentStatuses", PaymentStatus.values());
+    }
+
+    // =========================================================
+    // CUSTOMER VNPAY CHECKOUT
+    // URL: /payments/bookings/{bookingId}
+    // View folder: templates/payments/
+    // =========================================================
+
+    @GetMapping("/payments/bookings/{bookingId}")
+    public String showCustomerCheckout(@PathVariable Long bookingId,
+                                       HttpSession session,
+                                       Model model,
+                                       RedirectAttributes redirectAttributes) {
+        try {
+            User user = currentUser(session);
+
+            if (user == null) {
+                redirectAttributes.addFlashAttribute("error", "Please log in before payment.");
+                return "redirect:/login";
+            }
+
+            Booking booking = paymentService.getBookingForPayment(bookingId);
+
+            if (!canAccessBooking(booking, user)) {
+                redirectAttributes.addFlashAttribute("errorMessage", "You cannot pay this booking.");
+                return "redirect:/booking/history";
+            }
+
+            model.addAttribute("booking", booking);
+
+            return "payments/checkout";
+
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+            return "redirect:/booking/history";
+        }
+    }
+
+    @PostMapping("/payments/bookings/{bookingId}")
+    public String startCustomerPayment(@PathVariable Long bookingId,
+                                       HttpServletRequest request,
+                                       HttpSession session,
+                                       RedirectAttributes redirectAttributes) {
+        try {
+            User user = currentUser(session);
+
+            if (user == null) {
+                redirectAttributes.addFlashAttribute("error", "Please log in before payment.");
+                return "redirect:/login";
+            }
+
+            Booking booking = paymentService.getBookingForPayment(bookingId);
+
+            if (!canAccessBooking(booking, user)) {
+                redirectAttributes.addFlashAttribute("errorMessage", "You cannot pay this booking.");
+                return "redirect:/booking/history";
+            }
+
+            String paymentUrl = paymentService.createVnpayPaymentUrl(
+                    bookingId,
+                    resolveClientIp(request)
+            );
+
+            return "redirect:" + paymentUrl;
+
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+            return "redirect:/payments/bookings/" + bookingId;
+        }
+    }
+
+    @GetMapping("/payments/vnpay-return")
+    public String handleVnpayReturn(HttpServletRequest request, Model model) {
+        Map<String, String> params = new HashMap<>();
+
+        request.getParameterMap().forEach((key, value) -> {
+            if (value != null && value.length > 0) {
+                params.put(key, value[0]);
+            }
+        });
+
+        try {
+            Payment payment = paymentService.handleVnpayReturn(params);
+
+            boolean success = payment.getPaymentStatus() == PaymentStatus.SUCCESS;
+
+            model.addAttribute("payment", payment);
+            model.addAttribute("booking", payment.getBooking());
+            model.addAttribute("success", success);
+            model.addAttribute("message", success
+                    ? "Thanh toán thành công."
+                    : "Thanh toán thất bại.");
+
+            return "payments/result";
+
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            model.addAttribute("success", false);
+            model.addAttribute("message", ex.getMessage());
+
+            return "payments/result";
+        }
+    }
+
+    private User currentUser(HttpSession session) {
+        Object sessionUser = session.getAttribute("currentUser");
+        return sessionUser instanceof User user ? user : null;
+    }
+
+    private boolean canAccessBooking(Booking booking, User user) {
+        if (booking == null || user == null) {
+            return false;
+        }
+
+        if (booking.getUser() == null) {
+            return false;
+        }
+
+        return booking.getUser().getUserId().equals(user.getUserId());
+    }
+
+    private String resolveClientIp(HttpServletRequest request) {
+        String forwarded = request.getHeader("X-Forwarded-For");
+
+        if (forwarded != null && !forwarded.isBlank()) {
+            return forwarded.split(",")[0].trim();
+        }
+
+        String remote = request.getRemoteAddr();
+
+        return remote == null || remote.isBlank() ? "127.0.0.1" : remote;
     }
 }

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: layout('VNPay Checkout', ~{::section}, 'booking')}">
+
+<section class="booking-shell booking-section">
+    <div class="page-hero compact-hero">
+        <span class="page-eyebrow">VNPay Sandbox</span>
+        <h1 class="page-title">Thanh toán vé tàu</h1>
+        <p class="page-subtitle">
+            Kiểm tra lại thông tin booking trước khi chuyển sang cổng thanh toán VNPay sandbox.
+        </p>
+    </div>
+
+    <div class="railjet-card card">
+        <div class="card-body p-4 p-lg-5">
+
+            <div class="alert alert-danger"
+                 th:if="${errorMessage}"
+                 th:text="${errorMessage}">
+            </div>
+
+            <div class="alert alert-success"
+                 th:if="${successMessage}"
+                 th:text="${successMessage}">
+            </div>
+
+            <div class="summary-box mb-4" th:if="${booking != null}">
+                <div class="summary-line">
+                    <span>Booking code</span>
+                    <strong th:text="${booking.bookingNumber}">RJ0001</strong>
+                </div>
+
+                <div class="summary-line">
+                    <span>Status</span>
+                    <strong th:text="${booking.bookingStatus}">PENDING_PAYMENT</strong>
+                </div>
+
+                <div class="summary-line">
+                    <span>Train</span>
+                    <strong th:text="${booking.trainTrip != null and booking.trainTrip.train != null ? booking.trainTrip.train.trainName : '-'}">
+                        SE1
+                    </strong>
+                </div>
+
+                <div class="summary-line">
+                    <span>Route</span>
+                    <strong>
+                        <span th:text="${booking.departureStation != null ? booking.departureStation.stationName : '-'}">
+                            Departure
+                        </span>
+                        <span> → </span>
+                        <span th:text="${booking.arrivalStation != null ? booking.arrivalStation.stationName : '-'}">
+                            Arrival
+                        </span>
+                    </strong>
+                </div>
+
+                <div class="summary-line">
+                    <span>Departure time</span>
+                    <strong th:text="${booking.trainTrip != null ? booking.trainTrip.departureTime : '-'}">
+                        2026-06-30T08:00
+                    </strong>
+                </div>
+
+                <div class="summary-line total">
+                    <span>Total amount</span>
+                    <strong th:if="${booking.totalAmount != null}"
+                            th:text="${#numbers.formatDecimal(booking.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">
+                        0 VND
+                    </strong>
+                    <strong th:if="${booking.totalAmount == null}">
+                        0 VND
+                    </strong>
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                Đây là môi trường thanh toán thử nghiệm <strong>VNPay Sandbox</strong>.
+                Sau khi thanh toán thành công, booking sẽ chuyển sang <strong>PAID</strong>,
+                vé sẽ chuyển sang <strong>CONFIRMED</strong>, và tiền sẽ được cộng vào ví admin.
+            </div>
+
+            <form th:if="${booking != null and booking.bookingStatus != null and booking.bookingStatus.name() == 'PENDING_PAYMENT'}"
+                  th:action="@{/payments/bookings/{id}(id=${booking.bookingId})}"
+                  method="post"
+                  class="mt-4">
+
+                <button type="submit" class="btn btn-primary btn-lg w-100">
+                    <i class="bi bi-credit-card me-2"></i>
+                    Thanh toán bằng VNPay Sandbox
+                </button>
+            </form>
+
+            <div th:if="${booking != null and booking.bookingStatus != null and booking.bookingStatus.name() != 'PENDING_PAYMENT'}"
+                 class="alert alert-warning mt-3">
+                Booking này không còn ở trạng thái chờ thanh toán.
+            </div>
+
+            <div class="booking-actions justify-content-center mt-4">
+                <a class="btn btn-outline-secondary"
+                   th:if="${booking != null}"
+                   th:href="@{/booking/{id}(id=${booking.bookingId})}">
+                    <i class="bi bi-arrow-left me-1"></i>
+                    Quay lại booking
+                </a>
+
+                <a class="btn btn-outline-secondary"
+                   th:if="${booking == null}"
+                   th:href="@{/booking/history}">
+                    <i class="bi bi-arrow-left me-1"></i>
+                    Quay lại
+                </a>
+
+                <a class="btn btn-outline-primary" th:href="@{/booking/history}">
+                    My bookings
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+</html>
