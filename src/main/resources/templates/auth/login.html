@@ -144,10 +144,20 @@
                 <h1 class="auth-title">Đăng nhập RailJet</h1>
                 <p class="auth-subtitle">Trở lại để tiếp tục đặt vé, xem lịch sử booking, và quản lý tài khoản.</p>
             </div>
+            <!-- Thông báo thành công -->
+            <div class="alert alert-success alert-dismissible fade show"
+                 role="alert"
+                 th:if="${successMessage}">
+                <i class="bi bi-check-circle-fill"></i>
+                <span th:text="${successMessage}"></span>
 
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"></button>
+            </div>
             <form th:action="@{/login}" method="post">
                 <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-
+                <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
                 <div class="mb-3">
                     <label class="form-label" for="email">Email</label>
                     <input id="email" type="email" name="email" class="form-control" placeholder="email@example.com" required>

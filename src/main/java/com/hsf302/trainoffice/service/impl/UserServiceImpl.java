@@ -22,7 +22,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean existsByEmail(String email) {
-        return userRepository.existsByEmail(email);
+        String normalizedEmail = normalizeEmail(email);
+
+        if (normalizedEmail == null) {
+            return false;
+        }
+
+        return userRepository.existsByEmail(normalizedEmail);
     }
 
     @Override
@@ -32,23 +38,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    @Override
     public boolean register(RegisterRequest registerRequest) {
-        String fullName = registerRequest.getFullName();
-        String email = registerRequest.getEmail();
+        if (registerRequest == null) {
+            return false;
+        }
+
+        String fullName = clean(registerRequest.getFullName());
+        String email = normalizeEmail(registerRequest.getEmail());
         String password = registerRequest.getPassword();
         String confirmPassword = registerRequest.getConfirmPassword();
 
-        if (fullName == null || fullName.isBlank()) {
-            return false;
-        }
-
-        if (email == null || email.isBlank()) {
-            return false;
-        }
-
-        email = email.trim().toLowerCase();
-
-        if (password == null || password.isBlank()) {
+        if (fullName == null || email == null || password == null || password.isBlank()) {
             return false;
         }
 
@@ -56,21 +61,15 @@ public class UserServiceImpl implements UserService {
             return false;
         }
 
-        User user = new User();
-
         if (userRepository.existsByEmail(email)) {
             return false;
         }
 
+        User user = new User();
         user.setEmail(email);
-
-        user.setPassword(
-                registerRequest.getPassword());
-
-        user.setFullName(registerRequest.getFullName().trim());
-
+        user.setPassword(password);
+        user.setFullName(fullName);
         user.setRole(UserRole.CUSTOMER);
-
         user.setStatus(UserStatus.ACTIVE);
 
         try {
@@ -83,13 +82,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User login(String email, String pwd) {
-       if (email == null || pwd == null) {
-           return null;
-       }
-        User user = userRepository.findByEmailAndPassword(email.trim().toLowerCase(), pwd);
+        String normalizedEmail = normalizeEmail(email);
+
+        if (normalizedEmail == null || pwd == null || pwd.isBlank()) {
+            return null;
+        }
+
+        User user = userRepository.findByEmailAndPassword(normalizedEmail, pwd);
+
         if (user == null || user.getStatus() != UserStatus.ACTIVE) {
             return null;
         }
+
         return user;
     }
 
@@ -114,23 +118,28 @@ public class UserServiceImpl implements UserService {
     @Override
     public User saveUser(User user) {
         validateUser(user);
+
         if (user.getUserId() != null) {
             userRepository.findById(user.getUserId()).ifPresent(existing -> {
                 user.setCreatedAt(existing.getCreatedAt());
+
                 if (user.getPassword() == null || user.getPassword().isBlank()) {
                     user.setPassword(existing.getPassword());
                 }
             });
         }
-        if (user.getEmail() != null) {
-            user.setEmail(user.getEmail().trim().toLowerCase());
-        }
+
+        user.setEmail(normalizeEmail(user.getEmail()));
+        user.setFullName(clean(user.getFullName()));
+
         if (user.getRole() == null) {
             user.setRole(UserRole.CUSTOMER);
         }
+
         if (user.getStatus() == null) {
             user.setStatus(UserStatus.ACTIVE);
         }
+
         return userRepository.save(user);
     }
 
@@ -188,21 +197,35 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             throw new IllegalArgumentException("User is required.");
         }
-        if (user.getEmail() == null || user.getEmail().isBlank()) {
+
+        String email = normalizeEmail(user.getEmail());
+
+        if (email == null) {
             throw new IllegalArgumentException("Email is required.");
         }
-        String email = user.getEmail().trim().toLowerCase();
+
         boolean duplicate = user.getUserId() == null
                 ? userRepository.existsByEmail(email)
                 : userRepository.existsByEmailAndUserIdNot(email, user.getUserId());
+
         if (duplicate) {
             throw new IllegalArgumentException("Email already exists.");
         }
+
         if (user.getUserId() == null && (user.getPassword() == null || user.getPassword().isBlank())) {
             throw new IllegalArgumentException("Password is required.");
         }
+
         if (user.getPassword() != null && user.getPassword().length() > 255) {
             throw new IllegalArgumentException("Password is too long.");
+        }
+
+        if (user.getRole() == null) {
+            throw new IllegalArgumentException("Role is required.");
+        }
+
+        if (user.getStatus() == null) {
+            throw new IllegalArgumentException("Status is required.");
         }
     }
 
@@ -210,6 +233,22 @@ public class UserServiceImpl implements UserService {
         if (value == null || value.isBlank()) {
             return null;
         }
+        return value.trim();
+    }
+
+    private String normalizeEmail(String email) {
+        if (email == null || email.isBlank()) {
+            return null;
+        }
+
+        return email.trim().toLowerCase();
+    }
+
+    private String clean(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+
         return value.trim();
     }
 }

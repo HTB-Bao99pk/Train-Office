@@ -26,9 +26,9 @@
                         <i class="bi bi-person-circle me-1"></i>Profile
                     </a>
                 </li>
-                <li class="nav-item" th:if="${session.currentUser != null}">
-                    <a class="nav-link" th:classappend="${activeMenu == 'profile'} ? ' active'" th:href="@{/change-password}">
-                        <i class="bi bi-shield-lock me-1"></i>Change Password
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeMenu == 'allTrips'} ? ' active'" th:href="@{/booking/all-trips}">
+                        <i class="bi bi-list-ul me-1"></i>All trips
                     </a>
                 </li>
 

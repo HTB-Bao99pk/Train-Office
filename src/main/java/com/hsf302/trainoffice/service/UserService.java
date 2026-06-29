@@ -14,6 +14,8 @@ public interface UserService {
 
     User findById(Long id);
 
+    User findByEmail(String email);
+
     boolean register(RegisterRequest registerRequest);
 
     User login(String email, String pwd);

@@ -9,15 +9,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @Data
-public class ResetPasswordRequest{
+public class ResetPassword {
     @NotBlank(message = "Mật khẩu không được để trống")
     @Size(min = 6, message = "Mat khau toi thieu 6 ky tu")
-    private String currentPassword;
-
-    @NotBlank(message = "Mật khẩu không được để trống")
-    @Size(min = 6, message = "Mat khau toi thieu 6 ky tu")
-    private String newPassword;
+    private String password;
 
     @NotBlank(message = "Xác nhận mật khẩu")
-    private String confirmNewPassword;
+    private String confirmPassword;
 }

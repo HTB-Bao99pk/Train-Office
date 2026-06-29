@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: layout('Round Trip Results', ~{::section}, 'booking')}">
+<section class="booking-shell booking-section">
+
+    <div class="booking-progress three" aria-label="Booking progress">
+        <div class="booking-progress-item done"><span>1</span>Search</div>
+        <div class="booking-progress-item active"><span>2</span>Select trip</div>
+        <div class="booking-progress-item"><span>3</span>Complete</div>
+    </div>
+
+    <div class="page-hero compact-hero">
+        <span class="page-eyebrow">Round trip</span>
+        <h1 class="page-title">Kết quả tìm kiếm khứ hồi</h1>
+        <p class="page-subtitle">
+            Hệ thống tìm riêng lượt đi và lượt về. Nếu lượt về không có, bạn vẫn có thể xem và đặt lượt đi.
+        </p>
+    </div>
+
+    <div class="result-toolbar">
+        <div>
+            <strong th:text="${#lists.size(outboundTrips)}">0</strong>
+            <span> chuyến lượt đi</span>
+            <span class="mx-2">·</span>
+            <strong th:text="${#lists.size(inboundTrips)}">0</strong>
+            <span> chuyến lượt về</span>
+        </div>
+
+        <a class="btn btn-outline-primary" th:href="@{/booking/search}">
+            <i class="bi bi-arrow-left me-2"></i>Tìm lại
+        </a>
+    </div>
+
+    <div class="alert alert-danger" th:if="${outboundError}" th:text="${outboundError}"></div>
+
+    <div class="alert alert-warning" th:if="${#lists.isEmpty(inboundTrips)}">
+        Không tìm thấy chuyến khứ hồi cho ngày về đã chọn.
+        Bạn vẫn có thể tiếp tục đặt vé lượt đi nếu có chuyến phù hợp.
+    </div>
+
+    <!-- LƯỢT ĐI -->
+    <div class="railjet-card mb-4">
+        <div class="card-header bg-white">
+            <h4 class="mb-0">
+                <i class="bi bi-arrow-right-circle me-2"></i>
+                Lượt đi
+                <small class="text-muted"
+                       th:text="${departureDate != null ? '(' + #temporals.format(departureDate, 'dd/MM/yyyy') + ')' : ''}">
+                </small>
+            </h4>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive" th:if="${not #lists.isEmpty(outboundTrips)}">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-primary">
+                    <tr>
+                        <th>Tuyến</th>
+                        <th>Mã tàu</th>
+                        <th>Ga đi</th>
+                        <th>Ga đến</th>
+                        <th>Giờ đi</th>
+                        <th>Giờ đến</th>
+                        <th>Giá từ</th>
+                        <th class="text-end">Thao tác</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="result : ${outboundTrips}">
+                        <td>
+                            <strong th:text="${result.trainTrip.route != null ? result.trainTrip.route.routeCode : 'N/A'}">
+                                HN-SG
+                            </strong>
+                            <div class="small text-muted"
+                                 th:text="${result.trainTrip.route != null ? result.trainTrip.route.routeName : ''}">
+                                Hà Nội - Sài Gòn
+                            </div>
+                        </td>
+
+                        <td>
+                            <strong th:text="${result.trainTrip.train != null ? result.trainTrip.train.trainCode : 'N/A'}">
+                                SE1
+                            </strong>
+                            <div class="small text-muted"
+                                 th:text="${result.trainTrip.train != null ? result.trainTrip.train.trainName : ''}">
+                                Train
+                            </div>
+                        </td>
+
+                        <td th:text="${result.segment.departureStop.station.stationName}">Ga đi</td>
+                        <td th:text="${result.segment.arrivalStop.station.stationName}">Ga đến</td>
+
+                        <td th:text="${#temporals.format(result.trainTrip.departureTime, 'dd/MM/yyyy HH:mm')}">
+                            29/06/2026 08:00
+                        </td>
+
+                        <td th:text="${#temporals.format(result.trainTrip.arrivalTime, 'dd/MM/yyyy HH:mm')}">
+                            29/06/2026 18:00
+                        </td>
+
+                        <td>
+                            <strong th:text="${#numbers.formatDecimal(result.trainTrip.basePrice, 0, 'COMMA', 0, 'POINT')}">
+                                100000
+                            </strong>
+                        </td>
+
+                        <td class="text-end">
+                            <a class="btn btn-primary btn-sm"
+                               th:href="@{/booking/{tripId}/seats(
+                                    tripId=${result.trainTrip.tripId},
+                                    departureStationId=${result.segment.departureStop.station.stationId},
+                                    arrivalStationId=${result.segment.arrivalStop.station.stationId},
+                                    passengerCount=${result.passengerCount}
+                               )}">
+                                Đặt lượt đi
+                                <i class="bi bi-chevron-right ms-1"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="empty-state py-5" th:if="${#lists.isEmpty(outboundTrips)}">
+                <i class="bi bi-search"></i>
+                <h2>Không tìm thấy chuyến lượt đi</h2>
+                <p>Hãy chọn ngày đi hoặc ga khác.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- LƯỢT VỀ -->
+    <div class="railjet-card">
+        <div class="card-header bg-white">
+            <h4 class="mb-0">
+                <i class="bi bi-arrow-left-circle me-2"></i>
+                Lượt về
+                <small class="text-muted"
+                       th:text="${returnDate != null ? '(' + #temporals.format(returnDate, 'dd/MM/yyyy') + ')' : ''}">
+                </small>
+            </h4>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="alert alert-danger m-3" th:if="${inboundError}" th:text="${inboundError}"></div>
+
+            <div class="table-responsive" th:if="${not #lists.isEmpty(inboundTrips)}">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-primary">
+                    <tr>
+                        <th>Tuyến</th>
+                        <th>Mã tàu</th>
+                        <th>Ga đi</th>
+                        <th>Ga đến</th>
+                        <th>Giờ đi</th>
+                        <th>Giờ đến</th>
+                        <th>Giá từ</th>
+                        <th class="text-end">Thao tác</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="result : ${inboundTrips}">
+                        <td>
+                            <strong th:text="${result.trainTrip.route != null ? result.trainTrip.route.routeCode : 'N/A'}">
+                                SG-HN
+                            </strong>
+                            <div class="small text-muted"
+                                 th:text="${result.trainTrip.route != null ? result.trainTrip.route.routeName : ''}">
+                                Sài Gòn - Hà Nội
+                            </div>
+                        </td>
+
+                        <td>
+                            <strong th:text="${result.trainTrip.train != null ? result.trainTrip.train.trainCode : 'N/A'}">
+                                SE2
+                            </strong>
+                            <div class="small text-muted"
+                                 th:text="${result.trainTrip.train != null ? result.trainTrip.train.trainName : ''}">
+                                Train
+                            </div>
+                        </td>
+
+                        <td th:text="${result.segment.departureStop.station.stationName}">Ga đi</td>
+                        <td th:text="${result.segment.arrivalStop.station.stationName}">Ga đến</td>
+
+                        <td th:text="${#temporals.format(result.trainTrip.departureTime, 'dd/MM/yyyy HH:mm')}">
+                            09/07/2026 08:00
+                        </td>
+
+                        <td th:text="${#temporals.format(result.trainTrip.arrivalTime, 'dd/MM/yyyy HH:mm')}">
+                            09/07/2026 18:00
+                        </td>
+
+                        <td>
+                            <strong th:text="${#numbers.formatDecimal(result.trainTrip.basePrice, 0, 'COMMA', 0, 'POINT')}">
+                                100000
+                            </strong>
+                        </td>
+
+                        <td class="text-end">
+                            <a class="btn btn-primary btn-sm"
+                               th:href="@{/booking/{tripId}/seats(
+                                    tripId=${result.trainTrip.tripId},
+                                    departureStationId=${result.segment.departureStop.station.stationId},
+                                    arrivalStationId=${result.segment.arrivalStop.station.stationId},
+                                    passengerCount=${result.passengerCount}
+                               )}">
+                                Đặt lượt về
+                                <i class="bi bi-chevron-right ms-1"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="empty-state py-5" th:if="${#lists.isEmpty(inboundTrips)}">
+                <i class="bi bi-arrow-left-right"></i>
+                <h2>Không có chuyến khứ hồi</h2>
+                <p>
+                    Không tìm thấy chuyến về đúng ngày bạn chọn.
+                    Bạn vẫn có thể đặt lượt đi ở phía trên.
+                </p>
+            </div>
+        </div>
+    </div>
+
+</section>
+</html>

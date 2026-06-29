@@ -1,7 +1,7 @@
 package com.hsf302.trainoffice.controller;
 
 import com.hsf302.trainoffice.dto.ProfileForm;
-import com.hsf302.trainoffice.dto.ResetPasswordRequest;
+import com.hsf302.trainoffice.dto.ChangePasswordRequest;
 import com.hsf302.trainoffice.entity.User;
 import com.hsf302.trainoffice.service.UserService;
 import jakarta.servlet.http.HttpSession;
@@ -65,7 +65,7 @@ public class ProfileController {
 
         model.addAttribute(
                 "changePasswordForm",
-                new ResetPasswordRequest());
+                new ChangePasswordRequest());
 
         return "customer/change-password";
     }
@@ -74,7 +74,7 @@ public class ProfileController {
     public String changePassword(
             @Valid
             @ModelAttribute("changePasswordForm")
-            ResetPasswordRequest request,
+            ChangePasswordRequest request,
             BindingResult bindingResult,
             HttpSession session,
             Model model,

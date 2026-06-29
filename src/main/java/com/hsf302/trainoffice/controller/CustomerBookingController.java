@@ -330,10 +330,16 @@ public class CustomerBookingController {
 
     private String showTripResults(TripSearchForm form, BindingResult bindingResult, Model model) {
         model.addAttribute("stations", stationService.getAllStations());
+
         if (bindingResult.hasErrors()) {
             model.addAttribute("trips", List.of());
             return "booking/trips";
         }
+
+        if (Boolean.TRUE.equals(form.getRoundTrip())) {
+            return showRoundTripResults(form, model);
+        }
+
         try {
             model.addAttribute("trips", trainTripService.searchTrips(form));
             model.addAttribute("tripSearchForm", form);
@@ -341,7 +347,68 @@ public class CustomerBookingController {
             model.addAttribute("error", ex.getMessage());
             model.addAttribute("trips", List.of());
         }
+
         return "booking/trips";
+    }
+
+    private String showRoundTripResults(TripSearchForm form, Model model) {
+        if (form.getReturnDate() == null) {
+            model.addAttribute("error", "Please select a return date for round trip.");
+            model.addAttribute("tripSearchForm", form);
+            model.addAttribute("stations", stationService.getAllStations());
+            return "booking/search";
+        }
+
+        if (form.getReturnDate().isBefore(form.getDepartureDate())) {
+            model.addAttribute("error", "Return date must be after or equal to departure date.");
+            model.addAttribute("tripSearchForm", form);
+            model.addAttribute("stations", stationService.getAllStations());
+            return "booking/search";
+        }
+
+        List<TripSearchResult> outboundTrips = List.of();
+        List<TripSearchResult> inboundTrips = List.of();
+
+        String outboundError = null;
+        String inboundError = null;
+
+        try {
+            outboundTrips = trainTripService.searchTrips(form);
+        } catch (IllegalArgumentException ex) {
+            outboundError = ex.getMessage();
+        }
+
+        try {
+            TripSearchForm returnForm = buildReturnTripSearchForm(form);
+            inboundTrips = trainTripService.searchTrips(returnForm);
+        } catch (IllegalArgumentException ex) {
+            inboundError = ex.getMessage();
+        }
+
+        model.addAttribute("tripSearchForm", form);
+
+        model.addAttribute("outboundTrips", outboundTrips);
+        model.addAttribute("inboundTrips", inboundTrips);
+
+        model.addAttribute("outboundError", outboundError);
+        model.addAttribute("inboundError", inboundError);
+
+        model.addAttribute("departureDate", form.getDepartureDate());
+        model.addAttribute("returnDate", form.getReturnDate());
+
+        return "booking/round-trip-results";
+    }
+
+    private TripSearchForm buildReturnTripSearchForm(TripSearchForm form) {
+        TripSearchForm returnForm = new TripSearchForm();
+
+        returnForm.setDepartureStationId(form.getArrivalStationId());
+        returnForm.setArrivalStationId(form.getDepartureStationId());
+        returnForm.setDepartureDate(form.getReturnDate());
+        returnForm.setPassengerCount(form.getPassengerCount());
+        returnForm.setRoundTrip(false);
+
+        return returnForm;
     }
 
     private void addConfirmationModel(BookingConfirmationView confirmation, Model model) {

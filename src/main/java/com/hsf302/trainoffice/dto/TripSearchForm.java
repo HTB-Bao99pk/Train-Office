@@ -9,6 +9,7 @@ import java.time.LocalDate;
 
 @Data
 public class TripSearchForm {
+
     @NotNull(message = "Departure station is required")
     private Long departureStationId;
 
@@ -18,6 +19,11 @@ public class TripSearchForm {
     @NotNull(message = "Departure date is required")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate departureDate;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate returnDate;
+
+    private Boolean roundTrip = false;
 
     @Min(value = 1, message = "Passenger count must be greater than 0")
     private int passengerCount = 1;
