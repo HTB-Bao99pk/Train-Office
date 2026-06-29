@@ -11,6 +11,7 @@ import java.time.LocalDate;
 
 @Data
 public class ProfileForm {
+
     private Long passengerId;
 
     @NotBlank(message = "Họ tên không được để trống")
@@ -27,9 +28,8 @@ public class ProfileForm {
     )
     private String identityNumber;
 
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate dateOfBirth;
 
     private Gender gender;
-
 }
