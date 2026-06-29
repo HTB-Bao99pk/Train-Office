@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: layout('Thanh toán thất bại', ~{::section}, 'payments')}">
+<section class="container customer-page">
+    <div class="page-hero text-center">
+        <span class="page-eyebrow">Payment failed</span>
+        <h1 class="page-title">Thanh toán chưa hoàn tất</h1>
+        <p class="page-subtitle mx-auto">
+            Giao dịch không thành công hoặc đã bị hủy. Vui lòng kiểm tra lại thông tin và thử thanh toán lại.
+        </p>
+    </div>
+
+    <div class="railjet-card card">
+        <div class="card-body p-4 p-lg-5 text-center">
+            <div class="d-inline-flex align-items-center justify-content-center mb-3 rounded-3"
+                 style="width:76px;height:76px;background:#ffdad6;color:#ba1a1a;font-size:38px">
+                <i class="bi bi-x-circle"></i>
+            </div>
+            <h2 class="fw-bold mb-2">Không thể xác nhận thanh toán</h2>
+            <p class="text-muted mb-4">Nếu tiền đã bị trừ, hãy lưu lại mã booking và liên hệ hỗ trợ để đối soát.</p>
+            <div class="d-flex flex-wrap justify-content-center gap-2">
+                <a class="btn btn-primary px-4" th:href="@{/admin/payments/1}">
+                    <i class="bi bi-arrow-repeat me-1"></i> Thử lại
+                </a>
+                <a class="btn btn-outline-primary px-4" th:href="@{/profile}">
+                    <i class="bi bi-clock-history me-1"></i> Kiểm tra booking
+                </a>
+                <a class="btn btn-outline-primary px-4" th:href="@{/profile}">
+                    <i class="bi bi-search me-1"></i> Tìm chuyến khác
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+</html>

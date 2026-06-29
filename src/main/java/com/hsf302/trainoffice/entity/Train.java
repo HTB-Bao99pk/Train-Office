@@ -1,52 +1,51 @@
 package com.hsf302.trainoffice.entity;
 
-
-import com.hsf302.trainoffice.common.TrainStatus;
+import com.hsf302.trainoffice.common.enums.TrainStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "trains")
+@Table(
+        name = "trains",
+        indexes = @Index(name = "idx_trains_code", columnList = "train_code")
+)
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Train {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "train_id")
+    @EqualsAndHashCode.Include
+    private Long trainId;
 
-    @NotBlank(message = "Train code is mandatory")
-    @Size(min = 2, max = 10, message = "Code must be between 2 and 10 characters")
-    @Column(unique = true, nullable = false, length = 10, columnDefinition = "nvarchar(10)")
-    private String code;
+    @Column(name = "train_code", unique = true, nullable = false, length = 30)
+    private String trainCode;
 
-    @NotBlank(message = "Train name is mandatory")
-    @Column(nullable = false, columnDefinition = "nvarchar(255)")
-    private String name;
+    @Column(name = "train_name", nullable = false, length = 100)
+    private String trainName;
+
+    @Column(name = "train_type", nullable = false, length = 50)
+    private String trainType;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "train", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<Coach> coaches = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "train", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<TrainTrip> trainTrips = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "status", nullable = false)
+    @Builder.Default
     private TrainStatus status = TrainStatus.AVAILABLE;
-
-    @OneToMany(mappedBy = "train", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @ToString.Exclude
-    private List<Carriage> carriages = new ArrayList<>();
-
-    @Transient
-    public int getTotalCapacity() {
-        if (this.carriages == null) {
-            return 0;
-        }
-        return this.carriages.stream()
-                .mapToInt(Carriage::getCapacity)
-                .sum();
-    }
 }

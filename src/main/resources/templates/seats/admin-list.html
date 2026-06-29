@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/admin-layout :: layout('Seat Management', ~{::section}, 'seats')}">
+<section>
+    <div class="admin-page-hero">
+        <div>
+            <span class="admin-page-kicker"><i class="fas fa-chair mr-1"></i> Seat Inventory</span>
+            <h2>Seat Management</h2>
+            <p th:if="${selectedCoach != null}" th:text="'Filtered by coach: ' + ${selectedCoach.coachNumber}">Filtered by coach</p>
+            <p th:if="${selectedCoach == null}">Filter by coach to add or review seat inventory.</p>
+        </div>
+        <a class="btn btn-primary"
+           th:if="${selectedCoachId != null}"
+           th:href="@{/admin/seats/new(coachId=${selectedCoachId})}">
+            <i class="fas fa-plus mr-1"></i> Add Seat
+        </a>
+        <button class="btn btn-outline-secondary" th:if="${selectedCoachId == null}" disabled>
+            <i class="fas fa-filter mr-1"></i> Select coach to add
+        </button>
+    </div>
+
+    <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+    <div class="card admin-filter-card">
+        <div class="card-header">
+            <form th:action="@{/admin/seats}" method="get" class="row g-2">
+                <div class="col-lg-9 col-md-12">
+                    <label class="form-label">Filter by coach</label>
+                    <select class="form-control" name="coachId" onchange="this.form.submit()">
+                        <option value="">All coaches</option>
+                        <option th:each="coach : ${allCoaches}"
+                                th:value="${coach.coachId}"
+                                th:selected="${selectedCoachId != null and selectedCoachId == coach.coachId}"
+                                th:text="${coach.train != null ? coach.train.trainCode + ' / ' + coach.coachNumber : coach.coachNumber}">
+                        </option>
+                    </select>
+                </div>
+                <div class="col-lg-3 col-md-12 d-flex align-items-end">
+                    <a class="btn btn-outline-secondary w-100" th:href="@{/admin/seats}">
+                        <i class="fas fa-times mr-1"></i> Clear Filter
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card admin-table-card">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <div>
+                <span class="admin-card-title">Seat Directory</span>
+                <small th:text="${#lists.size(seats)} + ' seats shown'">0 seats shown</small>
+            </div>
+            <span class="badge badge-info">Seats</span>
+        </div>
+        <div class="card-body table-responsive p-0">
+            <table class="table table-hover mb-0">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Seat</th>
+                    <th>Coach</th>
+                    <th>Type</th>
+                    <th>Extra Price</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="seat : ${seats}">
+                    <td><span class="text-muted" th:text="'#' + ${seat.seatId}">#1</span></td>
+                    <td>
+                        <div class="admin-identity">
+                            <span class="admin-avatar"><i class="fas fa-chair"></i></span>
+                            <span>
+                                <strong th:text="${seat.seatNumber}">A1</strong>
+                                <small th:text="${seat.coach != null ? seat.coach.coachNumber : 'No coach'}">Coach</small>
+                            </span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge badge-primary admin-badge-soft"
+                              th:text="${seat.coach != null ? seat.coach.coachNumber : 'N/A'}">C01</span>
+                    </td>
+                    <td><span class="seat-type-badge" th:text="${seat.seatType}">STANDARD</span></td>
+                    <td th:text="${seat.extraPrice}">0</td>
+                    <td class="text-right">
+                        <a class="btn btn-sm btn-outline-warning" th:href="@{/admin/seats/edit/{id}(id=${seat.seatId})}">
+                            <i class="fas fa-edit"></i><span>Edit</span>
+                        </a>
+                        <a class="btn btn-sm btn-outline-danger"
+                           th:href="@{/admin/seats/delete/{id}(id=${seat.seatId},coachId=${selectedCoachId})}"
+                           onclick="return confirm('Delete this seat?')">
+                            <i class="fas fa-trash"></i><span>Delete</span>
+                        </a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(seats)}">
+                    <td colspan="6">
+                        <div class="admin-empty-state">
+                            <i class="fas fa-chair"></i>
+                            <strong>No seats found</strong>
+                            <span>Select another coach or add seats after choosing a coach.</span>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</html>

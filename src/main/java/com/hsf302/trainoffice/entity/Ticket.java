@@ -1,65 +1,82 @@
 package com.hsf302.trainoffice.entity;
 
 
-
-import com.hsf302.trainoffice.common.StationStatus;
-import com.hsf302.trainoffice.common.TicketStatus;
+import com.hsf302.trainoffice.common.enums.TicketStatus;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate; // THÊM
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name = "tickets")
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class Ticket extends BaseEntity {
+@Table(
+        name = "tickets",
+        indexes = {
+                @Index(name = "idx_tickets_code", columnList = "ticket_code"),
+                @Index(name = "idx_tickets_booking", columnList = "booking_id"),
+                @Index(name = "idx_tickets_passenger", columnList = "passenger_id"),
+                @Index(name = "idx_tickets_trip", columnList = "trip_id"),
+                @Index(name = "idx_tickets_seat", columnList = "seat_id"),
+                @Index(name = "idx_tickets_status", columnList = "ticket_status")
+        }
+)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "ticket_id")
+    @EqualsAndHashCode.Include
+    private Long ticketId;
 
-    @Column(unique = true, nullable = false, columnDefinition = "nvarchar(255)")
-    private String code;
+    @Column(name = "ticket_code", unique = true, nullable = false, length = 30)
+    private String ticketCode;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "booking_id", nullable = false)
+    @ToString.Exclude
     private Booking booking;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "trip_id", nullable = false)
-    private Trip trip;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "passenger_id", nullable = false)
+    @ToString.Exclude
+    private Passenger passenger;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seat_id")
+    @JoinColumn(name = "trip_id")
+    @ToString.Exclude
+    private TrainTrip trainTrip;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "seat_id", nullable = false)
+    @ToString.Exclude
     private Seat seat;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "from_station_id", nullable = false)
-    private Station fromStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "to_station_id", nullable = false)
-    private Station toStation;
-
-    @Column(columnDefinition = "nvarchar(255)")
-    private String passengerName;
-    @Column(columnDefinition = "nvarchar(50)")
-    private String passengerPhone;
-    @Column(columnDefinition = "nvarchar(50)")
-    private String passengerIdCard;
-    @Column(name = "date_of_birth")
-    private LocalDate dob;
-
-
-    private BigDecimal totalPrice;
+    @Column(name = "ticket_price", nullable = false, precision = 15, scale = 2)
+    private BigDecimal ticketPrice;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private TicketStatus status;
-    private LocalDateTime bookedAt;
+    @Column(name = "ticket_status", nullable = false, length = 20)
+    private TicketStatus ticketStatus;
 
-    private LocalDateTime checkedInAt;
+    @Builder.Default
+    @OneToMany(mappedBy = "ticket", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<Refund> refunds = new ArrayList<>();
+
+    @PrePersist
+    void onCreate() {
+        if (ticketStatus == null) {
+            ticketStatus = TicketStatus.BOOKED;
+        }
+    }
 }

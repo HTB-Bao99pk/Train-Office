@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: layout('Find a Train', ~{::section}, 'booking')}">
+<section class="booking-shell booking-section">
+    <div class="booking-progress three" aria-label="Booking progress">
+        <div class="booking-progress-item active"><span>1</span>Search</div>
+        <div class="booking-progress-item"><span>2</span>Select trip</div>
+        <div class="booking-progress-item"><span>3</span>Complete</div>
+    </div>
+
+    <div class="booking-hero">
+        <div>
+            <span class="page-eyebrow">RailJet Booking</span>
+            <h1 class="page-title">Find your next train</h1>
+            <p class="page-subtitle">
+                Search by departure station, arrival station, travel date, and passenger count.
+                The booking flow keeps the route, seats, and passenger steps tightly connected.
+            </p>
+        </div>
+        <div class="hero-visual">
+            <div><span class="rail-badge">Fast search</span></div>
+            <div>
+                <strong>Pick a trip, choose seats, and finish booking in a few steps.</strong>
+                <small>Everything stays in one guided flow designed for mobile and desktop.</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="railjet-card card booking-search-card">
+        <div class="card-body p-4 p-lg-5">
+            <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+            <form class="booking-search-form" th:action="@{/booking/trips}" th:object="${tripSearchForm}" method="post">
+                <div class="row g-3">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="search-field-card">
+                            <label class="form-label" for="departureStationId"><i class="bi bi-geo-alt me-1"></i>Departure</label>
+                            <select id="departureStationId" class="form-select" th:field="*{departureStationId}" required>
+                                <option value="">Select departure</option>
+                                <option th:each="station : ${stations}" th:value="${station.stationId}" th:text="${station.stationName}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="search-field-card">
+                            <label class="form-label" for="arrivalStationId"><i class="bi bi-signpost-2 me-1"></i>Arrival</label>
+                            <select id="arrivalStationId" class="form-select" th:field="*{arrivalStationId}" required>
+                                <option value="">Select arrival</option>
+                                <option th:each="station : ${stations}" th:value="${station.stationId}" th:text="${station.stationName}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="search-field-card">
+                            <label class="form-label" for="departureDate"><i class="bi bi-calendar3 me-1"></i>Travel date</label>
+                            <input id="departureDate" class="form-control" type="date" th:field="*{departureDate}" required>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="search-field-card">
+                            <label class="form-label" for="passengerCount"><i class="bi bi-people me-1"></i>Passengers</label>
+                            <input id="passengerCount" class="form-control" type="number" min="1" th:field="*{passengerCount}" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="booking-actions mt-4 justify-content-end">
+                    <button class="btn btn-primary btn-lg" type="submit">
+                        <i class="bi bi-search me-2"></i>Search trains
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="booking-info-grid">
+        <div class="booking-info-item">
+            <i class="bi bi-train-front"></i>
+            <div>
+                <strong>Search by route segment</strong>
+                <span>Choose a departure and arrival station on the same route to get valid trips only.</span>
+            </div>
+        </div>
+        <div class="booking-info-item">
+            <i class="bi bi-grid-3x3-gap"></i>
+            <div>
+                <strong>Visual seat selection</strong>
+                <span>Booked, selected, and available seats are shown with clear state styling.</span>
+            </div>
+        </div>
+        <div class="booking-info-item">
+            <i class="bi bi-receipt"></i>
+            <div>
+                <strong>Pending payment booking</strong>
+                <span>The flow stops at booking confirmation and leaves payment to the next module.</span>
+            </div>
+        </div>
+    </div>
+</section>
+</html>

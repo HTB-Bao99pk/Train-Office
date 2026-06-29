@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/admin-layout :: layout('Coach Management', ~{::section}, 'coaches')}">
+<section>
+    <div class="admin-page-hero">
+        <div>
+            <span class="admin-page-kicker"><i class="fas fa-subway mr-1"></i> Fleet Coaches</span>
+            <h2>Coach Management</h2>
+            <p th:if="${selectedTrain != null}" th:text="'Filtered by train: ' + ${selectedTrain.trainCode}">Filtered by train</p>
+            <p th:if="${selectedTrain == null}">Manage coaches by train, type, and passenger capacity.</p>
+        </div>
+        <a class="btn btn-primary" th:href="@{/admin/coaches/new(trainId=${selectedTrainId})}">
+            <i class="fas fa-plus mr-1"></i> Add Coach
+        </a>
+    </div>
+
+    <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+    <div class="card admin-filter-card">
+        <div class="card-header">
+            <form th:action="@{/admin/coaches}" method="get" class="row g-2">
+                <div class="col-lg-9 col-md-12">
+                    <label class="form-label">Filter by train</label>
+                    <select class="form-control" name="trainId" onchange="this.form.submit()">
+                        <option value="">All trains</option>
+                        <option th:each="train : ${allTrains}"
+                                th:value="${train.trainId}"
+                                th:selected="${selectedTrainId != null and selectedTrainId == train.trainId}"
+                                th:text="${train.trainCode + ' - ' + train.trainName}">
+                        </option>
+                    </select>
+                </div>
+                <div class="col-lg-3 col-md-12 d-flex align-items-end">
+                    <a class="btn btn-outline-secondary w-100" th:href="@{/admin/coaches}">
+                        <i class="fas fa-times mr-1"></i> Clear Filter
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card admin-table-card">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <div>
+                <span class="admin-card-title">Coach Directory</span>
+                <small th:text="${#lists.size(coaches)} + ' coaches shown'">0 coaches shown</small>
+            </div>
+            <span class="badge badge-info">Coaches</span>
+        </div>
+        <div class="card-body table-responsive p-0">
+            <table class="table table-hover mb-0">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Coach</th>
+                    <th>Train</th>
+                    <th>Type</th>
+                    <th>Capacity</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="coach : ${coaches}">
+                    <td><span class="text-muted" th:text="'#' + ${coach.coachId}">#1</span></td>
+                    <td>
+                        <div class="admin-identity">
+                            <span class="admin-avatar"><i class="fas fa-subway"></i></span>
+                            <span>
+                                <strong th:text="${coach.coachNumber}">C01</strong>
+                                <small th:text="${coach.coachType}">SOFT_SEAT</small>
+                            </span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge badge-primary admin-badge-soft"
+                              th:text="${coach.train != null ? coach.train.trainCode : 'N/A'}">SE1</span>
+                    </td>
+                    <td th:text="${coach.coachType}">SOFT_SEAT</td>
+                    <td><span class="capacity-pill" th:text="${coach.capacity} + ' seats'">64 seats</span></td>
+                    <td class="text-right">
+                        <a class="btn btn-sm btn-outline-info" th:href="@{/admin/seats(coachId=${coach.coachId})}">
+                            <i class="fas fa-chair"></i><span>Seats</span>
+                        </a>
+                        <a class="btn btn-sm btn-outline-warning" th:href="@{/admin/coaches/edit/{id}(id=${coach.coachId})}">
+                            <i class="fas fa-edit"></i><span>Edit</span>
+                        </a>
+                        <a class="btn btn-sm btn-outline-danger"
+                           th:href="@{/admin/coaches/delete/{id}(id=${coach.coachId},trainId=${selectedTrainId})}"
+                           onclick="return confirm('Delete this coach?')">
+                            <i class="fas fa-trash"></i><span>Delete</span>
+                        </a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(coaches)}">
+                    <td colspan="6">
+                        <div class="admin-empty-state">
+                            <i class="fas fa-subway"></i>
+                            <strong>No coaches found</strong>
+                            <span>Select another train or add a new coach.</span>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</html>

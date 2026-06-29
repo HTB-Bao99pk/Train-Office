@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/admin-layout :: layout('Train Management', ~{::section}, 'trains')}">
+<section>
+    <div class="admin-page-hero">
+        <div>
+            <span class="admin-page-kicker"><i class="fas fa-train mr-1"></i> Fleet Management</span>
+            <h2>Train Management</h2>
+            <p>Manage train codes, names, service type, and coach assignments.</p>
+        </div>
+        <a th:href="@{/admin/trains/new}" class="btn btn-primary">
+            <i class="fas fa-plus mr-1"></i> Add Train
+        </a>
+    </div>
+
+    <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+    <div class="card admin-table-card">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <div>
+                <span class="admin-card-title">Train Fleet</span>
+                <small th:text="${#lists.size(trains)} + ' trains available'">0 trains available</small>
+            </div>
+            <span class="badge badge-primary">Trains</span>
+        </div>
+        <div class="card-body table-responsive p-0">
+            <table class="table table-hover mb-0">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Train</th>
+                    <th>Code</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="train : ${trains}">
+                    <td><span class="text-muted" th:text="'#' + ${train.trainId}">#1</span></td>
+                    <td>
+                        <div class="admin-identity">
+                            <span class="admin-avatar"><i class="fas fa-train"></i></span>
+                            <span>
+                                <strong th:text="${train.trainName}">Train</strong>
+                                <small th:text="${train.trainType}">Type</small>
+                            </span>
+                        </div>
+                    </td>
+                    <td><span class="badge badge-primary admin-badge-soft" th:text="${train.trainCode}">SE1</span></td>
+                    <td th:text="${train.trainType}">Express</td>
+                    <td>
+                        <span class="badge admin-badge-soft"
+                              th:classappend="${train.status != null and train.status.toString() == 'ACTIVE'} ? ' badge-success' : ' badge-secondary'"
+                              th:text="${train.status != null ? train.status.description : 'N/A'}">Active</span>
+                    </td>
+                    <td class="text-right">
+                        <a class="btn btn-sm btn-outline-info" th:href="@{/admin/coaches(trainId=${train.trainId})}">
+                            <i class="fas fa-subway"></i><span>Coaches</span>
+                        </a>
+                        <a class="btn btn-sm btn-outline-warning" th:href="@{/admin/trains/edit/{id}(id=${train.trainId})}">
+                            <i class="fas fa-edit"></i><span>Edit</span>
+                        </a>
+                        <a class="btn btn-sm btn-outline-danger"
+                           th:href="@{/admin/trains/delete/{id}(id=${train.trainId})}"
+                           onclick="return confirm('Delete this train?')">
+                            <i class="fas fa-trash"></i><span>Delete</span>
+                        </a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(trains)}">
+                    <td colspan="6">
+                        <div class="admin-empty-state">
+                            <i class="fas fa-train"></i>
+                            <strong>No trains found</strong>
+                            <span>Create a train before adding coaches and seats.</span>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</html>

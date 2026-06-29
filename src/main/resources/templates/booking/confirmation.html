@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: layout('Confirm Booking', ~{::section}, 'booking')}">
+<section class="booking-shell booking-section">
+    <div class="booking-progress">
+        <div class="booking-progress-item done"><span>1</span>Search</div>
+        <div class="booking-progress-item done"><span>2</span>Select trip</div>
+        <div class="booking-progress-item done"><span>3</span>Select seats</div>
+        <div class="booking-progress-item done"><span>4</span>Passengers</div>
+        <div class="booking-progress-item active"><span>5</span>Confirm</div>
+        <div class="booking-progress-item"><span>6</span>Done</div>
+    </div>
+
+    <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+    <div class="detail-grid">
+        <aside class="railjet-card card sticky-summary">
+            <div class="card-header">Booking summary</div>
+            <div class="card-body">
+                <div class="summary-box mb-3">
+                    <span class="summary-label">Trip</span>
+                    <strong th:text="${trip.train != null ? trip.train.trainName : 'Train trip'}">SE1</strong>
+                    <small th:text="${trip.route != null ? trip.route.routeName : 'Route'}">Route</small>
+                </div>
+                <div class="summary-line">
+                    <span>Departure</span>
+                    <strong th:text="${segment.departureStop.station.stationName}">Ha Noi</strong>
+                </div>
+                <div class="summary-line">
+                    <span>Arrival</span>
+                    <strong th:text="${segment.arrivalStop.station.stationName}">Da Nang</strong>
+                </div>
+                <div class="summary-line">
+                    <span>Seats</span>
+                    <strong th:text="${#lists.size(selectedSeats)}">1</strong>
+                </div>
+                <hr>
+                <div class="summary-line total">
+                    <span>Total amount</span>
+                    <strong th:text="${totalAmount}">0</strong>
+                </div>
+                <form th:action="@{/booking/confirmation}" method="post" class="booking-actions mt-4">
+                    <button class="btn btn-primary w-100" type="submit">Create booking</button>
+                    <a class="btn btn-outline-primary w-100" th:href="@{/booking/passenger-info}">Back</a>
+                </form>
+            </div>
+        </aside>
+
+        <div class="booking-section">
+            <div class="railjet-card card">
+                <div class="card-header">Journey</div>
+                <div class="card-body">
+                    <div class="confirm-route">
+                        <div>
+                            <span>Departure</span>
+                            <strong th:text="${segment.departureStop.station.stationName}">Ha Noi</strong>
+                            <small th:text="${trip.departureTime}">08:00</small>
+                        </div>
+                        <div class="route-line"></div>
+                        <div class="text-lg-end">
+                            <span>Arrival</span>
+                            <strong th:text="${segment.arrivalStop.station.stationName}">Da Nang</strong>
+                            <small th:text="${trip.arrivalTime}">18:00</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="railjet-card card">
+                <div class="card-header">Passengers and seats</div>
+                <div class="card-body table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead>
+                        <tr>
+                            <th>Passenger</th>
+                            <th>Seat</th>
+                            <th>Type</th>
+                            <th class="text-end">Price</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="seat, stat : ${selectedSeats}">
+                            <td th:text="${passengerInfo.passengers[stat.index].fullName}">Passenger</td>
+                            <td>
+                                <strong th:text="${seat.coach.coachNumber + ' - ' + seat.seatNumber}">A - 01</strong>
+                            </td>
+                            <td th:text="${seat.seatType}">Standard</td>
+                            <td class="text-end">
+                                <span th:text="${trip.basePrice}">0</span>
+                                <span> + </span>
+                                <span th:text="${seat.extraPrice}">0</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</html>

@@ -11,10 +11,17 @@ import java.util.Optional;
 
 @Repository
 public interface StationRepository
-        extends JpaRepository<Station, Integer> {
-    Optional<Station> findByCode(String code);
-    List<Station> findByStatus(Station.Status status);
-    boolean existsByCode(String code);
-    Optional<Station> findByName(String name);
-    Page<Station> findByNameContainingIgnoreCaseOrCodeContainingIgnoreCase(String nameKeyword, String codeKeyword, Pageable pageable);
+        extends JpaRepository<Station, Long> {
+    Optional<Station> findByStationCode(String stationCode);
+
+    boolean existsByStationCode(String stationCode);
+
+    Optional<Station> findByStationName(String stationName);
+
+    Page<Station>
+    findByStationNameContainingIgnoreCaseOrStationCodeContainingIgnoreCase(
+            String name,
+            String code,
+            Pageable pageable
+    );
 }

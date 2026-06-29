@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: layout('Ticket Detail', ~{::section}, 'tickets')}">
+<section class="container customer-page">
+    <div class="railjet-card card">
+        <div class="card-body p-4 p-lg-5">
+            <div class="d-flex flex-wrap justify-content-between gap-3 mb-4">
+                <div>
+                    <span class="page-eyebrow">Train ticket</span>
+                    <h1 class="fw-bold mt-2 mb-1" th:text="${ticket.ticketCode}">RJ-T001</h1>
+                    <p class="text-muted mb-0">
+                        <span th:text="${ticket.booking != null and ticket.booking.departureStation != null ? ticket.booking.departureStation.stationName : '-'}">Ha Noi</span>
+                        <span> -> </span>
+                        <span th:text="${ticket.booking != null and ticket.booking.arrivalStation != null ? ticket.booking.arrivalStation.stationName : '-'}">Sai Gon</span>
+                    </p>
+                </div>
+                <span class="rail-badge" th:text="${ticket.ticketStatus}">BOOKED</span>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="summary-box">
+                        <div class="text-muted small">Passenger</div>
+                        <strong th:text="${ticket.passenger != null ? ticket.passenger.fullName : '-'}">Passenger</strong>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="summary-box">
+                        <div class="text-muted small">Seat</div>
+                        <strong th:text="${ticket.seat != null ? ticket.seat.seatNumber : '-'}">A1</strong>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="summary-box">
+                        <div class="text-muted small">Coach</div>
+                        <strong th:text="${ticket.seat != null and ticket.seat.coach != null ? ticket.seat.coach.coachNumber : '-'}">1</strong>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="summary-box">
+                        <div class="text-muted small">Train</div>
+                        <strong th:text="${ticket.trainTrip != null and ticket.trainTrip.train != null ? ticket.trainTrip.train.trainName : '-'}">SE1</strong>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="summary-box">
+                        <div class="text-muted small">Departure time</div>
+                        <strong th:text="${ticket.trainTrip != null ? ticket.trainTrip.departureTime : '-'}">2026-06-28T08:00</strong>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="summary-box">
+                        <div class="text-muted small">Ticket price</div>
+                        <strong th:text="${ticket.ticketPrice}">0</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 flex-wrap">
+                <a class="btn btn-outline-secondary" th:href="@{/tickets}">Back</a>
+                <a class="btn btn-primary" th:href="@{/tickets/{id}/print(id=${ticket.ticketId})}">
+                    <i class="bi bi-printer me-2"></i>Print Ticket
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+</html>

@@ -1,0 +1,92 @@
+<nav class="navbar navbar-expand-lg customer-navbar" xmlns:th="http://www.thymeleaf.org" th:fragment="customerHeader(activeMenu)">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/booking/search}">
+            <i class="bi bi-train-front-fill me-2"></i>RailJet
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#customerNav"
+                aria-controls="customerNav" aria-expanded="false" aria-label="Open menu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div id="customerNav" class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeMenu == 'booking'} ? ' active'" th:href="@{/booking/search}">
+                        <i class="bi bi-search me-1"></i>Search trip
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeMenu == 'history'} ? ' active'" th:href="@{/booking/history}">
+                        <i class="bi bi-calendar-check me-1"></i>My bookings
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${session.currentUser != null}">
+                    <a class="nav-link" th:classappend="${activeMenu == 'profile'} ? ' active'" th:href="@{/profile}">
+                        <i class="bi bi-person-circle me-1"></i>Profile
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${session.currentUser != null}">
+                    <a class="nav-link" th:classappend="${activeMenu == 'profile'} ? ' active'" th:href="@{/change-password}">
+                        <i class="bi bi-shield-lock me-1"></i>Change Password
+                    </a>
+                </li>
+
+                <li class="nav-item ms-lg-3" th:if="${session.currentUser == null}">
+                    <a class="btn btn-outline-primary btn-sm auth-nav-button" th:href="@{/register}">Register</a>
+                </li>
+                <li class="nav-item" th:if="${session.currentUser == null}">
+                    <a class="btn btn-primary btn-sm auth-nav-button" th:href="@{/login}">Login</a>
+                </li>
+
+                <li class="nav-item ms-lg-3" th:if="${session.currentUser != null and session.currentUser.role.name() == 'ADMIN'}">
+                    <a class="btn btn-warning btn-sm auth-nav-button" th:href="@{/admin}">
+                        <i class="bi bi-speedometer2 me-1"></i>Admin
+                    </a>
+                </li>
+
+                <li class="nav-item dropdown ms-lg-3" th:if="${session.currentUser != null}">
+                    <a class="nav-link dropdown-toggle user-menu-trigger" href="#" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="user-avatar"><i class="bi bi-person-fill"></i></span>
+                        <span class="user-name" th:text="${session.currentUser.email}">user@example.com</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm user-dropdown">
+                        <li class="dropdown-header">
+                            <div class="small text-muted">Signed in as</div>
+                            <div class="fw-semibold" th:text="${session.currentUser.email}">user@example.com</div>
+                            <div class="small text-muted" th:text="${session.currentUser.role}">CUSTOMER</div>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" th:href="@{/booking/search}">
+                                <i class="bi bi-search me-2"></i>Search trip
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" th:href="@{/booking/history}">
+                                <i class="bi bi-calendar-check me-2"></i>My bookings
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" th:href="@{/profile}">
+                                <i class="bi bi-person-circle me-2"></i>Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" th:href="@{/change-password}">
+                                <i class="bi bi-shield-lock me-2"></i>Change Password
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item text-danger" th:href="@{/logout}">
+                                <i class="bi bi-box-arrow-right me-2"></i>Logout
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

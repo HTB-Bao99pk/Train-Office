@@ -1,10 +1,8 @@
 package com.hsf302.trainoffice.service.impl;
 
 import com.hsf302.trainoffice.entity.Route;
-import com.hsf302.trainoffice.entity.Station;
 import com.hsf302.trainoffice.repository.RouteRepository;
 import com.hsf302.trainoffice.service.RouteService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,8 +11,11 @@ import java.util.Optional;
 @Service
 public class RouteServiceImpl implements RouteService {
 
-    @Autowired
-    private RouteRepository routeRepository;
+    private final RouteRepository routeRepository;
+
+    public RouteServiceImpl(RouteRepository routeRepository) {
+        this.routeRepository = routeRepository;
+    }
 
     @Override
     public List<Route> getAllRoutes() {
@@ -22,64 +23,44 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    public List<Route> getRoutesByStartAndEndStation(Station startStation, Station endStation) {
-        return routeRepository.findByStartStationAndEndStation(startStation, endStation);
-    }
-
-    @Override
-    public Route createRoute(Route route) {
-        if (routeRepository.existsByCode(route.getCode())) {
-            return null; // Route code already exists
-        }
-        return routeRepository.save(route);
-    }
-
-    @Override
-    public Route updateRoute(Integer id, Route route) {
-        Route existingRoute = routeRepository.findById(id).orElse(null);
-        if (existingRoute != null) {
-
-            if (!existingRoute.getCode().equals(route.getCode()) &&
-                    routeRepository.existsByCode(route.getCode())) {
-                return null;
-            }
-            existingRoute.setCode(route.getCode());
-            existingRoute.setStartStation(route.getStartStation());
-            existingRoute.setEndStation(route.getEndStation());
-            existingRoute.setStatus(route.getStatus());
-            return routeRepository.save(existingRoute);
-        }
-        return null;
-    }
-
-    @Override
-    public void deleteRoute(Integer id) {
-        routeRepository.deleteById(id);
-    }
-
-    @Override
-    public boolean routeExists(String code) {
-        return routeRepository.existsByCode(code);
-    }
-
-    @Override
-    public List<Route> findRouteByStations(Integer startStationId, Integer endStationId) {
-        return routeRepository.findByStartStationIdAndEndStationId(startStationId, endStationId);
-    }
-
-
-    @Override
-    public List<Route> findByStartStationIdAndEndStationId(Integer startStationId, Integer endStationId) {
-        return routeRepository.findByStartStationIdAndEndStationId(startStationId, endStationId);
-    }
-
-    @Override
-    public Optional<Route> findById(Integer id) {
+    public Optional<Route> getRouteById(Long id) {
         return routeRepository.findById(id);
     }
 
     @Override
-    public List<Route> findAllAndFetchStations() {
-        return routeRepository.findAllAndFetchStations();
+    public Route saveRoute(Route route) {
+
+        if (route.getRouteId() == null) {
+
+            if (routeRepository.existsByRouteCode(route.getRouteCode())) {
+                throw new IllegalStateException("Route code already exists!");
+            }
+
+        } else {
+
+            Optional<Route> oldRoute =
+                    routeRepository.findById(route.getRouteId());
+
+            if (oldRoute.isPresent()) {
+
+                if (!oldRoute.get().getRouteCode().equals(route.getRouteCode())
+                        && routeRepository.existsByRouteCode(route.getRouteCode())) {
+
+                    throw new IllegalStateException("Route code already exists!");
+                }
+            }
+        }
+
+        return routeRepository.save(route);
+    }
+
+    @Override
+    public void deleteRoute(Long id) {
+
+        if (!routeRepository.existsById(id)) {
+            throw new RuntimeException("Route not found");
+        }
+
+        routeRepository.deleteById(id);
     }
 }

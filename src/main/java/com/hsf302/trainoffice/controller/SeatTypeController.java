@@ -1,6 +1,7 @@
 package com.hsf302.trainoffice.controller;
 
 import com.hsf302.trainoffice.entity.SeatType;
+import com.hsf302.trainoffice.service.PaymentService;
 import com.hsf302.trainoffice.service.SeatTypeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ public class SeatTypeController {
         model.addAttribute("seatTypes", seatTypes);
         return "seattype/list";
     }
+
 
     @GetMapping("/new")
     public String showCreateForm(Model model) {

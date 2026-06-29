@@ -11,10 +11,10 @@ public interface StationService {
 
     List<Station> getAllStations();
     Page<Station> listAll(int pageNum, String keyword);
-    Station getStationById(Integer id);
+    Station getStationById(Long id);
     Station createStation(Station station);
-    Station updateStation(Integer id, Station station);
-    void deleteStation(Integer id);
+    Station updateStation(Long id, Station station);
+    void deleteStation(Long id);
     boolean stationExists(String code);
-    Optional<Station> findById(Integer id);
+    Optional<Station> findById(Long id);
 }

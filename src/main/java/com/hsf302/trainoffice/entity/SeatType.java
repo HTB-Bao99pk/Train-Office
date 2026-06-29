@@ -1,7 +1,5 @@
 package com.hsf302.trainoffice.entity;
 
-
-
 import jakarta.persistence.*;
 import lombok.Data;
 import java.math.BigDecimal;

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: layout('Hồ sơ', ~{::section}, 'profile')}">
+<section class="profile-velocity-page container">
+    <div class="profile-page-header">
+        <div>
+            <div class="profile-eyebrow">RailJet Account</div>
+            <h1 class="profile-page-title">Hồ sơ tài khoản</h1>
+            <p class="profile-page-subtitle">Quản lý thông tin cá nhân và trạng thái tài khoản của bạn.</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <a class="profile-ghost-action" th:href="@{/profile/change-password}">
+                <i class="bi bi-key"></i>
+                Change Password
+            </a>
+            <a class="profile-primary-action" th:href="@{/booking/search}">
+                <i class="bi bi-search"></i>
+                Tìm chuyến tàu
+            </a>
+        </div>
+    </div>
+
+    <div class="profile-velocity-grid">
+        <aside class="profile-summary-card">
+            <div class="profile-card-accent"></div>
+            <div class="profile-summary-avatar">
+                <i class="bi bi-person-fill"></i>
+            </div>
+            <div class="profile-summary-body">
+                <span class="profile-label">Đăng nhập với</span>
+                <h2 th:text="${profileForm != null and !#strings.isEmpty(profileForm.fullName) ? profileForm.fullName : (currentUser != null ? currentUser.email : 'Guest')}">user@example.com</h2>
+                <div class="profile-status-row">
+                    <span class="profile-status-pill">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span th:text="${currentUser != null ? currentUser.status : '-'}">ACTIVE</span>
+                    </span>
+                    <span class="profile-role-pill" th:text="${currentUser != null ? currentUser.role : '-'}">CUSTOMER</span>
+                </div>
+            </div>
+        </aside>
+
+        <div class="profile-detail-card">
+            <div class="profile-detail-header">
+                <div>
+                    <span class="profile-label">Thông tin cá nhân</span>
+                    <h3>Chi tiết tài khoản</h3>
+                </div>
+                <span class="profile-detail-icon">
+                    <i class="bi bi-person-vcard"></i>
+                </span>
+            </div>
+
+            <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}" role="alert"></div>
+            <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}" role="alert"></div>
+
+            <form th:action="@{/profile}" method="post" th:object="${profileForm}" autocomplete="off" accept-charset="UTF-8">
+                <div class="profile-form-grid">
+                    <div class="profile-form-field">
+                        <label class="profile-label" for="profileUserId">User ID</label>
+                        <input id="profileUserId" class="form-control" name="userId"
+                               th:value="${currentUser != null ? currentUser.userId : ''}" readonly>
+                    </div>
+                    <div class="profile-form-field">
+                        <label class="profile-label" for="profileEmail">Email</label>
+                        <input id="profileEmail" class="form-control" name="email"
+                               th:value="${currentUser != null ? currentUser.email : ''}" readonly>
+                    </div>
+                    <div class="profile-form-field">
+                        <label class="profile-label" for="profileRole">Vai trò</label>
+                        <input id="profileRole" class="form-control" name="role"
+                               th:value="${currentUser != null ? currentUser.role : ''}" readonly>
+                    </div>
+                    <div class="profile-form-field">
+                        <label class="profile-label" for="profileStatus">Trạng thái</label>
+                        <input id="profileStatus" class="form-control" name="status"
+                               th:value="${currentUser != null ? currentUser.status : ''}" readonly>
+                    </div>
+                    <div class="profile-form-field">
+                        <label class="profile-label" for="profilePassengerId">Passenger ID</label>
+                        <input id="profilePassengerId" class="form-control" th:field="*{passengerId}" readonly
+                               placeholder="Tự động khi có dữ liệu hành khách">
+                    </div>
+                    <div class="profile-form-field">
+                        <label class="profile-label" for="profileFullName">Họ và tên</label>
+                        <input id="profileFullName" class="form-control" th:field="*{fullName}" maxlength="100"
+                               placeholder="Nhập họ tên của bạn" required>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+                    </div>
+                    <div class="profile-form-field">
+                        <label class="profile-label" for="profileDateOfBirth">Ngày sinh</label>
+                        <input id="profileDateOfBirth" class="form-control" type="date" th:field="*{dateOfBirth}">
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('dateOfBirth')}" th:errors="*{dateOfBirth}"></div>
+                    </div>
+                    <div class="profile-form-field">
+                        <label class="profile-label" for="profileGender">Giới tính</label>
+                        <select id="profileGender" class="form-select" th:field="*{gender}">
+                            <option value="">Chọn giới tính</option>
+                            <option value="MALE">Nam</option>
+                            <option value="FEMALE">Nữ</option>
+                            <option value="OTHER">Khác</option>
+                        </select>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}"></div>
+                    </div>
+                    <div class="profile-form-field">
+                        <label class="profile-label" for="profileIdentityNumber">Số giấy tờ</label>
+                        <input id="profileIdentityNumber" class="form-control" th:field="*{identityNumber}" maxlength="30"
+                               placeholder="CCCD/CMND/Hộ chiếu">
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('identityNumber')}" th:errors="*{identityNumber}"></div>
+                    </div>
+                    <div class="profile-form-field">
+                        <label class="profile-label" for="profileUpdatedAt">Cập nhật lúc</label>
+                        <input id="profileUpdatedAt" class="form-control" name="updatedAt"
+                               th:value="${currentUser != null ? currentUser.updatedAt : ''}" readonly>
+                    </div>
+                </div>
+
+                <div class="profile-form-actions">
+                    <button type="reset" class="profile-ghost-action">Khôi phục</button>
+                    <button type="submit" class="profile-secondary-action">
+                        <i class="bi bi-check2-circle"></i>
+                        Lưu hồ sơ
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="profile-ticket-card">
+        <div class="profile-card-accent"></div>
+        <div class="profile-ticket-main">
+            <div class="profile-ticket-date">
+                <span class="profile-label">Bước tiếp theo</span>
+                <strong>Tìm chuyến</strong>
+                <small>RailJet booking</small>
+            </div>
+            <div class="profile-ticket-route">
+                <div class="profile-ticket-station text-end">
+                    <strong>Hồ sơ</strong>
+                    <span>Tài khoản</span>
+                </div>
+                <div class="profile-route-line">
+                    <span></span>
+                    <i class="bi bi-train-front-fill"></i>
+                    <span></span>
+                </div>
+                <div class="profile-ticket-station">
+                    <strong>Booking</strong>
+                    <span>Chọn chuyến</span>
+                </div>
+            </div>
+            <div class="profile-ticket-actions">
+                <a class="profile-secondary-action" th:href="@{/booking/search}">Tìm chuyến tàu</a>
+                <a class="profile-ghost-action" th:href="@{/logout}">Đăng xuất</a>
+            </div>
+        </div>
+    </div>
+
+</section>
+</html>

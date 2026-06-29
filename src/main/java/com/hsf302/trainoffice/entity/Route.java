@@ -1,39 +1,45 @@
 package com.hsf302.trainoffice.entity;
 
-
-
-import com.hsf302.trainoffice.common.RouteStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
+@Table(
+        name = "routes",
+        indexes = @Index(name = "idx_routes_code", columnList = "route_code")
+)
 @Getter
 @Setter
-@Table(name = "routes")
-public class Route extends BaseEntity {
-
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class Route {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @Column(name = "route_id")
+    @EqualsAndHashCode.Include
+    private Long routeId;
 
-    @Column(name = "code", unique = true, nullable = false, length = 20, columnDefinition = "NVARCHAR(20)")
-    private String code;
+    @Column(name = "route_code", unique = true, nullable = false, length = 30)
+    private String routeCode;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "start_station_id", nullable = false)
-    private Station startStation;
+    @Column(name = "route_name", nullable = false, length = 120)
+    private String routeName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "end_station_id", nullable = false)
-    private Station endStation;
+    @Column(name = "distance_km", nullable = false)
+    private Double distanceKm;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private RouteStatus status = RouteStatus.ACTIVE;
+    @Builder.Default
+    @OneToMany(mappedBy = "route", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<RouteStation> routeStations = new ArrayList<>();
 
-
+    @Builder.Default
+    @OneToMany(mappedBy = "route", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<TrainTrip> trainTrips = new ArrayList<>();
 }
-

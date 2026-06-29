@@ -1,6 +1,6 @@
 package com.hsf302.trainoffice.controller;
 
-import com.hsf302.trainoffice.common.TrainStatus;
+import com.hsf302.trainoffice.common.enums.TrainStatus;
 import com.hsf302.trainoffice.entity.Train;
 import com.hsf302.trainoffice.service.TrainService;
 import jakarta.validation.Valid;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/trains")
+@RequestMapping("/admin/trains")
 public class TrainController {
 
     private final TrainService trainService;
@@ -33,14 +33,14 @@ public class TrainController {
     public String listTrains(Model model) {
         List<Train> trains = trainService.getAllTrains();
         model.addAttribute("trains", trains);
-        return "train/list";
+        return "trains/admin-list";
     }
 
     @GetMapping("/new")
     public String showCreateForm(Model model) {
         model.addAttribute("train", new Train());
         addCommonAttributes(model);
-        return "train/form";
+        return "trains/form";
     }
 
     @GetMapping("/edit/{id}")
@@ -49,26 +49,26 @@ public class TrainController {
         if (train.isPresent()) {
             model.addAttribute("train", train.get());
             addCommonAttributes(model);
-            return "train/form";
+            return "trains/form";
         }
-        return "redirect:/trains";
+        return "redirect:/admin/trains";
     }
 
     @PostMapping("/save")
     public String saveTrain(@Valid @ModelAttribute("train") Train train, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             addCommonAttributes(model);
-            return "train/form";
+            return "trains/form";
         }
 
         try {
             trainService.saveTrain(train);
             redirectAttributes.addFlashAttribute("successMessage", "Train saved successfully!");
-            return "redirect:/trains";
+            return "redirect:/admin/trains";
         } catch (IllegalStateException e) {
             model.addAttribute("errorMessage", e.getMessage());
             addCommonAttributes(model);
-            return "train/form";
+            return "trains/form";
         }
     }
 
@@ -80,6 +80,6 @@ public class TrainController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error deleting train: " + e.getMessage());
         }
-        return "redirect:/trains";
+        return "redirect:/admin/trains";
     }
 }

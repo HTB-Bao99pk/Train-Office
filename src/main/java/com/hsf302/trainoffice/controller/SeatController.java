@@ -1,12 +1,10 @@
 package com.hsf302.trainoffice.controller;
 
-import com.hsf302.trainoffice.common.SeatStatus;
-import com.hsf302.trainoffice.entity.Carriage;
+import com.hsf302.trainoffice.entity.Coach;
 import com.hsf302.trainoffice.entity.Seat;
-import com.hsf302.trainoffice.service.CarriageService;
+import com.hsf302.trainoffice.service.CoachService;
 import com.hsf302.trainoffice.service.SeatService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,30 +15,34 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/seats")
+@RequestMapping("/admin/seats")
 public class SeatController {
-    private final SeatService seatService;
-    private final CarriageService carriageService;
 
-    @Autowired
-    public SeatController(SeatService seatService, CarriageService carriageService) {
+    private final SeatService seatService;
+    private final CoachService coachService;
+
+    public SeatController(SeatService seatService, CoachService coachService) {
         this.seatService = seatService;
-        this.carriageService = carriageService;
+        this.coachService = coachService;
     }
 
     @GetMapping
-    public String listSeats(Model model, @RequestParam(value = "carriageId", required = false) Long carriageId) {
+    public String listSeats(
+            Model model,
+            @RequestParam(value = "coachId", required = false) Long coachId
+    ) {
         List<Seat> seats;
-        List<Carriage> allCarriages = carriageService.getAllCarriages();
-        Carriage selectedCarriage = null;
+        List<Coach> allCoaches = coachService.getAllCoaches();
+        Coach selectedCoach = null;
 
-        if (carriageId != null) {
-            Optional<Carriage> carriageOpt = allCarriages.stream()
-                    .filter(carriage -> carriage.getCarriageId().equals(carriageId))
+        if (coachId != null) {
+            Optional<Coach> coachOpt = allCoaches.stream()
+                    .filter(coach -> coach.getCoachId().equals(coachId))
                     .findFirst();
-            if (carriageOpt.isPresent()) {
-                selectedCarriage = carriageOpt.get();
-                seats = selectedCarriage.getSeats();
+
+            if (coachOpt.isPresent()) {
+                selectedCoach = coachOpt.get();
+                seats = selectedCoach.getSeats();
             } else {
                 seats = List.of();
             }
@@ -49,79 +51,109 @@ public class SeatController {
         }
 
         model.addAttribute("seats", seats);
-        model.addAttribute("allCarriages", allCarriages);
-        model.addAttribute("selectedCarriageId", carriageId);
-        model.addAttribute("selectedCarriage", selectedCarriage);
+        model.addAttribute("allCoaches", allCoaches);
+        model.addAttribute("selectedCoachId", coachId);
+        model.addAttribute("selectedCoach", selectedCoach);
 
-        return "seat/list";
+        return "seats/admin-list";
     }
 
-    private void addCommonAttributes(Model model, Long carriageId) {
-        if (carriageId != null) {
-            model.addAttribute("allCarriages", carriageService.getCarriageById(carriageId).stream().toList());
-            model.addAttribute("selectedCarriageId", carriageId);
+    private void addCommonAttributes(Model model, Long coachId) {
+        if (coachId != null) {
+            model.addAttribute("allCoaches", coachService.getCoachById(coachId).stream().toList());
+            model.addAttribute("selectedCoachId", coachId);
         } else {
-            model.addAttribute("allCarriages", carriageService.getAllCarriages());
+            model.addAttribute("allCoaches", coachService.getAllCoaches());
         }
-        model.addAttribute("seatStatusTypes", SeatStatus.values());
     }
-
 
     @GetMapping("/new")
-    public String showCreateForm(Model model, @RequestParam("carriageId") Long carriageId) {
+    public String showCreateForm(
+            Model model,
+            @RequestParam("coachId") Long coachId
+    ) {
         Seat newSeat = new Seat();
-        carriageService.getCarriageById(carriageId).ifPresent(newSeat::setCarriage);
+
+        coachService.getCoachById(coachId).ifPresent(newSeat::setCoach);
 
         model.addAttribute("seat", newSeat);
-        addCommonAttributes(model, carriageId);
-        return "seat/form";
+        addCommonAttributes(model, coachId);
+
+        return "seats/form";
     }
 
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable("id") Long id, Model model) {
-        Optional<Seat> seat = seatService.getSeatById(id);
-        if (seat.isPresent()) {
-            model.addAttribute("seat", seat.get());
-            addCommonAttributes(model, seat.get().getCarriage().getCarriageId());
-            return "seat/form";
+    public String showEditForm(
+            @PathVariable("id") Long id,
+            Model model
+    ) {
+        Optional<Seat> seatOpt = seatService.getSeatById(id);
+
+        if (seatOpt.isPresent()) {
+            Seat seat = seatOpt.get();
+
+            model.addAttribute("seat", seat);
+            addCommonAttributes(model, seat.getCoach().getCoachId());
+
+            return "seats/form";
         }
-        return "redirect:/seats";
+
+        return "redirect:/admin/seats";
     }
 
     @PostMapping("/save")
-    public String saveSeat(@Valid @ModelAttribute("seat") Seat seat, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
-        Long carriageId = null;
-        if (seat.getCarriage() != null) {
-            carriageId = seat.getCarriage().getCarriageId();
+    public String saveSeat(
+            @Valid @ModelAttribute("seat") Seat seat,
+            BindingResult result,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
+        Long coachId = null;
+
+        if (seat.getCoach() != null) {
+            coachId = seat.getCoach().getCoachId();
         }
 
         if (result.hasErrors()) {
-            addCommonAttributes(model, carriageId);
-            return "seat/form";
+            addCommonAttributes(model, coachId);
+            return "seats/form";
         }
+
         try {
             seatService.saveSeat(seat);
             redirectAttributes.addFlashAttribute("successMessage", "Ghế đã được lưu!");
-            return "redirect:/seats?carriageId=" + seat.getCarriage().getCarriageId();
+
+            if (coachId != null) {
+                return "redirect:/admin/seats?coachId=" + coachId;
+            }
+
+            return "redirect:/admin/seats";
+
         } catch (IllegalStateException e) {
             model.addAttribute("errorMessage", e.getMessage());
-            addCommonAttributes(model, carriageId);
-            return "seat/form";
+            addCommonAttributes(model, coachId);
+
+            return "seats/form";
         }
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteSeat(@PathVariable("id") Long id, RedirectAttributes redirectAttributes,
-                             @RequestParam(value = "carriageId", required = false) Long carriageId) {
+    public String deleteSeat(
+            @PathVariable("id") Long id,
+            RedirectAttributes redirectAttributes,
+            @RequestParam(value = "coachId", required = false) Long coachId
+    ) {
         try {
             seatService.deleteSeat(id);
             redirectAttributes.addFlashAttribute("successMessage", "Ghế ID " + id + " đã được xóa.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xóa ghế: " + e.getMessage());
         }
-        if (carriageId != null) {
-            return "redirect:/seats?carriageId=" + carriageId;
+
+        if (coachId != null) {
+            return "redirect:/admin/seats?coachId=" + coachId;
         }
-        return "redirect:/seats";
+
+        return "redirect:/admin/seats";
     }
 }

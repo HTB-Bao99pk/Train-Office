@@ -31,11 +31,24 @@ public class TrainServiceImpl implements TrainService {
 
     @Override
     public Train saveTrain(Train train) {
-        if (train.getId() == null) {
-            if (trainRepository.existsByCode(train.getCode())) {
-                throw new IllegalStateException("Train code '" + train.getCode() + "' already exists!");
+
+        if (train.getTrainId() == null) {
+            if (trainRepository.existsByTrainCode(train.getTrainCode())) {
+                throw new IllegalStateException(
+                        "Train code '" + train.getTrainCode() + "' already exists!"
+                );
+            }
+        } else {
+            Optional<Train> oldTrain = trainRepository.findById(train.getTrainId());
+            if (oldTrain.isPresent()
+                    && !oldTrain.get().getTrainCode().equals(train.getTrainCode())
+                    && trainRepository.existsByTrainCode(train.getTrainCode())) {
+                throw new IllegalStateException(
+                        "Train code '" + train.getTrainCode() + "' already exists!"
+                );
             }
         }
+
         return trainRepository.save(train);
     }
 

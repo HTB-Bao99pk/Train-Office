@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/stations")
+@RequestMapping("/admin/stations")
 public class StationController {
 
     private final StationService stationService;
@@ -44,7 +44,7 @@ public class StationController {
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("keyword", keyword); // Gửi từ khóa ra view
 
-        return "station/list";
+        return "stations/admin-list";
     }
 
 
@@ -52,18 +52,18 @@ public class StationController {
     public String showCreateForm(Model model) {
         model.addAttribute("station", new Station());
         model.addAttribute("statusTypes", new String[]{"ACTIVE", "INACTIVE"});
-        return "station/form";
+        return "stations/form";
     }
 
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable("id") Integer id, Model model) {
+    public String showEditForm(@PathVariable("id") Long id, Model model) {
         Station station = stationService.getStationById(id);
         if (station != null) {
             model.addAttribute("station", station);
             model.addAttribute("statusTypes", new String[]{"ACTIVE", "INACTIVE"});
-            return "station/form";
+            return "stations/form";
         }
-        return "redirect:/stations";
+        return "redirect:/admin/stations";
     }
 
     @PostMapping("/save")
@@ -72,43 +72,43 @@ public class StationController {
                               RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             model.addAttribute("statusTypes", new String[]{"ACTIVE", "INACTIVE"});
-            return "station/form";
+            return "stations/form";
         }
 
         try {
-            if (station.getId() == null) {
+            if (station.getStationId() == null) {
                 Station createdStation = stationService.createStation(station);
                 if (createdStation == null) {
                     model.addAttribute("errorMessage", "Station code already exists!");
                     model.addAttribute("statusTypes", new String[]{"ACTIVE", "INACTIVE"});
-                    return "station/form";
+                    return "stations/form";
                 }
             } else {
-                Station updatedStation = stationService.updateStation(station.getId(), station);
+                Station updatedStation = stationService.updateStation(station.getStationId(), station);
                 if (updatedStation == null) {
                     model.addAttribute("errorMessage", "Station code already exists or station not found!");
                     model.addAttribute("statusTypes", new String[]{"ACTIVE", "INACTIVE"});
-                    return "station/form";
+                    return "stations/form";
                 }
             }
 
             redirectAttributes.addFlashAttribute("successMessage", "Station saved successfully!");
-            return "redirect:/stations";
+            return "redirect:/admin/stations";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Error saving station: " + e.getMessage());
             model.addAttribute("statusTypes", new String[]{"ACTIVE", "INACTIVE"});
-            return "station/form";
+            return "stations/form";
         }
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteStation(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
+    public String deleteStation(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         try {
             stationService.deleteStation(id);
             redirectAttributes.addFlashAttribute("successMessage", "Station with ID " + id + " has been deleted.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error deleting station: " + e.getMessage());
         }
-        return "redirect:/stations";
+        return "redirect:/admin/stations";
     }
 }
