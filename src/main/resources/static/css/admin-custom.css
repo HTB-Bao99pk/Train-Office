@@ -10,6 +10,7 @@
   --surface:#ffffff;
   --border:#d9e3ef;
   --muted:#657287;
+    --secondary-fixed:#c6e7ff;
 }
 
 *{font-family:Inter,"Segoe UI",Arial,sans-serif;letter-spacing:0}

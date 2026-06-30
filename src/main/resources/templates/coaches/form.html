@@ -1,69 +1,140 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layouts/admin-layout :: layout('Coach Form', ~{::section}, 'coaches')}">
+
 <section>
     <div class="admin-page-hero">
         <div>
-            <span class="admin-page-kicker"><i class="fas fa-subway mr-1"></i> Coach Profile</span>
-            <h2 th:text="${coach.coachId == null ? 'Add Coach' : 'Edit Coach'}">Coach Form</h2>
+            <span class="admin-page-kicker">
+                <i class="fas fa-subway mr-1"></i>
+                Coach Profile
+            </span>
+
+            <h2 th:text="${coach != null and coach.coachId != null ? 'Edit Coach' : 'Add Coach'}">
+                Coach Form
+            </h2>
+
             <p>Assign a coach to a train and define type and capacity.</p>
         </div>
-        <a class="btn btn-outline-primary" th:href="@{/admin/coaches(trainId=${selectedTrainId})}">
-            <i class="fas fa-arrow-left mr-1"></i> Back to coaches
+
+        <a class="btn btn-outline-primary"
+           th:href="@{/admin/coaches(trainId=${selectedTrainId})}">
+            <i class="fas fa-arrow-left mr-1"></i>
+            Back to coaches
         </a>
     </div>
 
-    <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+    <div class="alert alert-danger"
+         th:if="${errorMessage}"
+         th:text="${errorMessage}">
+    </div>
+
+    <div class="alert alert-success"
+         th:if="${successMessage}"
+         th:text="${successMessage}">
+    </div>
 
     <div class="card admin-form-card">
         <div class="card-header">
             <span class="admin-card-title">Coach Information</span>
             <small>Coach number should be unique inside the selected train.</small>
         </div>
-        <form th:action="@{/admin/coaches/save}" th:object="${coach}" method="post">
-            <input type="hidden" th:field="*{coachId}">
+
+        <form th:action="@{/admin/coaches/save}" method="post">
+            <input type="hidden"
+                   name="coachId"
+                   th:value="${coach != null ? coach.coachId : ''}">
+
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label" for="train">Train</label>
-                        <select id="train" class="form-control" th:field="*{train.trainId}" required>
+                        <label class="form-label" for="trainId">Train</label>
+
+                        <select id="trainId"
+                                name="train.trainId"
+                                class="form-control"
+                                required>
                             <option value="">Select train</option>
+
                             <option th:each="train : ${allTrains}"
                                     th:value="${train.trainId}"
-                                    th:text="${train.trainCode + ' - ' + train.trainName}">
+                                    th:text="${train.trainCode + ' - ' + train.trainName}"
+                                    th:selected="${coach != null and coach.train != null and coach.train.trainId == train.trainId}">
+                                Train
                             </option>
                         </select>
                     </div>
+
                     <div class="col-md-6 mb-3">
                         <label class="form-label" for="coachNumber">Coach Number</label>
+
                         <div class="input-group">
-                            <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-hashtag"></i></span></div>
-                            <input id="coachNumber" class="form-control" th:field="*{coachNumber}" required>
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="fas fa-hashtag"></i>
+                                </span>
+                            </div>
+
+                            <input id="coachNumber"
+                                   name="coachNumber"
+                                   class="form-control"
+                                   th:value="${coach != null ? coach.coachNumber : ''}"
+                                   placeholder="Example: C1"
+                                   required>
                         </div>
-                        <div class="text-danger small" th:if="${#fields.hasErrors('coachNumber')}" th:errors="*{coachNumber}"></div>
                     </div>
+
                     <div class="col-md-6 mb-3">
                         <label class="form-label" for="coachType">Coach Type</label>
+
                         <div class="input-group">
-                            <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-tags"></i></span></div>
-                            <input id="coachType" class="form-control" th:field="*{coachType}" required>
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="fas fa-tags"></i>
+                                </span>
+                            </div>
+
+                            <input id="coachType"
+                                   name="coachType"
+                                   class="form-control"
+                                   th:value="${coach != null ? coach.coachType : ''}"
+                                   placeholder="Example: Soft seat / Sleeper"
+                                   required>
                         </div>
-                        <div class="text-danger small" th:if="${#fields.hasErrors('coachType')}" th:errors="*{coachType}"></div>
                     </div>
+
                     <div class="col-md-6 mb-3">
                         <label class="form-label" for="capacity">Capacity</label>
+
                         <div class="input-group">
-                            <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-users"></i></span></div>
-                            <input id="capacity" type="number" min="1" class="form-control" th:field="*{capacity}" required>
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="fas fa-users"></i>
+                                </span>
+                            </div>
+
+                            <input id="capacity"
+                                   name="capacity"
+                                   type="number"
+                                   min="1"
+                                   class="form-control"
+                                   th:value="${coach != null ? coach.capacity : ''}"
+                                   placeholder="Example: 56"
+                                   required>
                         </div>
-                        <div class="text-danger small" th:if="${#fields.hasErrors('capacity')}" th:errors="*{capacity}"></div>
                     </div>
                 </div>
             </div>
+
             <div class="card-footer d-flex justify-content-end gap-2">
-                <a class="btn btn-outline-secondary" th:href="@{/admin/coaches(trainId=${selectedTrainId})}">Cancel</a>
+                <a class="btn btn-outline-secondary"
+                   th:href="@{/admin/coaches(trainId=${selectedTrainId})}">
+                    Cancel
+                </a>
+
                 <button class="btn btn-primary" type="submit">
-                    <i class="fas fa-save mr-1"></i> Save Coach
+                    <i class="fas fa-save mr-1"></i>
+                    Save Coach
                 </button>
             </div>
         </form>
