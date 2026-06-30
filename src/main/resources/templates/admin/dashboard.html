@@ -128,11 +128,44 @@
                         </thead>
                         <tbody>
                         <tr th:each="booking : ${recentBookings}">
-                            <td th:text="${booking.bookingCode}">RJ</td>
-                            <td th:text="${booking.contactName}">Name</td>
-                            <td th:text="${booking.route}">Route</td>
-                            <td th:text="${booking.totalAmount}">0</td>
-                            <td><span th:replace="~{fragments/status-badge :: statusBadge(${booking.status})}"></span></td>
+                            <td th:text="${booking.bookingNumber}">RJ0001</td>
+
+                            <td>
+        <span th:text="${booking.bookerName != null ? booking.bookerName : '-'}">
+            Customer
+        </span>
+                                <small class="d-block text-muted"
+                                       th:text="${booking.bookerEmail != null ? booking.bookerEmail : ''}">
+                                    email@example.com
+                                </small>
+                            </td>
+
+                            <td>
+        <span th:text="${booking.departureStation != null ? booking.departureStation.stationName : '-'}">
+            Hà Nội
+        </span>
+                                <span> → </span>
+                                <span th:text="${booking.arrivalStation != null ? booking.arrivalStation.stationName : '-'}">
+            Sài Gòn
+        </span>
+                            </td>
+
+                            <td>
+        <span th:if="${booking.totalAmount != null}"
+              th:text="${#numbers.formatDecimal(booking.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">
+            0 VND
+        </span>
+                                <span th:if="${booking.totalAmount == null}">
+            0 VND
+        </span>
+                            </td>
+
+                            <td>
+        <span class="badge badge-primary"
+              th:text="${booking.bookingStatus}">
+            PENDING_PAYMENT
+        </span>
+                            </td>
                         </tr>
                         <tr th:if="${recentBookings == null or #lists.isEmpty(recentBookings)}">
                             <td colspan="5" class="text-center text-muted py-4">No recent bookings.</td>
@@ -164,10 +197,21 @@
                         </thead>
                         <tbody>
                         <tr th:each="trip : ${trips}">
-                            <td th:text="${trip.train}">SE1</td>
-                            <td th:text="${trip.route}">Route</td>
-                            <td th:text="${trip.departureTime}">Time</td>
-                            <td th:text="${trip.basePrice}">0</td>
+                            <td th:text="${trip.train != null ? trip.train.trainName : '-'}">SE1</td>
+
+                            <td th:text="${trip.route != null ? trip.route.routeName : '-'}">Route</td>
+
+                            <td th:text="${trip.departureTime != null ? #temporals.format(trip.departureTime, 'dd/MM/yyyy HH:mm') : '-'}">
+                                30/06/2026 08:00
+                            </td>
+
+                            <td>
+        <span th:if="${trip.basePrice != null}"
+              th:text="${#numbers.formatDecimal(trip.basePrice, 0, 'COMMA', 0, 'POINT')} + ' VND'">
+            0 VND
+        </span>
+                                <span th:if="${trip.basePrice == null}">0 VND</span>
+                            </td>
                         </tr>
                         <tr th:if="${trips == null or #lists.isEmpty(trips)}">
                             <td colspan="4" class="text-center text-muted py-4">No trips to display.</td>
@@ -180,23 +224,62 @@
     </div>
 
     <script th:inline="javascript">
-        new Chart(document.getElementById('revenueChart'), {
-            type: 'line',
-            data: {
-                labels: /*[[${chartLabels}]]*/ [],
-                datasets: [{
-                    label: 'Revenue',
-                    data: /*[[${chartData}]]*/ [],
-                    borderColor: '#00658d',
-                    backgroundColor: 'rgba(61, 190, 255, .14)',
-                    fill: true,
-                    tension: .35
-                }]
-            },
-            options: {
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } }
+        window.addEventListener('load', function () {
+            const canvas = document.getElementById('revenueChart');
+
+            if (!canvas) {
+                return;
             }
+
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js is not loaded.');
+                return;
+            }
+
+            const labels = /*[[${chartLabels}]]*/ ['Revenue'];
+            const chartData = /*[[${chartData}]]*/ [0];
+
+            new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Revenue',
+                        data: chartData,
+                        backgroundColor: 'rgba(11, 111, 164, 0.75)',
+                        borderColor: '#0b6fa4',
+                        borderWidth: 1,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const value = context.raw || 0;
+                                    return new Intl.NumberFormat('vi-VN').format(value) + ' VND';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function (value) {
+                                    return new Intl.NumberFormat('vi-VN').format(value);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
         });
     </script>
 </section>

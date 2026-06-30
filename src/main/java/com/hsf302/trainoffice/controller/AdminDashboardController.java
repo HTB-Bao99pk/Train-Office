@@ -2,8 +2,10 @@ package com.hsf302.trainoffice.controller;
 
 import com.hsf302.trainoffice.common.enums.BookingStatus;
 import com.hsf302.trainoffice.common.enums.RefundStatus;
+import com.hsf302.trainoffice.common.enums.TripStatus;
 import com.hsf302.trainoffice.repository.BookingRepository;
 import com.hsf302.trainoffice.repository.RefundRepository;
+import com.hsf302.trainoffice.repository.TrainTripRepository;
 import com.hsf302.trainoffice.service.AdminWalletService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -21,13 +25,15 @@ public class AdminDashboardController {
     private final AdminWalletService adminWalletService;
     private final BookingRepository bookingRepository;
     private final RefundRepository refundRepository;
-
+    private final TrainTripRepository trainTripRepository;
     public AdminDashboardController(AdminWalletService adminWalletService,
                                     BookingRepository bookingRepository,
-                                    RefundRepository refundRepository) {
+                                    RefundRepository refundRepository,
+                                    TrainTripRepository trainTripRepository) {
         this.adminWalletService = adminWalletService;
         this.bookingRepository = bookingRepository;
         this.refundRepository = refundRepository;
+        this.trainTripRepository = trainTripRepository;
     }
 
     @GetMapping({"/admin", "/admin/dashboard"})
@@ -53,7 +59,16 @@ public class AdminDashboardController {
         model.addAttribute("issueItems", 0);
 
         model.addAttribute("recentBookings", bookingRepository.findTop5ByOrderByBookingDateDesc());
-        model.addAttribute("trips", List.of());
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime next30Days = LocalDate.now().plusDays(30).atTime(23, 59, 59);
+
+        model.addAttribute("trips",
+                trainTripRepository.findByStatusAndDepartureTimeGreaterThanEqualAndDepartureTimeLessThanOrderByDepartureTimeAsc(
+                        TripStatus.SCHEDULED,
+                        now,
+                        next30Days
+                )
+        );
         model.addAttribute("chartLabels", List.of("Revenue"));
         model.addAttribute("chartData", List.of(walletBalance));
 
