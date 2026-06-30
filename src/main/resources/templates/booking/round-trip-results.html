@@ -107,13 +107,14 @@
 
                         <td class="text-end">
                             <a class="btn btn-primary btn-sm"
+                               th:if="${session.currentUser != null}"
                                th:href="@{/booking/{tripId}/seats(
-                                    tripId=${result.trainTrip.tripId},
-                                    departureStationId=${result.segment.departureStop.station.stationId},
-                                    arrivalStationId=${result.segment.arrivalStop.station.stationId},
-                                    passengerCount=${result.passengerCount}
-                               )}">
-                                Đặt lượt đi
+        tripId=${result.trainTrip.tripId},
+        departureStationId=${result.segment.departureStop.station.stationId},
+        arrivalStationId=${result.segment.arrivalStop.station.stationId},
+        passengerCount=${result.passengerCount}
+   )}">
+                                Buy
                                 <i class="bi bi-chevron-right ms-1"></i>
                             </a>
                         </td>

@@ -23,7 +23,8 @@ import com.hsf302.trainoffice.repository.TrainTripRepository;
 import com.hsf302.trainoffice.service.BookingPricingService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.time.LocalDate;
+import java.time.Period;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -205,7 +206,11 @@ public class BookingServiceImpl implements com.hsf302.trainoffice.service.Bookin
         booking.setBookerEmail(request.getBookerEmail().trim());
         booking.setBookingStatus(BookingStatus.PENDING_PAYMENT);
         booking.setBookingDate(LocalDateTime.now());
-        booking.setTotalAmount(bookingPricingService.calculateTotal(booking.getTrainTrip(), seats));
+        booking.setTotalAmount(bookingPricingService.calculateTotal(
+                booking.getTrainTrip(),
+                seats,
+                request.getPassengers()
+        ));
         booking = bookingRepository.save(booking);
 
         for (int i = 0; i < request.getPassengers().size(); i++) {
@@ -219,7 +224,13 @@ public class BookingServiceImpl implements com.hsf302.trainoffice.service.Bookin
             ticket.setPassenger(passenger);
             ticket.setTrainTrip(trainTrip);
             ticket.setSeat(seat);
-            ticket.setTicketPrice(bookingPricingService.ticketPrice(booking.getTrainTrip(), seat));
+            PassengerBookingRequest passengerRequest = request.getPassengers().get(i);
+
+            ticket.setTicketPrice(bookingPricingService.ticketPrice(
+                    booking.getTrainTrip(),
+                    seat,
+                    passengerRequest.getPassengerType()
+            ));
             ticket.setTicketStatus(TicketStatus.BOOKED);
             ticketRepository.save(ticket);
         }
@@ -231,44 +242,63 @@ public class BookingServiceImpl implements com.hsf302.trainoffice.service.Bookin
         if (request == null) {
             throw new IllegalArgumentException("Booking request is required");
         }
+
         if (request.getTrainTripId() == null) {
             throw new IllegalArgumentException("Train trip is required");
         }
+
         if (request.getDepartureStationId() == null || request.getArrivalStationId() == null) {
             throw new IllegalArgumentException("Departure and arrival stations are required");
         }
+
+        if (request.getDepartureStationId().equals(request.getArrivalStationId())) {
+            throw new IllegalArgumentException("Departure station and arrival station must be different");
+        }
+
         if (request.getBookerName() == null || request.getBookerName().isBlank()
                 || request.getBookerPhone() == null || request.getBookerPhone().isBlank()
                 || request.getBookerEmail() == null || request.getBookerEmail().isBlank()) {
             throw new IllegalArgumentException("Booker contact information is required");
         }
+
         if (request.getPassengers() == null || request.getPassengers().isEmpty()) {
             throw new IllegalArgumentException("Booking must have at least one passenger");
         }
+
         if (request.getSeatIds() == null || request.getSeatIds().isEmpty()) {
             throw new IllegalArgumentException("Booking must have at least one seat");
         }
+
         if (request.getPassengers().size() != request.getSeatIds().size()) {
             throw new IllegalArgumentException("Passenger count must match selected seat count");
         }
+
         if (new HashSet<>(request.getSeatIds()).size() != request.getSeatIds().size()) {
             throw new IllegalArgumentException("Seat cannot duplicate within the same booking");
         }
-        if (request.getDepartureStationId() != null
-                && request.getDepartureStationId().equals(request.getArrivalStationId())) {
-            throw new IllegalArgumentException("Departure station and arrival station must be different");
-        }
+
         Set<String> identities = new HashSet<>();
+
         for (PassengerBookingRequest passenger : request.getPassengers()) {
             if (passenger.getFullName() == null || passenger.getFullName().isBlank()) {
                 throw new IllegalArgumentException("Passenger full name is required");
             }
-            if (passenger.getIdentityNumber() == null || passenger.getIdentityNumber().isBlank()) {
-                throw new IllegalArgumentException("Passenger identity number is required");
-            }
-            String identity = passenger.getIdentityNumber();
-            if (!identities.add(identity.trim())) {
-                throw new IllegalArgumentException("Passenger identity number cannot duplicate within the same booking");
+
+            validatePassengerAgeAndRelationship(passenger);
+
+            String passengerType = passenger.getPassengerType();
+
+            if ("ADULT".equalsIgnoreCase(passengerType)
+                    || "SENIOR".equalsIgnoreCase(passengerType)) {
+                if (passenger.getIdentityNumber() == null || passenger.getIdentityNumber().isBlank()) {
+                    throw new IllegalArgumentException("Adult and senior passengers must have identity number");
+                }
+
+                String identity = passenger.getIdentityNumber().trim();
+
+                if (!identities.add(identity)) {
+                    throw new IllegalArgumentException("Passenger identity number cannot duplicate within the same booking");
+                }
             }
         }
     }
@@ -289,14 +319,70 @@ public class BookingServiceImpl implements com.hsf302.trainoffice.service.Bookin
 
     private Passenger toPassenger(PassengerBookingRequest request, Booking booking) {
         Passenger passenger = new Passenger();
+
         passenger.setBooking(booking);
         passenger.setFullName(request.getFullName().trim());
-        passenger.setIdentityNumber(request.getIdentityNumber().trim());
+
+        if (request.getIdentityNumber() != null) {
+            passenger.setIdentityNumber(request.getIdentityNumber().trim());
+        }
+
         passenger.setDateOfBirth(request.getDateOfBirth());
         passenger.setGender(request.getGender());
+        passenger.setPassengerType(request.getPassengerType());
+        passenger.setRelationshipToBooker(request.getRelationshipToBooker());
+
         return passenger;
     }
+    private void validatePassengerAgeAndRelationship(PassengerBookingRequest passenger) {
+        if (passenger.getDateOfBirth() == null) {
+            throw new IllegalArgumentException("Passenger date of birth is required");
+        }
 
+        String passengerType = passenger.getPassengerType();
+
+        if (passengerType == null || passengerType.isBlank()) {
+            passengerType = "ADULT";
+            passenger.setPassengerType(passengerType);
+        }
+
+        int age = Period.between(passenger.getDateOfBirth(), LocalDate.now()).getYears();
+
+        switch (passengerType.toUpperCase()) {
+            case "INFANT" -> {
+                if (age >= 6) {
+                    throw new IllegalArgumentException("INFANT must be under 6 years old. Current age: " + age);
+                }
+            }
+
+            case "CHILD" -> {
+                if (age < 6 || age > 10) {
+                    throw new IllegalArgumentException("CHILD must be from 6 to 10 years old. Current age: " + age);
+                }
+            }
+
+            case "ADULT" -> {
+                if (age < 11 || age >= 60) {
+                    throw new IllegalArgumentException("ADULT must be from 11 to 59 years old. Current age: " + age);
+                }
+            }
+
+            case "SENIOR" -> {
+                if (age < 60) {
+                    throw new IllegalArgumentException("SENIOR must be 60 years old or above. Current age: " + age);
+                }
+            }
+
+            default -> throw new IllegalArgumentException("Invalid passenger type: " + passengerType);
+        }
+
+        if (age < 16) {
+            if (passenger.getRelationshipToBooker() == null
+                    || passenger.getRelationshipToBooker().isBlank()) {
+                throw new IllegalArgumentException("Passenger under 16 must have relationship to booker");
+            }
+        }
+    }
     private String generateBookingNumber() {
         String bookingNumber;
         do {
@@ -313,5 +399,36 @@ public class BookingServiceImpl implements com.hsf302.trainoffice.service.Bookin
             this.departureOrder = departureOrder;
             this.arrivalOrder = arrivalOrder;
         }
+    }
+
+    @Override
+    @Transactional
+    public int expirePendingBookingsOlderThan(int minutes) {
+        LocalDateTime cutoff = LocalDateTime.now().minusMinutes(minutes);
+
+        List<Booking> expiredBookings = bookingRepository.findByBookingStatusAndBookingDateBefore(
+                BookingStatus.PENDING_PAYMENT,
+                cutoff
+        );
+
+        for (Booking booking : expiredBookings) {
+            booking.setBookingStatus(BookingStatus.CANCELLED);
+
+            List<Ticket> tickets = ticketRepository.findByBooking_BookingIdOrderByTicketIdAsc(
+                    booking.getBookingId()
+            );
+
+            for (Ticket ticket : tickets) {
+                if (ticket.getTicketStatus() == TicketStatus.BOOKED) {
+                    ticket.setTicketStatus(TicketStatus.CANCELLED);
+                }
+            }
+
+            ticketRepository.saveAll(tickets);
+        }
+
+        bookingRepository.saveAll(expiredBookings);
+
+        return expiredBookings.size();
     }
 }

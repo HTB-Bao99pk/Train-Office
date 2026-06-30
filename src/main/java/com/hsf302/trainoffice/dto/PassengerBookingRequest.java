@@ -11,11 +11,11 @@ import java.time.LocalDate;
 
 @Data
 public class PassengerBookingRequest {
+
     @NotBlank(message = "Passenger full name is required")
     @Size(max = 100)
     private String fullName;
 
-    @NotBlank(message = "Identity number is required")
     @Size(max = 30)
     private String identityNumber;
 
@@ -24,4 +24,8 @@ public class PassengerBookingRequest {
     private LocalDate dateOfBirth;
 
     private Gender gender;
+
+    private String passengerType = "ADULT";
+
+    private String relationshipToBooker;
 }

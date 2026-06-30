@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layouts/customer-layout :: layout('Passenger Information', ~{::section}, 'booking')}">
+
 <section class="booking-shell booking-section">
     <div class="booking-progress">
         <div class="booking-progress-item done"><span>1</span>Search</div>
@@ -13,70 +14,251 @@
 
     <div class="page-hero compact-hero">
         <span class="page-eyebrow">Passengers</span>
-        <h1 class="page-title">Contact and passenger details</h1>
-        <p class="page-subtitle">When logged in, contact details are prefilled to make booking faster. All fields remain editable.</p>
+        <h1 class="page-title">Passenger details</h1>
+        <p class="page-subtitle">
+            Nhập thông tin hành khách. Hệ thống sẽ kiểm tra độ tuổi để áp dụng miễn vé hoặc giảm giá.
+        </p>
     </div>
 
-    <form th:action="@{/booking/passenger-info}" th:object="${passengerInfoForm}" method="post">
-        <div class="row g-4">
-            <div class="col-lg-4">
-                <div class="railjet-card card sticky-summary">
-                    <div class="card-header">Contact details</div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <label class="form-label" for="contactName">Contact name</label>
-                            <input id="contactName" class="form-control" type="text" th:field="*{contactName}" required>
-                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('contactName')}" th:errors="*{contactName}"></div>
+    <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+    <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+    <form th:action="@{/booking/passenger-info}" method="post">
+
+        <!-- Contact info: user đã đăng nhập nên ẩn, không bắt nhập lại -->
+        <input type="hidden"
+               name="contactName"
+               th:value="${passengerInfoForm != null ? passengerInfoForm.contactName : ''}">
+
+        <input type="hidden"
+               name="contactPhone"
+               th:value="${passengerInfoForm != null ? passengerInfoForm.contactPhone : 'N/A'}">
+
+        <input type="hidden"
+               name="contactEmail"
+               th:value="${passengerInfoForm != null ? passengerInfoForm.contactEmail : ''}">
+
+        <div class="booking-section">
+            <div class="passenger-card"
+                 th:each="passenger, stat : ${passengerInfoForm.passengers}">
+
+                <div class="passenger-index" th:text="${stat.count}">1</div>
+
+                <h2 class="h5 fw-bold mb-3" th:text="|Passenger ${stat.count}|">
+                    Passenger 1
+                </h2>
+
+                <div class="passenger-form-grid">
+                    <div>
+                        <label class="form-label">Full name</label>
+                        <input class="form-control"
+                               type="text"
+                               th:name="|passengers[${stat.index}].fullName|"
+                               th:value="${passenger.fullName}"
+                               required>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Date of birth</label>
+                        <input class="form-control dob-input"
+                               type="date"
+                               th:name="|passengers[${stat.index}].dateOfBirth|"
+                               th:value="${passenger.dateOfBirth}"
+                               required>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Passenger type</label>
+                        <select class="form-select passenger-type-select"
+                                th:name="|passengers[${stat.index}].passengerType|"
+                                required>
+                            <option value="ADULT"
+                                    th:selected="${passenger.passengerType == null or passenger.passengerType == 'ADULT'}">
+                                Người lớn 11-59 tuổi
+                            </option>
+
+                            <option value="CHILD"
+                                    th:selected="${passenger.passengerType == 'CHILD'}">
+                                Trẻ em 6-10 tuổi - giảm 50%
+                            </option>
+
+                            <option value="INFANT"
+                                    th:selected="${passenger.passengerType == 'INFANT'}">
+                                Trẻ dưới 6 tuổi - miễn vé
+                            </option>
+
+                            <option value="SENIOR"
+                                    th:selected="${passenger.passengerType == 'SENIOR'}">
+                                Người cao tuổi từ 60 - giảm 25%
+                            </option>
+                        </select>
+
+                        <div class="text-danger small mt-1 age-validation-msg" style="display:none;">
+                            Loại vé không khớp với ngày sinh.
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label" for="contactPhone">Phone number</label>
-                            <input id="contactPhone" class="form-control" type="text" th:field="*{contactPhone}" required>
-                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('contactPhone')}" th:errors="*{contactPhone}"></div>
-                        </div>
-                        <div class="mb-0">
-                            <label class="form-label" for="contactEmail">Email</label>
-                            <input id="contactEmail" class="form-control" type="email" th:field="*{contactEmail}" required>
-                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('contactEmail')}" th:errors="*{contactEmail}"></div>
-                        </div>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Gender</label>
+                        <select class="form-select"
+                                th:name="|passengers[${stat.index}].gender|">
+                            <option value="">Select gender</option>
+
+                            <option th:each="gender : ${genders}"
+                                    th:value="${gender}"
+                                    th:text="${gender}"
+                                    th:selected="${passenger.gender != null and passenger.gender == gender}">
+                                MALE
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="identity-wrapper">
+                        <label class="form-label">Identity number</label>
+                        <input class="form-control identity-input"
+                               type="text"
+                               th:name="|passengers[${stat.index}].identityNumber|"
+                               th:value="${passenger.identityNumber}"
+                               placeholder="CCCD / Passport">
+
+                        <small class="text-muted">
+                            Bắt buộc với người lớn và người cao tuổi.
+                        </small>
+                    </div>
+
+                    <div class="relationship-wrapper" style="display:none;">
+                        <label class="form-label">Relationship to booker</label>
+                        <input class="form-control relationship-input"
+                               type="text"
+                               th:name="|passengers[${stat.index}].relationshipToBooker|"
+                               th:value="${passenger.relationshipToBooker}"
+                               placeholder="Ví dụ: Con, em, cháu">
+
+                        <small class="text-muted">
+                            Bắt buộc nếu hành khách dưới 16 tuổi.
+                        </small>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-8">
-                <div class="booking-section">
-                    <div class="passenger-card" th:each="passenger, stat : *{passengers}">
-                        <div class="passenger-index" th:text="${stat.count}">1</div>
-                        <h2 class="h5 fw-bold mb-3" th:text="'Passenger ' + ${stat.count}">Passenger 1</h2>
-                        <div class="passenger-form-grid">
-                            <div>
-                                <label class="form-label">Full name</label>
-                                <input class="form-control" type="text" th:field="*{passengers[__${stat.index}__].fullName}" required>
-                            </div>
-                            <div>
-                                <label class="form-label">Identity number</label>
-                                <input class="form-control" type="text" th:field="*{passengers[__${stat.index}__].identityNumber}" required>
-                            </div>
-                            <div>
-                                <label class="form-label">Date of birth</label>
-                                <input class="form-control" type="date" th:field="*{passengers[__${stat.index}__].dateOfBirth}" required>
-                            </div>
-                            <div>
-                                <label class="form-label">Gender</label>
-                                <select class="form-select" th:field="*{passengers[__${stat.index}__].gender}">
-                                    <option value="">Select gender</option>
-                                    <option th:each="gender : ${genders}" th:value="${gender}" th:text="${gender}"></option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+            <div class="booking-actions justify-content-end">
+                <a class="btn btn-outline-primary" th:href="@{/booking/search}">
+                    Cancel
+                </a>
 
-                    <div class="booking-actions justify-content-end">
-                        <a class="btn btn-outline-primary" th:href="@{/booking/search}">Cancel</a>
-                        <button class="btn btn-primary" type="submit">Continue to confirmation</button>
-                    </div>
-                </div>
+                <button class="btn btn-primary" type="submit">
+                    Continue to confirmation
+                </button>
             </div>
         </div>
     </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const passengerCards = document.querySelectorAll('.passenger-card');
+
+            function getAge(dobString) {
+                if (!dobString) {
+                    return -1;
+                }
+
+                const today = new Date();
+                const birthDate = new Date(dobString);
+
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const monthDiff = today.getMonth() - birthDate.getMonth();
+
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+
+                return age;
+            }
+
+            function validateCard(card) {
+                const dobInput = card.querySelector('.dob-input');
+                const typeSelect = card.querySelector('.passenger-type-select');
+                const errorMsg = card.querySelector('.age-validation-msg');
+
+                const identityWrapper = card.querySelector('.identity-wrapper');
+                const identityInput = card.querySelector('.identity-input');
+
+                const relationshipWrapper = card.querySelector('.relationship-wrapper');
+                const relationshipInput = card.querySelector('.relationship-input');
+
+                if (!dobInput || !typeSelect) {
+                    return;
+                }
+
+                const age = getAge(dobInput.value);
+                const type = typeSelect.value;
+
+                let valid = true;
+
+                if (age >= 0) {
+                    if (type === 'INFANT' && age >= 6) {
+                        valid = false;
+                    }
+
+                    if (type === 'CHILD' && (age < 6 || age > 10)) {
+                        valid = false;
+                    }
+
+                    if (type === 'ADULT' && (age < 11 || age >= 60)) {
+                        valid = false;
+                    }
+
+                    if (type === 'SENIOR' && age < 60) {
+                        valid = false;
+                    }
+                }
+
+                if (errorMsg) {
+                    errorMsg.style.display = valid ? 'none' : 'block';
+                }
+
+                if (identityWrapper && identityInput) {
+                    if (type === 'INFANT' || type === 'CHILD') {
+                        identityWrapper.style.display = 'none';
+                        identityInput.required = false;
+                        identityInput.value = '';
+                    } else {
+                        identityWrapper.style.display = 'block';
+                        identityInput.required = true;
+                    }
+                }
+
+                if (relationshipWrapper && relationshipInput) {
+                    if (age >= 0 && age < 16) {
+                        relationshipWrapper.style.display = 'block';
+                        relationshipInput.required = true;
+                    } else {
+                        relationshipWrapper.style.display = 'none';
+                        relationshipInput.required = false;
+                        relationshipInput.value = '';
+                    }
+                }
+            }
+
+            passengerCards.forEach(function (card) {
+                const dobInput = card.querySelector('.dob-input');
+                const typeSelect = card.querySelector('.passenger-type-select');
+
+                if (dobInput) {
+                    dobInput.addEventListener('change', function () {
+                        validateCard(card);
+                    });
+                }
+
+                if (typeSelect) {
+                    typeSelect.addEventListener('change', function () {
+                        validateCard(card);
+                    });
+                }
+
+                validateCard(card);
+            });
+        });
+    </script>
 </section>
 </html>

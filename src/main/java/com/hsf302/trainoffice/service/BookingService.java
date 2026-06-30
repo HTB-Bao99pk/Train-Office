@@ -23,4 +23,5 @@ public interface BookingService {
     Booking cancelPendingBooking(Long bookingId, User user);
 
     Booking cancelPendingGuestBooking(Long bookingId);
+    int expirePendingBookingsOlderThan(int minutes);
 }

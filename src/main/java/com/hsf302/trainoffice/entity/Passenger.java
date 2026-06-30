@@ -51,4 +51,9 @@ public class Passenger {
     @OneToMany(mappedBy = "passenger", fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<Ticket> tickets = new ArrayList<>();
+    @Column(name = "passenger_type", length = 20)
+    private String passengerType;
+
+    @Column(name = "relationship_to_booker", length = 100, columnDefinition = "NVARCHAR(100)")
+    private String relationshipToBooker;
 }
