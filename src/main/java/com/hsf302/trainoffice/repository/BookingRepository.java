@@ -53,4 +53,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Optional<Booking> findBasicDetailsByBookingId(Long bookingId);
     List<Booking> findByBookingStatusAndBookingDateBefore(BookingStatus bookingStatus,
                                                           LocalDateTime bookingDate);
+    long countByBookingStatus(BookingStatus bookingStatus);
+
+    List<Booking> findTop5ByOrderByBookingDateDesc();
 }

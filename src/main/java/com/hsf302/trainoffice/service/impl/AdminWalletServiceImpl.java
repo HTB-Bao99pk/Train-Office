@@ -20,7 +20,7 @@ public class AdminWalletServiceImpl implements AdminWalletService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public BigDecimal getBalance() {
         return getOrCreateWallet().getBalance();
     }
