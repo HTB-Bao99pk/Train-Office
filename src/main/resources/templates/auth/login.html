@@ -3,10 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <title>Đăng nhập | RailJet</title>
-    <script th:src="@{/js/app.js}"></script>
     <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
     <style>
         :root{
@@ -168,32 +165,9 @@
 
                 <div class="mb-3">
                     <label class="form-label" for="password">Mật khẩu</label>
-
-                    <div style="position: relative;">
-                        <input id="password"
-                               type="password"
-                               name="password"
-                               class="form-control"
-                               placeholder="Nhập mật khẩu"
-                               required
-                               style="padding-right:45px;">
-
-                        <i class="fa-solid fa-eye"
-                           onclick="togglePassword('password', this)"
-                           style="position:absolute;
-                  right:15px;
-                  top:50%;
-                  transform:translateY(-50%);
-                  cursor:pointer;
-                  color:#6c757d;">
-                        </i>
-                    </div>
-
+                    <input id="password" type="password" name="password" class="form-control" placeholder="Nhập mật khẩu" required>
                     <div class="mt-2 text-end">
-                        <a class="small fw-bold text-decoration-none"
-                           th:href="@{/forgot-password}">
-                            Forgot Password?
-                        </a>
+                        <a class="small fw-bold text-decoration-none" th:href="@{/forgot-password}">Forgot Password?</a>
                     </div>
                 </div>
 

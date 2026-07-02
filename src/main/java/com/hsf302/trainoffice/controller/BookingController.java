@@ -141,10 +141,12 @@ public class BookingController {
     }
 
     @GetMapping("/booking/history")
-    public String history(HttpSession session,
+    public String history(@RequestParam(value = "status", required = false) String status,
+                          HttpSession session,
                           Model model,
                           RedirectAttributes redirectAttributes) {
         return bookingPageService.showHistory(
+                status,
                 session,
                 model,
                 redirectAttributes

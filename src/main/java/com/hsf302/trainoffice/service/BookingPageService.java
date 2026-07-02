@@ -51,7 +51,8 @@ public interface BookingPageService {
                        Model model,
                        RedirectAttributes redirectAttributes);
 
-    String showHistory(HttpSession session,
+    String showHistory(String status,
+                       HttpSession session,
                        Model model,
                        RedirectAttributes redirectAttributes);
 

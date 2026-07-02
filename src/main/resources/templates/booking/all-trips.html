@@ -1,23 +1,46 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layouts/customer-layout :: layout('All Trips', ~{::section}, 'allTrips')}">
-<section class="booking-shell booking-section">
 
-    <div class="page-hero compact-hero">
-        <span class="page-eyebrow">RailJet Trips</span>
-        <h1 class="page-title">Tất cả chuyến tàu</h1>
-        <p class="page-subtitle">
-            Xem danh sách các chuyến tàu đang mở theo ngày khởi hành và chọn chuyến phù hợp để đặt vé.
-        </p>
-    </div>
+<section class="rail-results-page">
+    <link rel="stylesheet" th:href="@{/css/rail-booking.css}">
 
-    <div class="railjet-card mb-4">
-        <div class="card-body">
-            <form th:action="@{/booking/all-trips}" method="get" class="row g-3 align-items-end">
-                <div class="col-lg-4 col-md-6">
-                    <label class="form-label" for="departureDate">
-                        <i class="bi bi-calendar3 me-1"></i>Ngày khởi hành
+    <div class="rail-results-container">
+        <div class="rail-results-header">
+            <div class="rail-results-title-block">
+                <h1>
+                    <span th:text="${trips != null ? #lists.size(trips) : 0}">0</span>
+                    available trips
+                </h1>
+
+                <p>
+                    Choose a suitable departure date. The number of tickets will be calculated from the seats you select in the next step.
+                </p>
+            </div>
+
+            <div class="rail-header-actions">
+                <a class="btn btn-outline-light" th:href="@{/booking/search}">
+                    <i class="bi bi-search"></i>
+                    Search by stations
+                </a>
+
+                <a class="btn btn-primary" th:href="@{/booking/all-trips}">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    Today
+                </a>
+            </div>
+        </div>
+
+        <div class="rail-date-card">
+            <form th:action="@{/booking/all-trips}"
+                  method="get"
+                  class="rail-date-form">
+
+                <div>
+                    <label for="departureDate">
+                        Departure date
                     </label>
+
                     <input id="departureDate"
                            type="date"
                            name="departureDate"
@@ -25,133 +48,156 @@
                            th:value="${selectedDate}">
                 </div>
 
-                <div class="col-lg-3 col-md-6">
-                    <button class="btn btn-primary w-100" type="submit">
-                        <i class="bi bi-search me-2"></i>Lọc chuyến
-                    </button>
-                </div>
+                <button class="btn btn-primary" type="submit">
+                    <i class="bi bi-funnel"></i>
+                    Filter trips
+                </button>
 
-                <div class="col-lg-3 col-md-6">
-                    <a class="btn btn-outline-secondary w-100" th:href="@{/booking/all-trips}">
-                        <i class="bi bi-arrow-clockwise me-2"></i>Hôm nay
-                    </a>
-                </div>
+                <a class="btn btn-outline-light" th:href="@{/booking/all-trips}">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    Today
+                </a>
             </form>
         </div>
-    </div>
 
-    <div class="result-toolbar">
-        <div>
-            <strong th:text="${trips != null ? #lists.size(trips) : 0}">0</strong>
-            <span> chuyến tàu</span>
-            <span th:if="${selectedDate != null}">
-                trong ngày
-                <strong th:text="${#temporals.format(selectedDate, 'dd/MM/yyyy')}">30/06/2026</strong>
-            </span>
+        <div class="rail-content-head">
+            <h2>
+                <span th:text="${trips != null ? #lists.size(trips) : 0}">0</span>
+                available trips
+            </h2>
+
+            <div class="rail-sort">
+                Sorted by:
+                <strong>Earliest departure</strong>
+            </div>
         </div>
 
-        <a class="btn btn-outline-primary" th:href="@{/booking/search}">
-            <i class="bi bi-search me-2"></i>Tìm chuyến theo ga
-        </a>
-    </div>
+        <div class="rail-trip-list"
+             th:if="${trips != null and !#lists.isEmpty(trips)}">
 
-    <div class="railjet-card">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-primary">
-                <tr>
-                    <th>Tuyến</th>
-                    <th>Mã tàu</th>
-                    <th>Giờ đi</th>
-                    <th>Giờ đến</th>
-                    <th>Trạng thái</th>
-                    <th>Giá từ (VNĐ)</th>
-                    <th class="text-end">Thao tác</th>
-                </tr>
-                </thead>
+            <article class="rail-trip-card" th:each="item : ${trips}">
+                <div class="rail-train-info">
+                    <div class="rail-train-head">
+                        <span class="rail-train-code"
+                              th:text="${item.trainTrip.train != null ? item.trainTrip.train.trainCode : 'N/A'}">
+                            SE3
+                        </span>
 
-                <tbody>
-                <tr th:each="item : ${trips}">
-                    <td>
-                        <strong th:text="${item.trainTrip.route != null ? item.trainTrip.route.routeCode : 'N/A'}">
-                            HN-SG
-                        </strong>
-                        <div class="small text-muted"
-                             th:text="${item.departureStation != null && item.arrivalStation != null
-                                ? item.departureStation.stationName + ' → ' + item.arrivalStation.stationName
-                                : 'Chưa có ga đầu/cuối'}">
-                            Hà Nội → Sài Gòn
-                        </div>
-                    </td>
-
-                    <td>
-                        <strong th:text="${item.trainTrip.train != null ? item.trainTrip.train.trainCode : 'N/A'}">
-                            SE1
-                        </strong>
-                        <div class="small text-muted"
-                             th:text="${item.trainTrip.train != null ? item.trainTrip.train.trainName : ''}">
-                            SE1
-                        </div>
-                    </td>
-
-                    <td th:text="${#temporals.format(item.trainTrip.departureTime, 'dd/MM/yyyy HH:mm')}">
-                        30/06/2026 19:30
-                    </td>
-
-                    <td th:text="${#temporals.format(item.trainTrip.arrivalTime, 'dd/MM/yyyy HH:mm')}">
-                        02/07/2026 04:30
-                    </td>
-
-                    <td>
-                        <span class="badge bg-success"
+                        <span class="rail-status"
                               th:text="${item.trainTrip.status}">
                             SCHEDULED
                         </span>
-                    </td>
+                    </div>
 
-                    <td>
-                        <strong th:text="${#numbers.formatDecimal(item.trainTrip.basePrice, 0, 'COMMA', 0, 'POINT')}">
-                            1200000
-                        </strong>
-                    </td>
+                    <p class="rail-train-name"
+                       th:text="${item.trainTrip.train != null ? item.trainTrip.train.trainName : 'Train trip'}">
+                        SE3 - Ha Noi - Sai Gon
+                    </p>
 
-                    <td class="text-end">
-                        <a th:if="${item.bookable}"
-                           class="btn btn-primary btn-sm"
-                           th:href="@{/booking/{tripId}/seats(
-                                tripId=${item.trainTrip.tripId},
-                                departureStationId=${item.departureStationId},
-                                arrivalStationId=${item.arrivalStationId},
-                                passengerCount=1
-                           )}">
-                            Đặt vé
-                            <i class="bi bi-chevron-right ms-1"></i>
-                        </a>
+                    <div class="rail-provider">
+                        <i class="bi bi-train-front"></i>
 
-                        <button th:if="${!item.bookable}"
-                                class="btn btn-outline-secondary btn-sm"
-                                disabled>
-                            Chưa đủ ga
-                        </button>
-                    </td>
-                </tr>
+                        <span th:text="${item.trainTrip.route != null ? item.trainTrip.route.routeCode : 'Vietnam Railway'}">
+                            R001
+                        </span>
+                    </div>
+                </div>
 
-                <tr th:if="${#lists.isEmpty(trips)}">
-                    <td colspan="7">
-                        <div class="empty-state py-5">
-                            <i class="bi bi-train-front"></i>
-                            <h2>Không có chuyến tàu</h2>
-                            <p>Hãy chọn ngày khác hoặc kiểm tra lại dữ liệu trip trong trang admin.</p>
-                            <a class="btn btn-primary" th:href="@{/booking/search}">
-                                Quay lại tìm chuyến
-                            </a>
+                <div class="rail-timeline">
+                    <div class="rail-time">
+                        <h3 th:text="${item.trainTrip.departureTime != null ? #temporals.format(item.trainTrip.departureTime, 'HH:mm') : '--:--'}">
+                            19:00
+                        </h3>
+
+                        <span th:text="${item.departureStation != null ? item.departureStation.stationName : 'Departure station'}">
+                            Ha Noi
+                        </span>
+                    </div>
+
+                    <div class="rail-line">
+                        <span>Direct</span>
+
+                        <div class="rail-line-map">
+                            <i></i>
                         </div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+
+                        <small th:if="${item.trainTrip.departureTime != null}"
+                               th:text="${#temporals.format(item.trainTrip.departureTime, 'dd/MM/yyyy')}">
+                            02/07/2026
+                        </small>
+                    </div>
+
+                    <div class="rail-time end">
+                        <h3 th:text="${item.trainTrip.arrivalTime != null ? #temporals.format(item.trainTrip.arrivalTime, 'HH:mm') : '--:--'}">
+                            00:50
+                        </h3>
+
+                        <span th:text="${item.arrivalStation != null ? item.arrivalStation.stationName : 'Arrival station'}">
+                            Sai Gon
+                        </span>
+                    </div>
+                </div>
+
+                <div class="rail-price-action">
+                    <div class="rail-price-label">
+                        From
+                    </div>
+
+                    <div class="rail-price">
+                        <span th:if="${item.trainTrip.basePrice != null}"
+                              th:text="${#numbers.formatDecimal(item.trainTrip.basePrice, 0, 'COMMA', 0, 'POINT')}">
+                            890,000
+                        </span>
+
+                        <span th:if="${item.trainTrip.basePrice == null}">
+                            0
+                        </span>
+
+                        <small>VND</small>
+                    </div>
+
+                    <a th:if="${item.bookable and session.currentUser != null}"
+                       class="btn rail-book-btn"
+                       th:href="@{/booking/{tripId}/seats(
+                            tripId=${item.trainTrip.tripId},
+                            departureStationId=${item.departureStationId},
+                            arrivalStationId=${item.arrivalStationId},
+                            passengerCount=1
+                       )}">
+                        Select seats
+                    </a>
+
+                    <a th:if="${item.bookable and session.currentUser == null}"
+                       class="btn rail-book-btn"
+                       th:href="@{/booking/login-required}">
+                        Buy ticket
+                    </a>
+
+                    <button th:if="${!item.bookable}"
+                            class="btn rail-disabled-btn"
+                            disabled>
+                        Stations unavailable
+                    </button>
+                </div>
+            </article>
+        </div>
+
+        <div class="rail-empty"
+             th:if="${trips == null or #lists.isEmpty(trips)}">
+
+            <i class="bi bi-train-front"></i>
+
+            <h2>No trips available</h2>
+
+            <p>
+                Please choose another date or check trip data in the admin panel.
+            </p>
+
+            <a class="btn rail-book-btn mt-2"
+               th:href="@{/booking/search}">
+                Search by stations
+            </a>
         </div>
     </div>
-
 </section>
 </html>

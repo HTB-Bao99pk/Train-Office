@@ -2,6 +2,7 @@ package com.hsf302.trainoffice.controller;
 
 import com.hsf302.trainoffice.entity.Route;
 import com.hsf302.trainoffice.service.RouteService;
+import com.hsf302.trainoffice.config.AdminErrorMessageUtil;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,101 +20,85 @@ public class RouteController {
         this.routeService = routeService;
     }
 
-    // ==========================
-    // LIST
-    // ==========================
     @GetMapping
     public String listRoutes(Model model) {
-
         model.addAttribute("routes", routeService.getAllRoutes());
-
         return "routes/admin-list";
     }
 
-    // ==========================
-    // CREATE
-    // ==========================
     @GetMapping("/new")
     public String showCreateForm(Model model) {
-
         model.addAttribute("route", new Route());
-
         return "routes/form";
     }
 
-    // ==========================
-    // EDIT
-    // ==========================
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id,
-                               Model model) {
+                               Model model,
+                               RedirectAttributes redirectAttributes) {
 
-        routeService.getRouteById(id).ifPresent(route ->
-                model.addAttribute("route", route));
-
-        return model.containsAttribute("route")
-                ? "routes/form"
-                : "redirect:/admin/routes";
+        return routeService.getRouteById(id)
+                .map(route -> {
+                    model.addAttribute("route", route);
+                    return "routes/form";
+                })
+                .orElseGet(() -> {
+                    redirectAttributes.addFlashAttribute(
+                            "errorMessage",
+                            "Route was not found."
+                    );
+                    return "redirect:/admin/routes";
+                });
     }
 
-    // ==========================
-    // SAVE
-    // ==========================
     @PostMapping("/save")
-    public String saveRoute(
-            @Valid @ModelAttribute("route") Route route,
-            BindingResult result,
-            RedirectAttributes redirectAttributes) {
+    public String saveRoute(@Valid @ModelAttribute("route") Route route,
+                            BindingResult result,
+                            Model model,
+                            RedirectAttributes redirectAttributes) {
 
         if (result.hasErrors()) {
             return "routes/form";
         }
 
         try {
-
             routeService.saveRoute(route);
 
             redirectAttributes.addFlashAttribute(
                     "successMessage",
-                    "Route saved successfully!"
+                    "Route saved successfully."
             );
+
+            return "redirect:/admin/routes";
 
         } catch (Exception e) {
-
-            redirectAttributes.addFlashAttribute(
+            model.addAttribute(
                     "errorMessage",
-                    e.getMessage()
+                    "Cannot save this route. Please check the information and try again."
             );
-        }
 
-        return "redirect:/admin/routes";
+            return "routes/form";
+        }
     }
 
-    // ==========================
-    // DELETE
-    // ==========================
     @GetMapping("/delete/{id}")
     public String deleteRoute(@PathVariable Long id,
                               RedirectAttributes redirectAttributes) {
-
         try {
-
             routeService.deleteRoute(id);
 
             redirectAttributes.addFlashAttribute(
                     "successMessage",
-                    "Route deleted successfully!"
+                    "Route deleted successfully."
             );
 
         } catch (Exception e) {
-
             redirectAttributes.addFlashAttribute(
                     "errorMessage",
-                    e.getMessage()
+                    AdminErrorMessageUtil.deleteMessage("route", e)
             );
         }
 
         return "redirect:/admin/routes";
     }
-
 }

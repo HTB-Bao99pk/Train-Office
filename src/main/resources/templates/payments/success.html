@@ -1,32 +1,60 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layouts/customer-layout :: layout('Thanh toán thành công', ~{::section}, 'payments')}">
-<section class="container customer-page">
-    <div class="page-hero text-center">
-        <span class="page-eyebrow">Payment completed</span>
-        <h1 class="page-title">Thanh toán thành công</h1>
-        <p class="page-subtitle mx-auto">
-            Giao dịch đã được ghi nhận. Vé và hóa đơn của bạn đã sẵn sàng để xem lại.
-        </p>
-    </div>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: layout('Payment Success', ~{::section}, 'booking')}">
 
-    <div class="railjet-card card">
-        <div class="card-body p-4 p-lg-5 text-center">
-            <div class="d-inline-flex align-items-center justify-content-center mb-3 rounded-3"
-                 style="width:76px;height:76px;background:#dff4ff;color:#0b6fa4;font-size:38px">
+<section class="rail-payment-page rail-payment-success-page">
+    <link rel="stylesheet" th:href="@{/css/rail-payment.css}">
+
+    <div class="rail-payment-shell">
+        <div class="rail-payment-card rail-payment-result-card">
+            <div class="rail-payment-status-icon rail-payment-status-success">
                 <i class="bi bi-check2-circle"></i>
             </div>
-            <h2 class="fw-bold mb-2">Đặt vé đã hoàn tất</h2>
-            <p class="text-muted mb-4">Bạn có thể xem lịch sử đặt vé, in vé hoặc kiểm tra hóa đơn ngay bên dưới.</p>
-            <div class="d-flex flex-wrap justify-content-center gap-2">
-                <a class="btn btn-primary px-4" th:href="@{/profile}">
-                    <i class="bi bi-clock-history me-1"></i> Lịch sử đặt vé
+
+            <h1 class="rail-payment-title">Payment Successful</h1>
+            <p class="rail-payment-subtitle">
+                Your journey is confirmed and ready for departure.
+            </p>
+
+            <div class="rail-payment-summary-box">
+                <div class="rail-payment-summary-row">
+                    <span>Booking Number</span>
+                    <strong th:text="${bookingCode != null ? bookingCode : (booking != null ? booking.bookingCode : 'RJ1782996611446')}">RJ1782996611446</strong>
+                </div>
+
+                <div class="rail-payment-summary-row">
+                    <span>Transaction Code</span>
+                    <strong th:text="${transactionCode != null ? transactionCode : 'TXN-9982-AB'}">TXN-9982-AB</strong>
+                </div>
+
+                <div class="rail-payment-summary-row">
+                    <span>Payment Status</span>
+                    <strong class="rail-payment-status-text rail-payment-status-text-success">● SUCCESS</strong>
+                </div>
+
+                <div class="rail-payment-summary-row rail-payment-total-row">
+                    <span>Total Amount</span>
+                    <strong class="rail-payment-total-value"
+                            th:text="${formattedAmount != null ? formattedAmount : '900,000 VND'}">900,000 VND</strong>
+                </div>
+            </div>
+
+            <a class="rail-payment-primary-btn"
+               th:href="@{/tickets}">
+                <i class="bi bi-ticket-perforated me-2"></i>
+                View Tickets
+            </a>
+
+            <div class="rail-payment-action-row">
+                <a class="rail-payment-secondary-btn"
+                   th:href="@{/booking/history}">
+                    View My Bookings
                 </a>
-                <a class="btn btn-outline-primary px-4" th:href="@{/profile}">
-                    <i class="bi bi-ticket-perforated me-1"></i> Xem vé
-                </a>
-                <a class="btn btn-outline-primary px-4" th:href="@{/admin/payments}">
-                    <i class="bi bi-receipt me-1"></i> Hóa đơn
+
+                <a class="rail-payment-secondary-btn"
+                   th:href="@{/all-trips}">
+                    Book Another Trip
                 </a>
             </div>
         </div>

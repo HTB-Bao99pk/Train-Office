@@ -334,3 +334,266 @@ a:hover{color:var(--rail-primary)}
   .profile-page-header .profile-primary-action,
   .profile-page-header .profile-ghost-action{width:100%;min-width:0}
 }
+
+
+/* =========================================================
+   Shared Midnight Customer Header
+   ========================================================= */
+
+.rail-midnight-header {
+    position: sticky;
+    top: 0;
+    z-index: 1090;
+    min-height: 72px;
+    background:
+            linear-gradient(180deg, rgba(5, 18, 34, .96), rgba(6, 22, 40, .92)) !important;
+    border-top: none !important;
+    border-bottom: 1px solid rgba(120, 190, 255, .14) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .22) !important;
+    backdrop-filter: blur(16px);
+}
+
+.rail-header-container {
+    max-width: 1280px;
+}
+
+.rail-header-brand {
+    display: inline-flex;
+    align-items: center;
+    color: #8fd3ff !important;
+    font-size: 25px !important;
+    font-weight: 900 !important;
+    letter-spacing: -.03em;
+}
+
+.rail-header-brand:hover {
+    color: #bfe7ff !important;
+}
+
+.rail-header-menu {
+    gap: 4px;
+}
+
+.rail-header-link {
+    position: relative;
+    display: inline-flex !important;
+    align-items: center;
+    min-height: 42px;
+    padding: 0 10px !important;
+    color: #c7d3df !important;
+    font-size: 14px;
+    font-weight: 800 !important;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: .2s ease;
+}
+
+.rail-header-link i {
+    color: #3dbdf8;
+}
+
+.rail-header-link:hover,
+.rail-header-link.active {
+    color: #8fd3ff !important;
+}
+
+.rail-header-link.active::after {
+    content: "";
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: 0;
+    height: 2px;
+    border-radius: 999px;
+    background: #38bdf8;
+    box-shadow: 0 0 14px rgba(56, 189, 248, .5);
+}
+
+.rail-register-btn,
+.rail-login-btn,
+.rail-admin-btn {
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px !important;
+    padding: 0 16px !important;
+    font-weight: 800 !important;
+    transition: .2s ease;
+}
+
+.rail-register-btn {
+    color: #8fd3ff !important;
+    border: 1px solid rgba(143, 211, 255, .45) !important;
+    background: transparent !important;
+}
+
+.rail-register-btn:hover {
+    color: #041523 !important;
+    background: #8fd3ff !important;
+}
+
+.rail-login-btn {
+    color: #041523 !important;
+    border: 1px solid #38bdf8 !important;
+    background: #38bdf8 !important;
+}
+
+.rail-login-btn:hover {
+    filter: brightness(1.06);
+    box-shadow: 0 0 22px rgba(56, 189, 248, .28);
+}
+
+.rail-admin-btn {
+    color: #041523 !important;
+    border: 1px solid #f8c14a !important;
+    background: #f8c14a !important;
+}
+
+.rail-user-trigger {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 10px;
+    min-height: 42px;
+    padding: 0 8px !important;
+    color: #e7f2ff !important;
+    font-weight: 800 !important;
+}
+
+.rail-user-trigger:hover {
+    color: #8fd3ff !important;
+}
+
+.rail-user-trigger::after {
+    margin-left: 4px;
+    color: #9eb2c7;
+}
+
+.rail-user-avatar {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    color: #041523;
+    background: linear-gradient(180deg, #d6ecff, #b4ddff);
+    border: 1px solid rgba(143, 211, 255, .25);
+    box-shadow: 0 0 18px rgba(56, 189, 248, .14);
+}
+
+.rail-user-name {
+    max-width: 190px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ===== Dropdown user box ===== */
+
+.rail-user-dropdown {
+    min-width: 280px;
+    margin-top: 12px !important;
+    overflow: hidden;
+    border: 1px solid rgba(122, 183, 231, .18) !important;
+    border-radius: 14px !important;
+    background:
+            linear-gradient(180deg, rgba(18, 34, 56, .98), rgba(10, 24, 42, .98)) !important;
+    box-shadow: 0 22px 50px rgba(0, 0, 0, .32) !important;
+    backdrop-filter: blur(18px);
+    padding: 0 !important;
+}
+
+.rail-dropdown-header {
+    padding: 16px 18px 12px;
+    background: rgba(255, 255, 255, .02);
+}
+
+.rail-dropdown-header .text-muted {
+    color: #8fa3b9 !important;
+}
+
+.rail-dropdown-email {
+    max-width: 235px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #dbe9f8 !important;
+}
+
+.rail-user-dropdown .dropdown-divider {
+    margin: 0 !important;
+    border-top-color: rgba(255, 255, 255, .08) !important;
+}
+
+.rail-user-dropdown .dropdown-item {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #dbe7f5 !important;
+    font-weight: 600;
+    padding: 10px 16px;
+    background: transparent !important;
+    transition: .18s ease;
+}
+
+.rail-user-dropdown .dropdown-item i {
+    color: #59c8ff;
+}
+
+.rail-user-dropdown .dropdown-item:hover {
+    background: rgba(56, 189, 248, .10) !important;
+    color: #8fd3ff !important;
+}
+
+.rail-user-dropdown .dropdown-item.text-danger {
+    color: #ff7d7d !important;
+}
+
+.rail-user-dropdown .dropdown-item.text-danger i {
+    color: #ff7d7d !important;
+}
+
+.rail-user-dropdown .dropdown-item.text-danger:hover {
+    background: rgba(255, 85, 85, .10) !important;
+    color: #ff9a9a !important;
+}
+
+.rail-header-toggler {
+    border: 1px solid rgba(143, 211, 255, .25) !important;
+    background: rgba(143, 211, 255, .08);
+}
+
+.rail-header-toggler:focus {
+    box-shadow: 0 0 0 .2rem rgba(56, 189, 248, .18) !important;
+}
+
+@media (max-width: 991px) {
+    .rail-header-menu {
+        padding: 14px 0;
+        gap: 8px;
+    }
+
+    .rail-header-link {
+        width: 100%;
+        justify-content: flex-start;
+        padding: 10px 0 !important;
+    }
+
+    .rail-header-link.active::after {
+        display: none;
+    }
+
+    .rail-register-btn,
+    .rail-login-btn,
+    .rail-admin-btn,
+    .rail-user-trigger {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .rail-user-dropdown {
+        width: 100%;
+    }
+}
