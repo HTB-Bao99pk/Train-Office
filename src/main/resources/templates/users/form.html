@@ -13,6 +13,7 @@
         </a>
     </div>
 
+    <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
     <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
 
     <div class="card admin-form-card">
@@ -30,6 +31,10 @@
                             <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-envelope"></i></span></div>
                             <input class="form-control" th:field="*{email}" type="email" required>
                         </div>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('email')}"
+                             th:errors="*{email}">
+                        </div>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Password</label>
@@ -39,12 +44,20 @@
                                    th:required="${user.userId == null}"
                                    th:placeholder="${user.userId == null ? 'Required for new user' : 'Leave blank to keep current password'}">
                         </div>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('password')}"
+                             th:errors="*{password}">
+                        </div>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Full name</label>
                         <div class="input-group">
                             <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-id-badge"></i></span></div>
                             <input class="form-control" th:field="*{fullName}">
+                        </div>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('fullName')}"
+                             th:errors="*{fullName}">
                         </div>
                     </div>
                     <div class="col-md-3 mb-3">

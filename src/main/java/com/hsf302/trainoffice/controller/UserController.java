@@ -94,8 +94,15 @@ public class UserController {
             redirectAttributes.addFlashAttribute("successMessage", "User saved successfully.");
             return "redirect:/admin/users";
         } catch (IllegalArgumentException ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
-            model.addAttribute("user", user);
+            // Nếu lỗi là email trùng
+            if (ex.getMessage().toLowerCase().contains("email")) {
+                bindingResult.rejectValue(
+                        "email",
+                        "duplicate",
+                        ex.getMessage());
+            } else {
+                model.addAttribute("errorMessage", ex.getMessage());
+            }
             addFormOptions(model);
             return "users/form";
         }
