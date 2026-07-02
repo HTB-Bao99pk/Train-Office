@@ -49,21 +49,10 @@ function setupPassengerValidation() {
         let valid = true;
 
         if (age >= 0) {
-            if (type === 'INFANT' && age >= 6) {
-                valid = false;
-            }
-
-            if (type === 'CHILD' && (age < 6 || age > 10)) {
-                valid = false;
-            }
-
-            if (type === 'ADULT' && (age < 11 || age >= 60)) {
-                valid = false;
-            }
-
-            if (type === 'SENIOR' && age < 60) {
-                valid = false;
-            }
+            if (type === 'INFANT' && age >= 6) valid = false;
+            if (type === 'CHILD' && (age < 6 || age > 10)) valid = false;
+            if (type === 'ADULT' && (age < 11 || age >= 60)) valid = false;
+            if (type === 'SENIOR' && age < 60) valid = false;
         }
 
         if (errorMsg) {
@@ -123,16 +112,34 @@ function setupSeatSelection() {
         return;
     }
 
+    const seatOptions = Array.from(document.querySelectorAll('.rj-seat-option'));
     const checkboxes = Array.from(document.querySelectorAll('.rail-seat-checkbox'));
+
     const passengerCountInput = document.getElementById('passengerCountInput');
     const selectedList = document.getElementById('selectedSeatList');
     const selectedCountText = document.getElementById('selectedCountText');
     const selectedTotalText = document.getElementById('selectedTotalText');
 
+    const coachTabs = document.getElementById('railCoachTabs');
+    const previousCoachBtn = document.getElementById('previousCoachBtn');
+    const nextCoachBtn = document.getElementById('nextCoachBtn');
+
+    const currentCoachName = document.getElementById('currentCoachName');
+    const currentCoachMeta = document.getElementById('currentCoachMeta');
+    const currentCoachSeatCount = document.getElementById('currentCoachSeatCount');
+
     const basePrice = Number(form.dataset.basePrice || 0);
+
+    let coaches = [];
+    let activeCoachIndex = 0;
 
     function formatVnd(value) {
         return new Intl.NumberFormat('en-US').format(value) + ' VND';
+    }
+
+    function numberValue(value) {
+        const parsed = Number(value);
+        return Number.isNaN(parsed) ? 0 : parsed;
     }
 
     function getSelectedCheckboxes() {
@@ -141,9 +148,120 @@ function setupSeatSelection() {
         });
     }
 
+    function buildCoaches() {
+        const coachMap = new Map();
+
+        seatOptions.forEach(function (option) {
+            const coachId = option.dataset.coachId || '0';
+            const coachNumber = option.dataset.coachNumber || 'Unknown';
+            const coachType = option.dataset.coachType || 'Standard';
+            const coachCapacity = option.dataset.coachCapacity || '0';
+
+            if (!coachMap.has(coachId)) {
+                coachMap.set(coachId, {
+                    id: coachId,
+                    number: coachNumber,
+                    type: coachType,
+                    capacity: coachCapacity,
+                    totalSeats: 0,
+                    availableSeats: 0
+                });
+            }
+
+            const coach = coachMap.get(coachId);
+            coach.totalSeats += 1;
+
+            if (!option.classList.contains('booked')) {
+                coach.availableSeats += 1;
+            }
+        });
+
+        coaches = Array.from(coachMap.values()).sort(function (a, b) {
+            return String(a.number).localeCompare(String(b.number), undefined, {
+                numeric: true,
+                sensitivity: 'base'
+            });
+        });
+    }
+
+    function renderCoachTabs() {
+        if (!coachTabs) {
+            return;
+        }
+
+        coachTabs.innerHTML = '';
+
+        coaches.forEach(function (coach, index) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'rj-coach-tab';
+            button.dataset.coachId = coach.id;
+
+            button.innerHTML =
+                '<i class="bi bi-train-front"></i>' +
+                '<div>' +
+                '<strong>Coach ' + coach.number + '</strong>' +
+                '<small>' + coach.type + ' • ' + coach.availableSeats + '/' + coach.totalSeats + ' available</small>' +
+                '</div>';
+
+            button.addEventListener('click', function () {
+                showCoach(index);
+            });
+
+            coachTabs.appendChild(button);
+        });
+    }
+
+    function showCoach(index) {
+        if (!coaches.length) {
+            return;
+        }
+
+        if (index < 0) {
+            index = coaches.length - 1;
+        }
+
+        if (index >= coaches.length) {
+            index = 0;
+        }
+
+        activeCoachIndex = index;
+
+        const activeCoach = coaches[activeCoachIndex];
+
+        seatOptions.forEach(function (option) {
+            const sameCoach = option.dataset.coachId === activeCoach.id;
+            option.style.display = sameCoach ? '' : 'none';
+        });
+
+        document.querySelectorAll('.rj-coach-tab').forEach(function (button) {
+            button.classList.toggle('active', button.dataset.coachId === activeCoach.id);
+        });
+
+        if (currentCoachName) {
+            currentCoachName.textContent = 'Coach ' + activeCoach.number;
+        }
+
+        if (currentCoachMeta) {
+            currentCoachMeta.textContent = activeCoach.type + ' • ' + activeCoach.availableSeats + ' available of ' + activeCoach.totalSeats + ' seats';
+        }
+
+        if (currentCoachSeatCount) {
+            currentCoachSeatCount.textContent = activeCoach.availableSeats + ' available';
+        }
+
+        if (previousCoachBtn) {
+            previousCoachBtn.disabled = coaches.length <= 1;
+        }
+
+        if (nextCoachBtn) {
+            nextCoachBtn.disabled = coaches.length <= 1;
+        }
+    }
+
     function updateSeatClasses() {
         checkboxes.forEach(function (checkbox) {
-            const option = checkbox.closest('.rail-seat-option');
+            const option = checkbox.closest('.rj-seat-option');
 
             if (!option) {
                 return;
@@ -151,6 +269,11 @@ function setupSeatSelection() {
 
             option.classList.toggle('selected', checkbox.checked);
         });
+    }
+
+    function getSeatPrice(checkbox) {
+        const extraPrice = numberValue(checkbox.dataset.seatExtraPrice);
+        return basePrice + extraPrice;
     }
 
     function updateSummary() {
@@ -166,8 +289,12 @@ function setupSeatSelection() {
             selectedCountText.textContent = selected.length;
         }
 
+        const total = selected.reduce(function (sum, checkbox) {
+            return sum + getSeatPrice(checkbox);
+        }, 0);
+
         if (selectedTotalText) {
-            selectedTotalText.textContent = formatVnd(selected.length * basePrice);
+            selectedTotalText.textContent = formatVnd(total);
         }
 
         if (!selectedList) {
@@ -187,6 +314,9 @@ function setupSeatSelection() {
         selected.forEach(function (checkbox) {
             const seatLabel = checkbox.dataset.seatLabel || 'Seat';
             const seatType = checkbox.dataset.seatType || 'Standard';
+            const coachNumber = checkbox.dataset.coachNumber || 'Unknown';
+            const coachType = checkbox.dataset.coachType || seatType;
+            const seatPrice = getSeatPrice(checkbox);
 
             const item = document.createElement('div');
             item.className = 'rail-selected-item';
@@ -195,13 +325,25 @@ function setupSeatSelection() {
                 '<div class="rail-selected-seat-info">' +
                 '<div class="rail-selected-seat-code">' + seatLabel + '</div>' +
                 '<div class="rail-selected-seat-type">' +
-                '<strong>Passenger</strong>' +
-                '<small>' + seatType + '</small>' +
+                '<strong>Coach ' + coachNumber + '</strong>' +
+                '<small>' + coachType + '</small>' +
                 '</div>' +
                 '</div>' +
-                '<div class="rail-selected-price">' + formatVnd(basePrice) + '</div>';
+                '<div class="rail-selected-price">' + formatVnd(seatPrice) + '</div>';
 
             selectedList.appendChild(item);
+        });
+    }
+
+    if (previousCoachBtn) {
+        previousCoachBtn.addEventListener('click', function () {
+            showCoach(activeCoachIndex - 1);
+        });
+    }
+
+    if (nextCoachBtn) {
+        nextCoachBtn.addEventListener('click', function () {
+            showCoach(activeCoachIndex + 1);
         });
     }
 
@@ -221,7 +363,12 @@ function setupSeatSelection() {
         if (passengerCountInput) {
             passengerCountInput.value = selected.length;
         }
+
+        return true;
     });
 
+    buildCoaches();
+    renderCoachTabs();
+    showCoach(0);
     updateSummary();
 }

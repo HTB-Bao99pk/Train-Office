@@ -884,51 +884,52 @@
     }
 }
 
-@media(max-width:768px){
-    .rail-flow-page{
-        padding:32px 16px 58px;
+@media(max-width:768px) {
+    .rail-flow-page {
+        padding: 32px 16px 58px;
     }
 
-    .rail-flow-progress{
-        margin-bottom:40px;
+    .rail-flow-progress {
+        margin-bottom: 40px;
     }
 
-    .rail-flow-step{
-        font-size:10px;
+    .rail-flow-step {
+        font-size: 10px;
     }
 
-    .rail-form-grid{
+    .rail-form-grid {
         grid-template-columns:1fr;
     }
 
-    .rail-form-field.full{
-        grid-column:auto;
+    .rail-form-field.full {
+        grid-column: auto;
     }
 
-    .rail-form-actions{
-        flex-direction:column;
-        align-items:stretch;
+    .rail-form-actions {
+        flex-direction: column;
+        align-items: stretch;
     }
 
-    .rail-primary-btn{
-        width:100%;
+    .rail-primary-btn {
+        width: 100%;
     }
 
-    .rail-seat-panel{
-        padding:22px;
+    .rail-seat-panel {
+        padding: 22px;
     }
 
-    .rail-coach{
-        padding:22px;
+    .rail-coach {
+        padding: 22px;
     }
 
-    .rail-seat-map{
-        grid-template-columns:repeat(4,50px);
-        gap:14px;
+    .rail-seat-map {
+        grid-template-columns:repeat(4, 50px);
+        gap: 14px;
     }
 
-    .rail-seat-box{
-        width:50px;
-        height:56px;
+    .rail-seat-box {
+        width: 50px;
+        height: 56px;
     }
 }
+

@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layouts/customer-layout :: layout('Select Your Seat', ~{::section}, 'booking')}">
+      th:replace="~{layouts/customer-layout :: layout('Select Your Seats', ~{::section}, 'booking')}">
 
 <section class="rail-flow-page">
     <link rel="stylesheet" th:href="@{/css/rail-booking-flow.css}">
+    <link rel="stylesheet" th:href="@{/css/rail-seat-selection.css}">
 
     <div class="rail-flow-container">
         <div class="rail-flow-progress seat">
             <div class="rail-flow-step done">
                 <span><i class="bi bi-check-lg"></i></span>
-                Journey
+                Itinerary
             </div>
 
             <div class="rail-flow-step active">
@@ -29,71 +30,90 @@
         </div>
 
         <div class="rail-flow-title">
-            <h1>Select your seat</h1>
+            <h1>Select your seats</h1>
 
             <p>
-                <strong th:text="${trip.train != null ? trip.train.trainName : 'Train trip'}">
-                    RailJet
-                </strong>
-
-                <span> • </span>
-
-                <span th:text="${segment.departureStop.station.stationName}">
-                    Departure
-                </span>
-
-                <span> to </span>
-
-                <span th:text="${segment.arrivalStop.station.stationName}">
-                    Arrival
-                </span>
+                Choose your preferred coach and seats for
+                <strong th:text="${trip.train != null ? trip.train.trainName : 'RailJet'}">RailJet</strong>.
             </p>
         </div>
 
-        <div class="rail-alert"
-             th:if="${error}"
-             th:text="${error}">
-        </div>
-
-        <div class="rail-alert"
-             th:if="${errorMessage}"
-             th:text="${errorMessage}">
-        </div>
+        <div class="rail-alert" th:if="${error}" th:text="${error}"></div>
+        <div class="rail-alert" th:if="${errorMessage}" th:text="${errorMessage}"></div>
 
         <form id="railSeatSelectionForm"
               th:action="@{/booking/seat-selection}"
               method="post"
               th:data-base-price="${trip.basePrice != null ? trip.basePrice : 0}">
 
-            <input type="hidden"
-                   name="trainTripId"
-                   th:value="${seatSelectionForm.trainTripId}">
-
-            <input type="hidden"
-                   name="departureStationId"
-                   th:value="${seatSelectionForm.departureStationId}">
-
-            <input type="hidden"
-                   name="arrivalStationId"
-                   th:value="${seatSelectionForm.arrivalStationId}">
+            <input type="hidden" name="trainTripId" th:value="${seatSelectionForm.trainTripId}">
+            <input type="hidden" name="departureStationId" th:value="${seatSelectionForm.departureStationId}">
+            <input type="hidden" name="arrivalStationId" th:value="${seatSelectionForm.arrivalStationId}">
 
             <input id="passengerCountInput"
                    type="hidden"
                    name="passengerCount"
                    th:value="${seatSelectionForm.passengerCount != null ? seatSelectionForm.passengerCount : 1}">
 
-            <div class="rail-seat-layout">
-                <main class="rail-glass-card rail-seat-panel">
-                    <div class="rail-seat-top">
-                        <i class="bi bi-arrow-up"></i>
-                        Direction of Travel
+            <div class="rail-seat-layout rj-seat-layout">
+                <main class="rail-glass-card rj-seat-main">
+                    <div class="rj-seat-main-header">
+                        <div>
+                            <span class="rj-kicker">Coach selection</span>
+                            <h2>Choose a coach</h2>
+                            <p>Select a coach first, then choose seats inside that coach.</p>
+                        </div>
+
+                        <div class="rj-coach-nav">
+                            <button id="previousCoachBtn" type="button" class="rj-coach-nav-btn">
+                                <i class="bi bi-chevron-up"></i>
+                            </button>
+
+                            <button id="nextCoachBtn" type="button" class="rj-coach-nav-btn">
+                                <i class="bi bi-chevron-down"></i>
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="rail-coach">
-                        <div class="rail-seat-map">
-                            <label class="rail-seat-option"
+                    <div id="railCoachTabs" class="rj-coach-tabs">
+                        <!-- JS will generate coach tabs here -->
+                    </div>
+
+                    <div class="rj-seat-toolbar">
+                        <div class="rj-seat-legend">
+                            <span><i class="rj-legend-box"></i> Available</span>
+                            <span><i class="rj-legend-box selected"></i> Selected</span>
+                            <span><i class="rj-legend-box booked"></i> Unavailable</span>
+                        </div>
+
+                        <div class="rj-current-coach-pill">
+                            <i class="bi bi-train-front"></i>
+                            <span id="currentCoachSeatCount">0 seats</span>
+                        </div>
+                    </div>
+
+                    <div class="rj-current-coach">
+                        <div>
+                            <span class="rj-kicker">Current coach</span>
+                            <h3 id="currentCoachName">Coach</h3>
+                            <p id="currentCoachMeta">Choose a coach to view available seats.</p>
+                        </div>
+                    </div>
+
+                    <div class="rj-coach-shell">
+                        <div class="rj-coach-front">
+                            <i class="bi bi-arrow-up"></i>
+                            Front of Train
+                        </div>
+
+                        <div class="rj-seat-map">
+                            <label class="rail-seat-option rj-seat-option"
                                    th:each="item : ${seats}"
-                                   th:classappend="${item.available} ? '' : ' booked'">
+                                   th:classappend="${item.available} ? '' : ' booked'"
+                                   th:data-coach-id="${item.seat.coach != null ? item.seat.coach.coachId : 0}"
+                                   th:data-coach-number="${item.seat.coach != null ? item.seat.coach.coachNumber : 'Unknown'}"
+                                   th:data-coach-type="${item.seat.coach != null ? item.seat.coach.coachType : item.seat.seatType}"
+                                   th:data-coach-capacity="${item.seat.coach != null and item.seat.coach.capacity != null ? item.seat.coach.capacity : 0}">
 
                                 <input class="rail-seat-checkbox"
                                        type="checkbox"
@@ -101,38 +121,41 @@
                                        th:value="${item.seat.seatId}"
                                        th:disabled="${!item.available}"
                                        th:data-seat-label="${item.seat.seatNumber}"
-                                       th:data-seat-type="${item.seat.seatType}">
+                                       th:data-seat-type="${item.seat.seatType}"
+                                       th:data-seat-extra-price="${item.seat.extraPrice != null ? item.seat.extraPrice : 0}"
+                                       th:data-coach-id="${item.seat.coach != null ? item.seat.coach.coachId : 0}"
+                                       th:data-coach-number="${item.seat.coach != null ? item.seat.coach.coachNumber : 'Unknown'}"
+                                       th:data-coach-type="${item.seat.coach != null ? item.seat.coach.coachType : item.seat.seatType}">
 
-                                <span class="rail-seat-box"
-                                      th:text="${item.seat.seatNumber}">
-                                    1A
+                                <span class="rj-seat-box">
+                                    <span class="rj-seat-cap"></span>
+
+                                    <span class="rj-seat-number"
+                                          th:text="${item.seat.seatNumber}">
+                                        01A
+                                    </span>
+
+                                    <i class="bi bi-check-circle-fill rj-seat-check"></i>
+                                    <i class="bi bi-x-lg rj-seat-x"></i>
                                 </span>
                             </label>
                         </div>
-                    </div>
 
-                    <div class="rail-seat-bottom"></div>
+                        <div class="rj-luggage-rack">
+                            <i class="bi bi-luggage"></i>
+                            Oversized Luggage Rack
+                        </div>
 
-                    <div class="rail-seat-legend">
-                        <span>
-                            <i class="rail-legend-box"></i>
-                            Available
-                        </span>
-
-                        <span>
-                            <i class="rail-legend-box selected"></i>
-                            Selected
-                        </span>
-
-                        <span>
-                            <i class="rail-legend-box booked"></i>
-                            Booked
-                        </span>
+                        <div class="rj-coach-rear">
+                            Rear Exit / Connections
+                            <i class="bi bi-arrow-down"></i>
+                        </div>
                     </div>
                 </main>
 
-                <aside class="rail-glass-card rail-summary-card">
+                <aside class="rail-glass-card rail-summary-card rj-seat-summary">
                     <h2 class="rail-summary-title">
+                        <i class="bi bi-journal-check"></i>
                         Selection Summary
                     </h2>
 
@@ -165,7 +188,6 @@
                     <div class="rail-seat-date-line">
                         <span>
                             <i class="bi bi-calendar3"></i>
-
                             <span th:text="${trip.departureTime != null ? #temporals.format(trip.departureTime, 'dd/MM/yyyy') : '-'}">
                                 30/06/2026
                             </span>
@@ -173,17 +195,12 @@
 
                         <span>
                             <i class="bi bi-clock"></i>
-
-                            <span>
-                                <span th:text="${trip.departureTime != null ? #temporals.format(trip.departureTime, 'HH:mm') : '--:--'}">
-                                    08:30
-                                </span>
-
-                                <span> - </span>
-
-                                <span th:text="${trip.arrivalTime != null ? #temporals.format(trip.arrivalTime, 'HH:mm') : '--:--'}">
-                                    11:45
-                                </span>
+                            <span th:text="${trip.departureTime != null ? #temporals.format(trip.departureTime, 'HH:mm') : '--:--'}">
+                                08:30
+                            </span>
+                            <span> - </span>
+                            <span th:text="${trip.arrivalTime != null ? #temporals.format(trip.arrivalTime, 'HH:mm') : '--:--'}">
+                                11:45
                             </span>
                         </span>
                     </div>
@@ -214,12 +231,13 @@
                     </div>
 
                     <div class="rail-seat-total">
-                        <span>Total</span>
+                        <span>Total Price</span>
                         <strong id="selectedTotalText">0 VND</strong>
                     </div>
 
                     <button class="rail-primary-btn rail-full-btn" type="submit">
-                        Confirm Selection
+                        Continue to Passengers
+                        <i class="bi bi-arrow-right"></i>
                     </button>
 
                     <a class="rail-back-link mt-4" th:href="@{/booking/search}">
