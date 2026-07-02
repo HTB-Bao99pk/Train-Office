@@ -1,75 +1,76 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layouts/customer-layout :: layout('Booking Success', ~{::section}, 'booking')}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: layout('Booking Completed', ~{::section}, 'booking')}">
 
-<section class="booking-shell">
-    <div class="booking-success-card railjet-card card text-center">
-        <div class="card-body p-5">
-            <div class="success-mark mb-4">
-                <i class="bi bi-check2"></i>
+<section class="rail-success-page">
+    <link rel="stylesheet" th:href="@{/css/rail-booking-summary.css}">
+
+    <div class="rail-success-container">
+        <article class="rail-glass-card rail-success-card">
+            <div class="rail-success-icon">
+                <i class="bi bi-check-circle"></i>
             </div>
 
-            <span class="rail-badge status-success mb-3">Booking created</span>
+            <h1>Booking Completed!</h1>
 
-            <h1 class="page-title mb-3">Booking completed</h1>
-
-            <p class="page-subtitle mx-auto">
-                Your booking has been created. Please complete payment to confirm your tickets.
+            <p>
+                Your journey has been reserved. Please complete payment to confirm your ticket.
             </p>
 
-            <div class="summary-box my-4 text-start" th:if="${booking != null}">
-                <div class="summary-line">
-                    <span>Booking number</span>
-                    <strong th:text="${booking.bookingNumber}">RJ0001</strong>
+            <div class="rail-success-box" th:if="${booking != null}">
+                <div class="rail-success-top">
+                    <div>
+                        <p class="rail-success-label">Booking Number</p>
+
+                        <p class="rail-booking-number"
+                           th:text="${booking.bookingNumber}">
+                            RJ0001
+                        </p>
+                    </div>
+
+                    <div>
+                        <p class="rail-success-label text-end">Status</p>
+
+                        <div class="rail-status-pending">
+                            <i class="bi bi-clock"></i>
+
+                            <span th:text="${booking.bookingStatus}">
+                                Pending Payment
+                            </span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="summary-line">
-                    <span>Status</span>
-                    <strong th:text="${booking.bookingStatus}">PENDING_PAYMENT</strong>
-                </div>
+                <div class="rail-success-amount">
+                    <p class="rail-success-label">Total Amount</p>
 
-                <div class="summary-line total">
-                    <span>Total amount</span>
                     <strong th:text="${#numbers.formatDecimal(booking.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">
                         0 VND
                     </strong>
                 </div>
             </div>
 
-            <div class="summary-box my-4 text-start" th:if="${booking != null and booking.user == null}">
-                <div class="summary-line">
-                    <span>Guest booking access</span>
-                    <strong>Use these details later</strong>
-                </div>
-
-                <div class="summary-line">
-                    <span>Email</span>
-                    <strong th:text="${booking.bookerEmail}">guest@example.com</strong>
-                </div>
-
-                <div class="summary-line">
-                    <span>Phone</span>
-                    <strong th:text="${booking.bookerPhone}">0123456789</strong>
-                </div>
-            </div>
-
-            <div class="booking-actions justify-content-center">
-                <a class="btn btn-success"
+            <div class="rail-success-actions">
+                <a class="rail-primary-btn"
                    th:if="${booking != null and booking.bookingStatus != null and booking.bookingStatus.name() == 'PENDING_PAYMENT'}"
                    th:href="@{/payments/bookings/{id}(id=${booking.bookingId})}">
-                    <i class="bi bi-credit-card me-1"></i>
+                    <i class="bi bi-wallet2"></i>
                     Pay with VNPay
                 </a>
 
-                <a class="btn btn-outline-primary" th:href="@{/booking/history}">
-                    View my bookings
-                </a>
+                <div class="rail-success-actions-row">
+                    <a class="rail-secondary-btn" th:href="@{/booking/history}">
+                        <i class="bi bi-ticket-perforated"></i>
+                        View My Bookings
+                    </a>
 
-                <a class="btn btn-primary" th:href="@{/booking/search}">
-                    Book another trip
-                </a>
+                    <a class="rail-secondary-btn" th:href="@{/booking/search}">
+                        <i class="bi bi-plus-circle"></i>
+                        Book Another Trip
+                    </a>
+                </div>
             </div>
-        </div>
+        </article>
     </div>
 </section>
 </html>
