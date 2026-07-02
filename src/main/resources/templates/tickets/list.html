@@ -2,27 +2,23 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layouts/customer-layout :: layout('My Tickets', ~{::section}, 'tickets')}">
 
-<section class="rail-ticket-page">
+<section class="rail-ticket-page rail-my-ticket-page">
     <link rel="stylesheet" th:href="@{/css/rail-ticket-pages.css}">
 
-    <div class="rail-ticket-container">
-        <header class="rail-page-head">
+    <div class="rail-ticket-container rail-my-ticket-container">
+        <header class="rail-page-head rail-my-ticket-head">
             <div>
                 <span class="rail-page-eyebrow">Train tickets</span>
 
-                <h1 class="rail-page-title">Family E-Tickets</h1>
+                <h1 class="rail-page-title">My Tickets</h1>
 
                 <p class="rail-page-subtitle">
-                    View tickets created from your bookings. You can print confirmed tickets or request a refund.
+                    View tickets created from your paid bookings. You can print confirmed tickets or request a refund when eligible.
                 </p>
             </div>
 
-            <div class="rail-page-actions">
-                <button type="button" class="rail-secondary-btn" onclick="window.print()">
-                    <i class="bi bi-download"></i>
-                    Download All
-                </button>
-
+            <div class="rail-page-actions"
+                 th:if="${tickets != null and !#lists.isEmpty(tickets)}">
                 <button type="button" class="rail-primary-btn" onclick="window.print()">
                     <i class="bi bi-printer"></i>
                     Print All
@@ -37,11 +33,11 @@
         <div class="rail-ticket-list"
              th:if="${tickets != null and !#lists.isEmpty(tickets)}">
 
-            <article class="rail-glass-card rail-family-ticket"
+            <article class="rail-glass-card rail-family-ticket rail-ticket-row"
                      th:each="ticket, stat : ${tickets}"
                      th:classappend="${stat.index > 0} ? ' muted'">
 
-                <div>
+                <div class="rail-ticket-main-info">
                     <span class="rail-summary-label">Passenger</span>
 
                     <div class="rail-history-code"
@@ -59,7 +55,7 @@
                     <small>Coach</small>
 
                     <strong th:text="${ticket.seat != null and ticket.seat.coach != null ? ticket.seat.coach.coachNumber : '-'}">
-                        12
+                        C01
                     </strong>
                 </div>
 
@@ -67,15 +63,16 @@
                     <small>Seat</small>
 
                     <strong th:text="${ticket.seat != null ? ticket.seat.seatNumber : '-'}">
-                        4A
+                        01A
                     </strong>
                 </div>
 
-                <div>
+                <div class="rail-ticket-status-block">
                     <div class="rail-ticket-class">
                         <small>Class</small>
+
                         <strong th:text="${ticket.seat != null and ticket.seat.seatType != null ? ticket.seat.seatType : 'Standard'}">
-                            First
+                            Standard
                         </strong>
                     </div>
 
@@ -114,7 +111,7 @@
                     <a class="rail-icon-btn"
                        th:if="${ticket.ticketStatus != null and ticket.ticketStatus.name() != 'REFUNDED'}"
                        th:href="@{/tickets/{id}/print(id=${ticket.ticketId})}"
-                       title="Print Ticket">
+                       title="Print ticket">
                         <i class="bi bi-printer"></i>
                     </a>
 
@@ -126,22 +123,24 @@
             </article>
         </div>
 
-        <div class="rail-glass-card rail-empty-state"
+        <div class="rail-glass-card rail-empty-state rail-ticket-empty-state"
              th:if="${tickets == null or #lists.isEmpty(tickets)}">
-            <i class="bi bi-ticket-perforated"></i>
+
+            <div class="rail-empty-icon">
+                <i class="bi bi-ticket-perforated"></i>
+            </div>
+
+            <span class="rail-page-eyebrow">No ticket records</span>
 
             <h2>No tickets yet</h2>
 
-            <p>Your confirmed tickets will appear here after payment is completed.</p>
+            <p>
+                Your confirmed tickets will appear here after your payment is completed successfully.
+            </p>
 
             <a class="rail-primary-btn" th:href="@{/booking/search}">
+                <i class="bi bi-search"></i>
                 Book a Trip
-            </a>
-        </div>
-
-        <div class="mt-5 text-center">
-            <a class="rail-back-link" th:href="@{/booking/search}">
-                View Terms & Conditions for First Class Travel
             </a>
         </div>
     </div>

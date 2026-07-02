@@ -1,5 +1,6 @@
 package com.hsf302.trainoffice.service.impl;
 
+import com.hsf302.trainoffice.common.enums.BookingStatus;
 import com.hsf302.trainoffice.common.enums.Gender;
 import com.hsf302.trainoffice.dto.BookingConfirmationView;
 import com.hsf302.trainoffice.dto.BookingSession;
@@ -23,6 +24,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class BookingPageServiceImpl implements BookingPageService {
@@ -330,19 +332,47 @@ public class BookingPageServiceImpl implements BookingPageService {
     }
 
     @Override
-    public String showHistory(HttpSession session,
+    public String showHistory(String status,
+                              HttpSession session,
                               Model model,
                               RedirectAttributes redirectAttributes) {
         User user = currentUser(session);
 
         if (user == null) {
-            redirectAttributes.addFlashAttribute("error", "Vui lòng đăng nhập để xem booking của bạn.");
+            redirectAttributes.addFlashAttribute("error", "Please log in to view your bookings.");
             return "redirect:/login";
         }
 
-        model.addAttribute("recentBookings", bookingService.getBookingsForUser(user));
+        List<Booking> bookings = bookingService.getBookingsForUser(user);
+
+        String selectedStatus = normalizeStatus(status);
+
+        if (selectedStatus != null) {
+            try {
+                BookingStatus bookingStatus = BookingStatus.valueOf(selectedStatus);
+
+                bookings = bookings.stream()
+                        .filter(booking -> booking.getBookingStatus() == bookingStatus)
+                        .toList();
+
+            } catch (IllegalArgumentException ex) {
+                selectedStatus = null;
+            }
+        }
+
+        model.addAttribute("recentBookings", bookings);
+        model.addAttribute("selectedStatus", selectedStatus);
+        model.addAttribute("bookingStatuses", BookingStatus.values());
 
         return "booking/history";
+    }
+
+    private String normalizeStatus(String status) {
+        if (status == null || status.isBlank() || "ALL".equalsIgnoreCase(status)) {
+            return null;
+        }
+
+        return status.trim().toUpperCase(Locale.ROOT);
     }
 
     @Override

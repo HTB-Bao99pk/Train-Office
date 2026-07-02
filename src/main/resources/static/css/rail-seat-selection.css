@@ -479,3 +479,66 @@
         height: 56px !important;
     }
 }
+/* =========================================================
+   Fix coach filtering and coach price display
+   ========================================================= */
+
+.rj-seat-option.hidden-by-coach {
+    display: none !important;
+}
+
+.rj-coach-tab-content {
+    min-width: 0 !important;
+}
+
+.rj-coach-price {
+    display: inline-flex !important;
+    align-items: center !important;
+    width: fit-content !important;
+    margin-top: 7px !important;
+    padding: 4px 8px !important;
+    border-radius: 999px !important;
+    color: #8ed5ff !important;
+    background: rgba(56, 189, 248, .10) !important;
+    border: 1px solid rgba(56, 189, 248, .20) !important;
+    font-size: 10px !important;
+    font-style: normal !important;
+    font-weight: 900 !important;
+    letter-spacing: .02em !important;
+    white-space: nowrap !important;
+}
+
+.rj-coach-tab.active .rj-coach-price {
+    color: #001e2c !important;
+    background: #38bdf8 !important;
+    border-color: #38bdf8 !important;
+}
+
+.rail-selected-price {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    gap: 3px !important;
+}
+
+.rail-selected-extra-label {
+    color: rgba(189, 200, 209, .70) !important;
+    font-size: 10px !important;
+    font-weight: 900 !important;
+    letter-spacing: .08em !important;
+    text-transform: uppercase !important;
+}
+
+.rail-selected-price strong {
+    color: #8ed5ff !important;
+    font-size: 13px !important;
+    font-weight: 900 !important;
+}
+
+.rj-seat-map {
+    align-content: start !important;
+}
+
+.rj-seat-map:has(.rj-seat-option:not(.hidden-by-coach)) {
+    min-height: 360px !important;
+}

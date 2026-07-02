@@ -3,6 +3,7 @@ package com.hsf302.trainoffice.controller;
 import com.hsf302.trainoffice.common.enums.TrainStatus;
 import com.hsf302.trainoffice.entity.Train;
 import com.hsf302.trainoffice.service.TrainService;
+import com.hsf302.trainoffice.config.AdminErrorMessageUtil;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -44,18 +45,32 @@ public class TrainController {
     }
 
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable("id") Long id, Model model) {
+    public String showEditForm(@PathVariable("id") Long id,
+                               Model model,
+                               RedirectAttributes redirectAttributes) {
+
         Optional<Train> train = trainService.getTrainById(id);
+
         if (train.isPresent()) {
             model.addAttribute("train", train.get());
             addCommonAttributes(model);
             return "trains/form";
         }
+
+        redirectAttributes.addFlashAttribute(
+                "errorMessage",
+                "Train was not found."
+        );
+
         return "redirect:/admin/trains";
     }
 
     @PostMapping("/save")
-    public String saveTrain(@Valid @ModelAttribute("train") Train train, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
+    public String saveTrain(@Valid @ModelAttribute("train") Train train,
+                            BindingResult result,
+                            Model model,
+                            RedirectAttributes redirectAttributes) {
+
         if (result.hasErrors()) {
             addCommonAttributes(model);
             return "trains/form";
@@ -63,23 +78,47 @@ public class TrainController {
 
         try {
             trainService.saveTrain(train);
-            redirectAttributes.addFlashAttribute("successMessage", "Train saved successfully!");
+
+            redirectAttributes.addFlashAttribute(
+                    "successMessage",
+                    "Train saved successfully."
+            );
+
             return "redirect:/admin/trains";
+
         } catch (IllegalStateException e) {
             model.addAttribute("errorMessage", e.getMessage());
+            addCommonAttributes(model);
+            return "trains/form";
+
+        } catch (Exception e) {
+            model.addAttribute(
+                    "errorMessage",
+                    "Cannot save this train. Please check the information and try again."
+            );
             addCommonAttributes(model);
             return "trains/form";
         }
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteTrain(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+    public String deleteTrain(@PathVariable("id") Long id,
+                              RedirectAttributes redirectAttributes) {
         try {
             trainService.deleteTrain(id);
-            redirectAttributes.addFlashAttribute("successMessage", "Train with ID " + id + " has been deleted.");
+
+            redirectAttributes.addFlashAttribute(
+                    "successMessage",
+                    "Train with ID " + id + " has been deleted."
+            );
+
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Error deleting train: " + e.getMessage());
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    AdminErrorMessageUtil.deleteMessage("train", e)
+            );
         }
+
         return "redirect:/admin/trains";
     }
 }
