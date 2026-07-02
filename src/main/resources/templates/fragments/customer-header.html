@@ -16,7 +16,7 @@
                         <i class="bi bi-search me-1"></i>Search trip
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" th:if="${session.currentUser != null}">
                     <a class="nav-link" th:classappend="${activeMenu == 'history'} ? ' active'" th:href="@{/booking/history}">
                         <i class="bi bi-calendar-check me-1"></i>My bookings
                     </a>

@@ -34,7 +34,7 @@ public class BookingFlowServiceImpl implements BookingFlowService {
     private final TicketService ticketService;
     private final BookingService bookingService;
     private final BookingPricingService bookingPricingService;
-
+    private static final int PAYMENT_HOLD_MINUTES = 15;
     public BookingFlowServiceImpl(TrainTripService trainTripService,
                                   TicketService ticketService,
                                   BookingService bookingService,
@@ -46,13 +46,20 @@ public class BookingFlowServiceImpl implements BookingFlowService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<SeatAvailabilityView> getSeatAvailability(Long tripId, Long departureStationId, Long arrivalStationId) {
+    @Transactional
+    public List<SeatAvailabilityView> getSeatAvailability(Long tripId,
+                                                          Long departureStationId,
+                                                          Long arrivalStationId) {
+        bookingService.expirePendingBookingsOlderThan(PAYMENT_HOLD_MINUTES);
+
         TripSegment segment = trainTripService.getValidSegment(tripId, departureStationId, arrivalStationId);
+
         Set<Long> blockedSeatIds = ticketService.findBlockedSeatIds(
                 tripId,
                 segment.getDepartureOrder(),
-                segment.getArrivalOrder());
+                segment.getArrivalOrder()
+        );
+
         return ticketService.getSeatsForTrip(tripId)
                 .stream()
                 .map(seat -> new SeatAvailabilityView(seat, !blockedSeatIds.contains(seat.getSeatId())))
@@ -84,20 +91,25 @@ public class BookingFlowServiceImpl implements BookingFlowService {
     @Override
     public PassengerInfoForm createPassengerInfoForm(int passengerCount, User user) {
         PassengerInfoForm form = createPassengerInfoForm(passengerCount);
+
         if (user == null) {
             return form;
         }
 
         String contactName = firstNonBlank(user.getFullName(), user.getEmail());
+
         form.setContactName(contactName);
         form.setContactEmail(user.getEmail());
+        form.setContactPhone("N/A");
 
         if (!form.getPassengers().isEmpty()) {
             PassengerBookingRequest firstPassenger = form.getPassengers().get(0);
+
             firstPassenger.setFullName(user.getFullName());
             firstPassenger.setIdentityNumber(user.getIdentityNumber());
             firstPassenger.setDateOfBirth(user.getDateOfBirth());
             firstPassenger.setGender(user.getGender());
+            firstPassenger.setPassengerType("ADULT");
         }
 
         return form;
@@ -118,21 +130,32 @@ public class BookingFlowServiceImpl implements BookingFlowService {
     @Transactional(readOnly = true)
     public BookingConfirmationView buildConfirmation(BookingSession bookingSession) {
         validateReadyForConfirmation(bookingSession);
+
         TrainTrip trip = trainTripService.getTripById(bookingSession.getTrainTripId())
                 .orElseThrow(() -> new IllegalArgumentException("Train trip does not exist"));
+
         TripSegment segment = trainTripService.getValidSegment(
                 bookingSession.getTrainTripId(),
                 bookingSession.getDepartureStationId(),
-                bookingSession.getArrivalStationId());
+                bookingSession.getArrivalStationId()
+        );
+
         validateSelectedSeatsStillAvailable(bookingSession, segment);
+
         List<Seat> selectedSeats = selectedSeatsInOrder(bookingSession);
+
         return new BookingConfirmationView(
                 bookingSession,
                 bookingSession.getPassengerInfo(),
                 trip,
                 segment,
                 selectedSeats,
-                bookingPricingService.calculateTotal(trip, selectedSeats));
+                bookingPricingService.calculateTotal(
+                        trip,
+                        selectedSeats,
+                        bookingSession.getPassengerInfo().getPassengers()
+                )
+        );
     }
 
     @Override
@@ -153,10 +176,13 @@ public class BookingFlowServiceImpl implements BookingFlowService {
 
     @Override
     public Booking createBooking(BookingSession bookingSession, User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("Please log in before booking.");
+        }
+
         CreateBookingRequest request = buildCreateBookingRequest(bookingSession);
-        return user == null
-                ? bookingService.createBookingForGuest(request)
-                : bookingService.createBookingForUser(request, user);
+
+        return bookingService.createBookingForUser(request, user);
     }
 
     private void validateSelectedSeats(SeatSelectionForm form) {

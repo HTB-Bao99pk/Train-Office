@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/admin-layout :: layout('Refund Requests', ~{::section}, 'refunds')}">
+
+<section>
+    <div class="card velocity-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="card-title mb-0">Refund Requests</h3>
+                <small>Admin duyệt hoặc từ chối các yêu cầu hoàn tiền của khách hàng.</small>
+            </div>
+
+            <div class="text-right">
+                <span class="badge badge-primary p-2">
+                    Admin wallet:
+                    <strong th:text="${#numbers.formatDecimal(walletBalance, 0, 'COMMA', 0, 'POINT')} + ' VND'">
+                        0 VND
+                    </strong>
+                </span>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+            <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                    <tr>
+                        <th>Refund code</th>
+                        <th>Ticket</th>
+                        <th>Customer</th>
+                        <th>Train</th>
+                        <th>Seat</th>
+                        <th>Amount</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                        <th class="text-right">Actions</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="refund : ${refunds}">
+                        <td class="font-weight-bold" th:text="${refund.refundCode}">RF001</td>
+
+                        <td>
+                            <span th:text="${refund.ticket != null ? refund.ticket.ticketCode : '-'}">
+                                T001
+                            </span>
+                            <small class="d-block text-muted"
+                                   th:text="${refund.ticket != null ? refund.ticket.ticketStatus : '-'}">
+                                CONFIRMED
+                            </small>
+                        </td>
+
+                        <td>
+                            <span th:text="${refund.ticket != null and refund.ticket.booking != null ? refund.ticket.booking.bookerName : '-'}">
+                                Customer
+                            </span>
+                            <small class="d-block text-muted"
+                                   th:text="${refund.ticket != null and refund.ticket.booking != null ? refund.ticket.booking.bookerEmail : ''}">
+                                customer@email.com
+                            </small>
+                        </td>
+
+                        <td>
+                            <span th:text="${refund.ticket != null and refund.ticket.trainTrip != null and refund.ticket.trainTrip.train != null ? refund.ticket.trainTrip.train.trainName : '-'}">
+                                SE1
+                            </span>
+                            <small class="d-block text-muted"
+                                   th:text="${refund.ticket != null and refund.ticket.trainTrip != null ? refund.ticket.trainTrip.departureTime : ''}">
+                                2026-06-30
+                            </small>
+                        </td>
+
+                        <td>
+                            <span th:text="${refund.ticket != null and refund.ticket.seat != null ? refund.ticket.seat.seatNumber : '-'}">
+                                A1
+                            </span>
+                            <small class="d-block text-muted"
+                                   th:text="${refund.ticket != null and refund.ticket.seat != null and refund.ticket.seat.coach != null ? 'Coach ' + refund.ticket.seat.coach.coachNumber : ''}">
+                                Coach 1
+                            </small>
+                        </td>
+
+                        <td th:text="${#numbers.formatDecimal(refund.refundAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">
+                            0 VND
+                        </td>
+
+                        <td th:text="${refund.refundReason}">Reason</td>
+
+                        <td>
+                            <span class="badge badge-warning" th:text="${refund.refundStatus}">
+                                PENDING
+                            </span>
+                        </td>
+
+                        <td class="text-right">
+                            <form th:action="@{/admin/refunds/{id}/approve(id=${refund.refundId})}"
+                                  method="post"
+                                  class="d-inline"
+                                  onsubmit="return confirm('Approve this refund? Admin wallet will be deducted.')">
+                                <button type="submit" class="btn btn-sm btn-success">
+                                    <i class="fas fa-check mr-1"></i>
+                                    Approve
+                                </button>
+                            </form>
+
+                            <form th:action="@{/admin/refunds/{id}/reject(id=${refund.refundId})}"
+                                  method="post"
+                                  class="d-inline"
+                                  onsubmit="return confirm('Reject this refund request?')">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-times mr-1"></i>
+                                    Reject
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${refunds == null or #lists.isEmpty(refunds)}">
+                        <td colspan="9" class="text-center text-muted py-4">
+                            No pending refund requests.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+</html>

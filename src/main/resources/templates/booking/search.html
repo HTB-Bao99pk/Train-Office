@@ -14,16 +14,19 @@
             <span class="page-eyebrow">RailJet Booking</span>
             <h1 class="page-title">Find your next train</h1>
             <p class="page-subtitle">
-                Search by departure station, arrival station, travel date, and passenger count.
-                The booking flow keeps the route, seats, and passenger steps tightly connected.
+                Search by departure station, arrival station, and travel date.
+                You will choose the number of tickets by selecting seats later.
             </p>
         </div>
 
         <div class="hero-visual">
-            <div><span class="rail-badge">Fast search</span></div>
+            <div>
+                <span class="rail-badge">Fast search</span>
+            </div>
+
             <div>
                 <strong>Pick a trip, choose seats, and finish booking in a few steps.</strong>
-                <small>Everything stays in one guided flow designed for mobile and desktop.</small>
+                <small>Each selected seat will require passenger information.</small>
             </div>
         </div>
     </div>
@@ -34,83 +37,71 @@
 
             <form class="booking-search-form"
                   th:action="@{/booking/trips}"
-                  th:object="${tripSearchForm}"
                   method="post">
 
-                <div class="row g-3">
+                <!-- Không cho user nhập passenger count ở search nữa -->
+                <input type="hidden" name="passengerCount" value="1">
 
-                    <!-- GA ĐI -->
-                    <div class="col-lg-3 col-md-6">
+                <div class="row g-3">
+                    <div class="col-lg-4 col-md-6">
                         <div class="search-field-card">
                             <label class="form-label" for="departureStationId">
                                 <i class="bi bi-geo-alt me-1"></i>Departure
                             </label>
 
                             <select id="departureStationId"
+                                    name="departureStationId"
                                     class="form-select"
-                                    th:field="*{departureStationId}"
                                     required>
                                 <option value="">Select departure</option>
+
                                 <option th:each="station : ${stations}"
                                         th:value="${station.stationId}"
-                                        th:text="${station.stationName}">
+                                        th:text="${station.stationName}"
+                                        th:selected="${tripSearchForm != null and tripSearchForm.departureStationId != null and tripSearchForm.departureStationId == station.stationId}">
+                                    Station
                                 </option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- GA ĐẾN -->
-                    <div class="col-lg-3 col-md-6">
+                    <div class="col-lg-4 col-md-6">
                         <div class="search-field-card">
                             <label class="form-label" for="arrivalStationId">
                                 <i class="bi bi-signpost-2 me-1"></i>Arrival
                             </label>
 
                             <select id="arrivalStationId"
+                                    name="arrivalStationId"
                                     class="form-select"
-                                    th:field="*{arrivalStationId}"
                                     required>
                                 <option value="">Select arrival</option>
+
                                 <option th:each="station : ${stations}"
                                         th:value="${station.stationId}"
-                                        th:text="${station.stationName}">
+                                        th:text="${station.stationName}"
+                                        th:selected="${tripSearchForm != null and tripSearchForm.arrivalStationId != null and tripSearchForm.arrivalStationId == station.stationId}">
+                                    Station
                                 </option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- NGÀY ĐI -->
-                    <div class="col-lg-3 col-md-6">
+                    <div class="col-lg-4 col-md-6">
                         <div class="search-field-card">
                             <label class="form-label" for="departureDate">
                                 <i class="bi bi-calendar3 me-1"></i>Travel date
                             </label>
 
                             <input id="departureDate"
+                                   name="departureDate"
                                    class="form-control"
                                    type="date"
-                                   th:field="*{departureDate}"
+                                   th:value="${tripSearchForm != null ? tripSearchForm.departureDate : ''}"
                                    required>
                         </div>
                     </div>
 
-                    <!-- SỐ HÀNH KHÁCH -->
-                    <div class="col-lg-3 col-md-6">
-                        <div class="search-field-card">
-                            <label class="form-label" for="passengerCount">
-                                <i class="bi bi-people me-1"></i>Passengers
-                            </label>
-
-                            <input id="passengerCount"
-                                   class="form-control"
-                                   type="number"
-                                   min="1"
-                                   th:field="*{passengerCount}"
-                                   required>
-                        </div>
-                    </div>
-
-                    <!-- CHECKBOX KHỨ HỒI -->
                     <div class="col-12">
                         <div class="form-check mt-2">
                             <input class="form-check-input"
@@ -118,7 +109,7 @@
                                    id="roundTripCheck"
                                    name="roundTrip"
                                    value="true"
-                                   th:checked="*{roundTrip}">
+                                   th:checked="${tripSearchForm != null and tripSearchForm.roundTrip == true}">
 
                             <label class="form-check-label fw-semibold" for="roundTripCheck">
                                 Khứ hồi
@@ -126,20 +117,19 @@
                         </div>
                     </div>
 
-                    <!-- NGÀY VỀ -->
-                    <div class="col-lg-3 col-md-6" id="returnDateGroup" style="display: none;">
+                    <div class="col-lg-4 col-md-6" id="returnDateGroup" style="display: none;">
                         <div class="search-field-card">
                             <label class="form-label" for="returnDate">
                                 <i class="bi bi-calendar-check me-1"></i>Return date
                             </label>
 
                             <input id="returnDate"
+                                   name="returnDate"
                                    class="form-control"
                                    type="date"
-                                   th:field="*{returnDate}">
+                                   th:value="${tripSearchForm != null ? tripSearchForm.returnDate : ''}">
                         </div>
                     </div>
-
                 </div>
 
                 <div class="booking-actions mt-4 justify-content-end">
@@ -172,12 +162,11 @@
             <i class="bi bi-receipt"></i>
             <div>
                 <strong>Pending payment booking</strong>
-                <span>The flow stops at booking confirmation and leaves payment to the next module.</span>
+                <span>Your selected seats are held temporarily while waiting for payment.</span>
             </div>
         </div>
     </div>
 
-    <!-- SCRIPT PHẢI ĐỂ TRONG SECTION NÀY -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const roundTripCheck = document.getElementById('roundTripCheck');

@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layouts/customer-layout :: layout('My Tickets', ~{::section}, 'tickets')}">
+
 <section class="container customer-page">
     <div class="page-hero">
         <span class="page-eyebrow">Train tickets</span>
         <h1 class="page-title">Ticket list</h1>
-        <p class="page-subtitle">View tickets created from your bookings and open the detail or print pages.</p>
+        <p class="page-subtitle">
+            View tickets created from your bookings. You can print confirmed tickets or request refund.
+        </p>
     </div>
 
     <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+    <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
 
     <div class="railjet-card card">
         <div class="card-body table-responsive p-0">
@@ -25,32 +30,97 @@
                     <th class="text-end">Actions</th>
                 </tr>
                 </thead>
+
                 <tbody>
                 <tr th:each="ticket : ${tickets}">
                     <td class="fw-bold" th:text="${ticket.ticketCode}">RJ-T001</td>
-                    <td th:text="${ticket.booking != null ? ticket.booking.bookingNumber : '-'}">RJ0001</td>
-                    <td th:text="${ticket.passenger != null ? ticket.passenger.fullName : '-'}">Passenger</td>
+
                     <td>
-                        <span th:text="${ticket.booking != null and ticket.booking.departureStation != null ? ticket.booking.departureStation.stationName : '-'}">Ha Noi</span>
-                        <span> -> </span>
-                        <span th:text="${ticket.booking != null and ticket.booking.arrivalStation != null ? ticket.booking.arrivalStation.stationName : '-'}">Sai Gon</span>
+                        <span th:text="${ticket.booking != null ? ticket.booking.bookingNumber : '-'}">
+                            RJ0001
+                        </span>
+                        <small class="text-muted d-block"
+                               th:text="${ticket.booking != null ? ticket.booking.bookingStatus : ''}">
+                            PAID
+                        </small>
                     </td>
+
+                    <td th:text="${ticket.passenger != null ? ticket.passenger.fullName : '-'}">
+                        Passenger
+                    </td>
+
                     <td>
-                        <span th:text="${ticket.seat != null ? ticket.seat.seatNumber : '-'}">A1</span>
+                        <span th:text="${ticket.booking != null and ticket.booking.departureStation != null ? ticket.booking.departureStation.stationName : '-'}">
+                            Ha Noi
+                        </span>
+                        <span> → </span>
+                        <span th:text="${ticket.booking != null and ticket.booking.arrivalStation != null ? ticket.booking.arrivalStation.stationName : '-'}">
+                            Sai Gon
+                        </span>
+                    </td>
+
+                    <td>
+                        <span th:text="${ticket.seat != null ? ticket.seat.seatNumber : '-'}">
+                            A1
+                        </span>
                         <small class="text-muted d-block"
                                th:text="${ticket.seat != null and ticket.seat.coach != null ? 'Coach ' + ticket.seat.coach.coachNumber : ''}">
                             Coach 1
                         </small>
                     </td>
-                    <td th:text="${ticket.ticketPrice}">0</td>
-                    <td><span class="rail-badge" th:text="${ticket.ticketStatus}">BOOKED</span></td>
+
+                    <td th:text="${#numbers.formatDecimal(ticket.ticketPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'">
+                        0 VND
+                    </td>
+
+                    <td>
+                        <span class="rail-badge"
+                              th:if="${ticket.ticketStatus == null}"
+                              th:text="'UNKNOWN'">
+                            UNKNOWN
+                        </span>
+
+                        <span class="rail-badge"
+                              th:if="${ticket.ticketStatus != null and ticket.ticketStatus.name() != 'REFUNDED'}"
+                              th:text="${ticket.ticketStatus}">
+                            CONFIRMED
+                        </span>
+
+                        <span class="badge bg-success"
+                              th:if="${ticket.ticketStatus != null and ticket.ticketStatus.name() == 'REFUNDED'}">
+                            Đã hoàn
+                        </span>
+                    </td>
+
                     <td class="text-end">
-                        <a class="btn btn-sm btn-outline-primary" th:href="@{/tickets/{id}(id=${ticket.ticketId})}">Detail</a>
-                        <a class="btn btn-sm btn-primary" th:href="@{/tickets/{id}/print(id=${ticket.ticketId})}">Print</a>
+                        <a class="btn btn-sm btn-outline-primary"
+                           th:href="@{/tickets/{id}(id=${ticket.ticketId})}">
+                            Detail
+                        </a>
+
+                        <a class="btn btn-sm btn-primary"
+                           th:if="${ticket.ticketStatus != null and ticket.ticketStatus.name() != 'REFUNDED'}"
+                           th:href="@{/tickets/{id}/print(id=${ticket.ticketId})}">
+                            Print
+                        </a>
+
+                        <form th:if="${ticket.ticketStatus != null and ticket.ticketStatus.name() == 'CONFIRMED'}"
+                              th:action="@{/tickets/{id}/refund(id=${ticket.ticketId})}"
+                              method="post"
+                              class="d-inline"
+                              onsubmit="return confirm('Send refund request for this ticket?')">
+                            <input type="hidden" name="reason" value="Customer requested refund">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                Refund
+                            </button>
+                        </form>
                     </td>
                 </tr>
+
                 <tr th:if="${tickets == null or #lists.isEmpty(tickets)}">
-                    <td colspan="8" class="text-center text-muted py-4">No tickets yet.</td>
+                    <td colspan="8" class="text-center text-muted py-4">
+                        No tickets yet.
+                    </td>
                 </tr>
                 </tbody>
             </table>

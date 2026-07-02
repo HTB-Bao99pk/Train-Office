@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: layout('Payment Result', ~{::section}, 'booking')}">
+
+<section class="booking-shell booking-section">
+    <div class="booking-success-card railjet-card card text-center">
+        <div class="card-body p-5">
+
+            <div class="success-mark mb-4"
+                 th:classappend="${success == true} ? '' : ' bg-danger'">
+                <i class="bi"
+                   th:classappend="${success == true} ? ' bi-check2' : ' bi-x-lg'">
+                </i>
+            </div>
+
+            <span class="rail-badge mb-3"
+                  th:classappend="${success == true} ? ' status-success' : ' bg-danger'"
+                  th:text="${success == true} ? 'Payment success' : 'Payment failed'">
+                Payment result
+            </span>
+
+            <h1 class="page-title mb-3" th:text="${message}">
+                Thanh toán thành công.
+            </h1>
+
+            <p class="page-subtitle mx-auto" th:if="${success == true}">
+                Booking của bạn đã được thanh toán. Vé đã được xác nhận và có thể xem trong mục My Tickets.
+            </p>
+
+            <p class="page-subtitle mx-auto" th:if="${success != true}">
+                Thanh toán chưa hoàn tất. Bạn có thể quay lại booking và thử thanh toán lại.
+            </p>
+
+            <div class="summary-box my-4 text-start" th:if="${booking != null}">
+                <div class="summary-line">
+                    <span>Booking number</span>
+                    <strong th:text="${booking.bookingNumber}">RJ0001</strong>
+                </div>
+
+                <div class="summary-line">
+                    <span>Booking status</span>
+                    <strong th:text="${booking.bookingStatus}">PAID</strong>
+                </div>
+
+                <div class="summary-line">
+                    <span>Transaction code</span>
+                    <strong th:text="${payment != null ? payment.transactionCode : '-'}">
+                        PAY001
+                    </strong>
+                </div>
+
+                <div class="summary-line">
+                    <span>Payment status</span>
+                    <strong th:text="${payment != null ? payment.paymentStatus : '-'}">
+                        SUCCESS
+                    </strong>
+                </div>
+
+                <div class="summary-line">
+                    <span>Paid at</span>
+                    <strong th:text="${payment != null and payment.paidAt != null ? payment.paidAt : '-'}">
+                        2026-06-30T08:00
+                    </strong>
+                </div>
+
+                <div class="summary-line total">
+                    <span>Total amount</span>
+                    <strong th:if="${booking.totalAmount != null}"
+                            th:text="${#numbers.formatDecimal(booking.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">
+                        0 VND
+                    </strong>
+                    <strong th:if="${booking.totalAmount == null}">
+                        0 VND
+                    </strong>
+                </div>
+            </div>
+
+            <div class="booking-actions justify-content-center">
+                <a class="btn btn-outline-primary" th:href="@{/booking/history}">
+                    My bookings
+                </a>
+
+                <a class="btn btn-primary" th:href="@{/tickets}">
+                    My tickets
+                </a>
+
+                <a class="btn btn-outline-secondary" th:href="@{/booking/search}">
+                    Book another trip
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+</html>

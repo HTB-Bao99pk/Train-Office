@@ -1,11 +1,90 @@
 ﻿<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/admin-layout :: layout('Create Coaches / Toa', ~{::section}, 'coaches')}">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/admin-layout :: layout('Create Coach / Tạo toa', ~{::section}, 'coaches')}">
+
 <section>
-<div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div><div class="card"><div class="card-header">Create / Tạo Coaches / Toa</div><form th:action="@{'/admin/coaches/save'}" method="post" th:object="${form}"><div class="card-body"><div th:replace="~{fragments/form-errors :: globalErrors}"></div><div class="row g-3"><div class="col-md-6"><label class="form-label">coachId</label><input class="form-control" th:field="*{coachId}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('coachId')}" th:errors="*{coachId}">Error</div></div>
-<div class="col-md-6"><label class="form-label">train</label><input class="form-control" th:field="*{train}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('train')}" th:errors="*{train}">Error</div></div>
-<div class="col-md-6"><label class="form-label">coachNumber</label><input class="form-control" th:field="*{coachNumber}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('coachNumber')}" th:errors="*{coachNumber}">Error</div></div>
-<div class="col-md-6"><label class="form-label">coachType</label><input class="form-control" th:field="*{coachType}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('coachType')}" th:errors="*{coachType}">Error</div></div>
-<div class="col-md-6"><label class="form-label">capacity</label><input class="form-control" th:field="*{capacity}"><div class="text-danger small mt-1" th:if="${#fields.hasErrors('capacity')}" th:errors="*{capacity}">Error</div></div></div></div><div class="card-footer d-flex justify-content-between"><a class="btn btn-secondary" th:href="@{'/admin/coaches'}">Back / Quay lại</a><button class="btn btn-primary">Save / Lưu</button></div></form></div>
+    <div th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbs})}"></div>
+
+    <div class="card">
+        <div class="card-header">
+            Create Coach / Tạo toa
+        </div>
+
+        <form th:action="@{/admin/coaches/save}" method="post">
+            <div class="card-body">
+                <div th:replace="~{fragments/form-errors :: globalErrors}"></div>
+
+                <div class="alert alert-danger"
+                     th:if="${errorMessage}"
+                     th:text="${errorMessage}">
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="trainId">Train</label>
+
+                        <select id="trainId"
+                                name="train.trainId"
+                                class="form-control"
+                                required>
+                            <option value="">Select train</option>
+
+                            <option th:each="train : ${allTrains}"
+                                    th:value="${train.trainId}"
+                                    th:text="${train.trainCode + ' - ' + train.trainName}"
+                                    th:selected="${coach != null and coach.train != null and coach.train.trainId == train.trainId}">
+                                Train
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="coachNumber">Coach Number</label>
+
+                        <input id="coachNumber"
+                               name="coachNumber"
+                               class="form-control"
+                               th:value="${coach != null ? coach.coachNumber : ''}"
+                               placeholder="Example: C1"
+                               required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="coachType">Coach Type</label>
+
+                        <input id="coachType"
+                               name="coachType"
+                               class="form-control"
+                               th:value="${coach != null ? coach.coachType : ''}"
+                               placeholder="Example: Soft Seat / Sleeper"
+                               required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="capacity">Capacity</label>
+
+                        <input id="capacity"
+                               name="capacity"
+                               type="number"
+                               min="1"
+                               class="form-control"
+                               th:value="${coach != null ? coach.capacity : ''}"
+                               placeholder="Example: 56"
+                               required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer d-flex justify-content-between">
+                <a class="btn btn-secondary" th:href="@{/admin/coaches}">
+                    Back / Quay lại
+                </a>
+
+                <button class="btn btn-primary" type="submit">
+                    Save / Lưu
+                </button>
+            </div>
+        </form>
+    </div>
 </section>
 </html>
-

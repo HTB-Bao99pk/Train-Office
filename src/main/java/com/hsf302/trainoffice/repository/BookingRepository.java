@@ -8,7 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-
+import com.hsf302.trainoffice.common.enums.BookingStatus;
+import java.time.LocalDateTime;
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
@@ -50,4 +51,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "arrivalStation"
     })
     Optional<Booking> findBasicDetailsByBookingId(Long bookingId);
+    List<Booking> findByBookingStatusAndBookingDateBefore(BookingStatus bookingStatus,
+                                                          LocalDateTime bookingDate);
+    long countByBookingStatus(BookingStatus bookingStatus);
+
+    List<Booking> findTop5ByOrderByBookingDateDesc();
 }

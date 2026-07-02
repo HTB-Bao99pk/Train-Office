@@ -52,8 +52,20 @@
                         <span class="rail-badge status-muted">Available</span>
                         <strong class="trip-price" th:text="${result.trainTrip.basePrice}">450000</strong>
                         <a class="btn btn-primary w-100"
-                           th:href="@{/booking/{tripId}/seats(tripId=${result.trainTrip.tripId},departureStationId=${result.segment.departureStop.station.stationId},arrivalStationId=${result.segment.arrivalStop.station.stationId},passengerCount=${result.passengerCount})}">
-                            Select seats
+                           th:if="${session.currentUser != null}"
+                           th:href="@{/booking/{tripId}/seats(
+        tripId=${result.trainTrip.tripId},
+        departureStationId=${result.segment.departureStop.station.stationId},
+        arrivalStationId=${result.segment.arrivalStop.station.stationId},
+        passengerCount=${result.passengerCount}
+   )}">
+                            Buy
+                        </a>
+
+                        <a class="btn btn-primary w-100"
+                           th:if="${session.currentUser == null}"
+                           th:href="@{/booking/login-required}">
+                            Buy
                         </a>
                     </div>
                 </div>
