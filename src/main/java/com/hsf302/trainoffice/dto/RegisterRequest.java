@@ -8,7 +8,6 @@ import lombok.Data;
 
 @Data
 public class RegisterRequest {
-
     @NotBlank(message = "Ho ten khong duoc de trong")
     @Size(max = 100, message = "Họ tên tối đa 100 ký tự")
     @Pattern(
