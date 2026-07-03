@@ -10,10 +10,10 @@ import lombok.Setter;
 @Setter
 @Data
 public class ResetPassword {
-    @NotBlank(message = "Mật khẩu không được để trống")
-    @Size(min = 6, message = "Mat khau toi thieu 6 ky tu")
+    @NotBlank(message = "The password cannot be left blank.")
+    @Size(min = 6, message = "The password must be 6 characters long.")
     private String password;
 
-    @NotBlank(message = "Xác nhận mật khẩu")
+    @NotBlank(message = "Password confirmation cannot be left blank.")
     private String confirmPassword;
 }

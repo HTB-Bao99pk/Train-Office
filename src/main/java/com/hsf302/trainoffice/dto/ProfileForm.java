@@ -14,17 +14,17 @@ public class ProfileForm {
 
     private Long passengerId;
 
-    @NotBlank(message = "Họ tên không được để trống")
-    @Size(max = 100, message = "Họ tên tối đa 100 ký tự")
+    @NotBlank(message = "The full name cannot be left blank!")
+    @Size(max = 100, message = "Full name (maximum 100 characters)")
     @Pattern(
             regexp = "^[\\p{L}\\s]+$",
-            message = "Họ tên chỉ được chứa chữ cái và khoảng trắng"
+            message = "Full names can only contain letters and spaces."
     )
     private String fullName;
 
     @Pattern(
             regexp = "^$|^\\d{9,12}$",
-            message = "CCCD/CMND phải gồm 9-12 chữ số"
+            message = "Citizen ID/National ID card must consist of 9-12 digits."
     )
     private String identityNumber;
 
