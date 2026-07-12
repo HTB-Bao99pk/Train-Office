@@ -42,6 +42,9 @@ public class Coach {
     @Column(name = "compartment_count")
     private Integer compartmentCount;
 
+    @Column(name = "sleeper_coach")
+    private Boolean sleeperCoach;
+
     @Column(name = "berths_per_compartment")
     private Integer berthsPerCompartment;
 

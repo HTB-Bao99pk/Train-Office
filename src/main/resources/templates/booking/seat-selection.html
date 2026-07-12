@@ -99,9 +99,11 @@
                             <p id="currentCoachMeta">Choose a coach to view available seats.</p>
                         </div>
                     </div>
+
                     <div id="railCompartmentTabs" class="rj-compartment-tabs">
                         <!-- JS will generate compartment tabs here -->
                     </div>
+
                     <div class="rj-coach-shell">
                         <div class="rj-coach-front">
                             <i class="bi bi-arrow-up"></i>
@@ -115,8 +117,11 @@
                                    th:data-coach-id="${item.seat.coach != null ? item.seat.coach.coachId : 0}"
                                    th:data-coach-number="${item.seat.coach != null ? item.seat.coach.coachNumber : 'Unknown'}"
                                    th:data-coach-type="${item.seat.coach != null ? item.seat.coach.coachType : item.seat.seatType}"
-                                   th:data-coach-capacity="${item.seat.coach != null and item.seat.coach.capacity != null ? item.seat.coach.capacity : 0}"                                th:data-compartment-id="${item.seat.compartment != null ? item.seat.compartment.compartmentId : 0}"
-                                   th:data-compartment-number="${item.seat.compartment != null ? item.seat.compartment.compartmentNumber : 'Open Cabin'}"
+                                   th:data-coach-capacity="${item.seat.coach != null and item.seat.coach.capacity != null ? item.seat.coach.capacity : 0}"
+                                   th:data-is-sleeper="${item.seat.coach != null and item.seat.coach.sleeperCoach == true}"
+                                   th:data-has-compartment="${item.seat.compartment != null}"
+                                   th:data-compartment-id="${item.seat.compartment != null ? item.seat.compartment.compartmentId : ''}"
+                                   th:data-compartment-number="${item.seat.compartment != null ? item.seat.compartment.compartmentNumber : ''}"
                                    th:data-berth-level="${item.seat.berthLevel != null ? item.seat.berthLevel : ''}">
 
                                 <input class="rail-seat-checkbox"
@@ -130,8 +135,10 @@
                                        th:data-coach-id="${item.seat.coach != null ? item.seat.coach.coachId : 0}"
                                        th:data-coach-number="${item.seat.coach != null ? item.seat.coach.coachNumber : 'Unknown'}"
                                        th:data-coach-type="${item.seat.coach != null ? item.seat.coach.coachType : item.seat.seatType}"
-                                       th:data-compartment-id="${item.seat.compartment != null ? item.seat.compartment.compartmentId : 0}"
-                                       th:data-compartment-number="${item.seat.compartment != null ? item.seat.compartment.compartmentNumber : 'Open Cabin'}"
+                                       th:data-is-sleeper="${item.seat.coach != null and item.seat.coach.sleeperCoach == true}"
+                                       th:data-has-compartment="${item.seat.compartment != null}"
+                                       th:data-compartment-id="${item.seat.compartment != null ? item.seat.compartment.compartmentId : ''}"
+                                       th:data-compartment-number="${item.seat.compartment != null ? item.seat.compartment.compartmentNumber : ''}"
                                        th:data-berth-level="${item.seat.berthLevel != null ? item.seat.berthLevel : ''}">
 
                                 <span class="rj-seat-box">
@@ -141,11 +148,13 @@
                                           th:text="${item.seat.seatNumber}">
                                         01A
                                     </span>
-<span class="rj-seat-berth"
-      th:if="${item.seat.berthLevel != null}"
-      th:text="${item.seat.berthLevel}">
-    LOWER
-</span>
+
+                                    <span class="rj-seat-berth"
+                                          th:if="${item.seat.berthLevel != null}"
+                                          th:text="${item.seat.berthLevel}">
+                                        LOWER
+                                    </span>
+
                                     <i class="bi bi-check-circle-fill rj-seat-check"></i>
                                     <i class="bi bi-x-lg rj-seat-x"></i>
                                 </span>

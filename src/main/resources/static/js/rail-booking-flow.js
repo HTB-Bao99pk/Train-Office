@@ -175,6 +175,36 @@ function setupSeatSelection() {
         return Number.isNaN(parsed) ? 0 : parsed;
     }
 
+    function isTrue(value) {
+        return String(value || '').toLowerCase() === 'true';
+    }
+
+    function hasRealCompartment(option, checkbox) {
+        const hasCompartment = isTrue(option.dataset.hasCompartment)
+            || isTrue(checkbox.dataset.hasCompartment);
+
+        const compartmentId = option.dataset.compartmentId || checkbox.dataset.compartmentId;
+
+        return hasCompartment
+            && compartmentId !== null
+            && compartmentId !== undefined
+            && String(compartmentId).trim() !== '';
+    }
+
+    function showSeatsByCoachOnly(activeCoach) {
+        seatOptions.forEach(function (option) {
+            const sameCoach = String(option.dataset.coachId) === String(activeCoach.id);
+
+            option.classList.toggle('hidden-by-coach', !sameCoach);
+        });
+    }
+
+    function hideAllSeats() {
+        seatOptions.forEach(function (option) {
+            option.classList.add('hidden-by-coach');
+        });
+    }
+
     function getSelectedCheckboxes() {
         return checkboxes.filter(function (checkbox) {
             return checkbox.checked;
@@ -268,12 +298,15 @@ function setupSeatSelection() {
             const coachCapacity = option.dataset.coachCapacity || '0';
             const extraPrice = numberValue(checkbox.dataset.seatExtraPrice);
 
+            const sleeperCoach = isTrue(option.dataset.isSleeper) || isTrue(checkbox.dataset.isSleeper);
+
             if (!coachMap.has(coachId)) {
                 coachMap.set(coachId, {
-                    id: coachId,
+                    id: String(coachId),
                     number: coachNumber,
                     type: coachType,
                     capacity: coachCapacity,
+                    isSleeper: sleeperCoach,
                     totalSeats: 0,
                     availableSeats: 0,
                     minExtraPrice: extraPrice,
@@ -292,8 +325,13 @@ function setupSeatSelection() {
 
             coach.minExtraPrice = Math.min(coach.minExtraPrice, extraPrice);
             coach.maxExtraPrice = Math.max(coach.maxExtraPrice, extraPrice);
-            const compartmentId = option.dataset.compartmentId || checkbox.dataset.compartmentId || '0';
-            const compartmentNumber = option.dataset.compartmentNumber || checkbox.dataset.compartmentNumber || 'Open Cabin';
+
+            if (!coach.isSleeper || !hasRealCompartment(option, checkbox)) {
+                return;
+            }
+
+            const compartmentId = String(option.dataset.compartmentId || checkbox.dataset.compartmentId);
+            const compartmentNumber = option.dataset.compartmentNumber || checkbox.dataset.compartmentNumber;
 
             if (!coach.compartments.has(compartmentId)) {
                 coach.compartments.set(compartmentId, {
@@ -319,6 +357,7 @@ function setupSeatSelection() {
                 sensitivity: 'base'
             });
         });
+
         coaches.forEach(function (coach) {
             coach.compartments = Array.from(coach.compartments.values()).sort(function (a, b) {
                 return String(a.number).localeCompare(String(b.number), undefined, {
@@ -403,7 +442,7 @@ function setupSeatSelection() {
 
         compartmentTabs.innerHTML = '';
 
-        if (!coach || !coach.compartments || coach.compartments.length <= 1) {
+        if (!coach || !coach.isSleeper || !coach.compartments || !coach.compartments.length) {
             compartmentTabs.classList.add('is-hidden');
             return;
         }
@@ -419,7 +458,7 @@ function setupSeatSelection() {
 
             button.innerHTML =
                 '<strong>' + compartment.number + '</strong>' +
-                '<small>' + compartment.availableSeats + '/' + compartment.totalSeats + ' available</small>';
+                '<small>' + compartment.availableSeats + '/' + compartment.totalSeats + ' berths available</small>';
 
             button.addEventListener('click', function () {
                 showCompartment(index);
@@ -432,7 +471,8 @@ function setupSeatSelection() {
     function showCompartment(index) {
         const activeCoach = coaches[activeCoachIndex];
 
-        if (!activeCoach || !activeCoach.compartments || !activeCoach.compartments.length) {
+        if (!activeCoach || !activeCoach.isSleeper || !activeCoach.compartments || !activeCoach.compartments.length) {
+            showSeatsByCoachOnly(activeCoach);
             return;
         }
 
@@ -448,15 +488,19 @@ function setupSeatSelection() {
 
         const activeCompartment = activeCoach.compartments[activeCompartmentIndex];
 
-        seatOptions.forEach(function (option) {
-            const sameCoach = option.dataset.coachId === activeCoach.id;
-            const sameCompartment = option.dataset.compartmentId === activeCompartment.id;
+        hideAllSeats();
 
-            option.classList.toggle('hidden-by-coach', !sameCoach || !sameCompartment);
+        seatOptions.forEach(function (option) {
+            const sameCoach = String(option.dataset.coachId) === String(activeCoach.id);
+            const sameCompartment = String(option.dataset.compartmentId || '') === String(activeCompartment.id);
+
+            if (sameCoach && sameCompartment) {
+                option.classList.remove('hidden-by-coach');
+            }
         });
 
         document.querySelectorAll('.rj-compartment-tab').forEach(function (button) {
-            button.classList.toggle('active', button.dataset.compartmentId === activeCompartment.id);
+            button.classList.toggle('active', String(button.dataset.compartmentId) === String(activeCompartment.id));
         });
 
         if (currentCoachMeta) {
@@ -473,7 +517,7 @@ function setupSeatSelection() {
 
         if (currentCoachSeatCount) {
             currentCoachSeatCount.textContent =
-                activeCompartment.number + ' • ' + activeCompartment.availableSeats + ' available';
+                activeCompartment.number + ' • ' + activeCompartment.availableSeats + ' berths available';
         }
 
         if (seatMap) {
@@ -495,44 +539,45 @@ function setupSeatSelection() {
         }
 
         activeCoachIndex = index;
+        activeCompartmentIndex = 0;
 
         const activeCoach = coaches[activeCoachIndex];
 
-        activeCompartmentIndex = 0;
-
         renderCompartmentTabs(activeCoach);
 
-        if (activeCoach.compartments && activeCoach.compartments.length) {
+        if (activeCoach.isSleeper && activeCoach.compartments && activeCoach.compartments.length) {
             showCompartment(0);
         } else {
-            seatOptions.forEach(function (option) {
-                const sameCoach = option.dataset.coachId === activeCoach.id;
-                option.classList.toggle('hidden-by-coach', !sameCoach);
-            });
+            if (compartmentTabs) {
+                compartmentTabs.classList.add('is-hidden');
+                compartmentTabs.innerHTML = '';
+            }
+
+            showSeatsByCoachOnly(activeCoach);
+
+            if (currentCoachMeta) {
+                currentCoachMeta.textContent =
+                    activeCoach.type +
+                    ' • Price: ' +
+                    getCoachPriceShortText(activeCoach) +
+                    ' • ' +
+                    activeCoach.availableSeats +
+                    ' available of ' +
+                    activeCoach.totalSeats +
+                    ' seats';
+            }
+
+            if (currentCoachSeatCount) {
+                currentCoachSeatCount.textContent = activeCoach.availableSeats + ' seats available';
+            }
         }
 
         document.querySelectorAll('.rj-coach-tab').forEach(function (button) {
-            button.classList.toggle('active', button.dataset.coachId === activeCoach.id);
+            button.classList.toggle('active', String(button.dataset.coachId) === String(activeCoach.id));
         });
 
         if (currentCoachName) {
             currentCoachName.textContent = 'Coach ' + activeCoach.number;
-        }
-
-        if (currentCoachMeta) {
-            currentCoachMeta.textContent =
-                activeCoach.type +
-                ' • Price: ' +
-                getCoachPriceShortText(activeCoach) +
-                ' • ' +
-                activeCoach.availableSeats +
-                ' available of ' +
-                activeCoach.totalSeats +
-                ' seats';
-        }
-
-        if (currentCoachSeatCount) {
-            currentCoachSeatCount.textContent = activeCoach.availableSeats + ' available';
         }
 
         if (previousCoachBtn) {
@@ -609,7 +654,11 @@ function setupSeatSelection() {
             const coachNumber = checkbox.dataset.coachNumber || 'Unknown';
             const coachType = checkbox.dataset.coachType || seatType;
             const extraPrice = getSeatExtraPrice(checkbox);
-            const compartmentNumber = checkbox.dataset.compartmentNumber || 'Open Cabin';
+            const hasCompartment = isTrue(checkbox.dataset.hasCompartment)
+                && checkbox.dataset.compartmentNumber
+                && checkbox.dataset.compartmentNumber.trim() !== '';
+
+            const compartmentNumber = hasCompartment ? checkbox.dataset.compartmentNumber : '';
             const berthLevel = checkbox.dataset.berthLevel || '';
             const item = document.createElement('div');
             item.className = 'rail-selected-item';
@@ -619,7 +668,11 @@ function setupSeatSelection() {
                 '<div class="rail-selected-seat-code">' + seatLabel + '</div>' +
                 '<div class="rail-selected-seat-type">' +
                 '<strong>Coach ' + coachNumber + '</strong>' +
-                '<small>' + coachType + ' • ' + compartmentNumber + (berthLevel ? ' • ' + berthLevel : '') + '</small>' +
+                '<small>' +
+                coachType +
+                (hasCompartment ? ' • ' + compartmentNumber : '') +
+                (berthLevel ? ' • ' + berthLevel : '') +
+                '</small>' +
                 '</div>' +
                 '</div>' +
                 '<div class="rail-selected-price">' +

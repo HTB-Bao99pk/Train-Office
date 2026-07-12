@@ -106,12 +106,17 @@ public class CoachServiceImpl implements CoachService {
                 throw new IllegalStateException("Sleeper coach must have compartment count.");
             }
 
-            if (coach.getBerthsPerCompartment() == null || coach.getBerthsPerCompartment() <= 0) {
+            if (coach.getBerthsPerCompartment() == null) {
                 throw new IllegalStateException("Sleeper coach must have berths per compartment.");
+            }
+
+            if (!List.of(2, 4, 6).contains(coach.getBerthsPerCompartment())) {
+                throw new IllegalStateException("Berths per compartment must be 2, 4, or 6.");
             }
 
             coach.setCapacity(coach.getCompartmentCount() * coach.getBerthsPerCompartment());
             return;
+
         }
 
         if (coach.getCapacity() == null || coach.getCapacity() <= 0) {
@@ -123,7 +128,10 @@ public class CoachServiceImpl implements CoachService {
         coach.setCoachNumber(normalize(coach.getCoachNumber()));
         coach.setCoachType(coach.getCoachType().trim());
 
-        if (!isSleeperCoach(coach)) {
+        boolean sleeperCoach = Boolean.TRUE.equals(coach.getSleeperCoach());
+        coach.setSleeperCoach(sleeperCoach);
+
+        if (!sleeperCoach) {
             coach.setCompartmentCount(null);
             coach.setBerthsPerCompartment(null);
         }
@@ -134,21 +142,10 @@ public class CoachServiceImpl implements CoachService {
     }
 
     private boolean isSleeperCoach(Coach coach) {
-        return coach != null && isSleeperType(coach.getCoachType());
+        return coach != null && Boolean.TRUE.equals(coach.getSleeperCoach());
     }
 
-    private boolean isSleeperType(String coachType) {
-        if (coachType == null) {
-            return false;
-        }
 
-        String type = coachType.toLowerCase();
-
-        return type.contains("sleeper")
-                || type.contains("bed")
-                || type.contains("giường")
-                || type.contains("giuong");
-    }
 
     private void generateNormalSeats(Coach coach) {
         int capacity = coach.getCapacity() == null ? 0 : coach.getCapacity();

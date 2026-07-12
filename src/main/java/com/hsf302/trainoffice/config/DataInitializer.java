@@ -203,6 +203,7 @@ public class DataInitializer implements CommandLineRunner {
                 "C01",
                 "VIP Sleeper",
                 16,
+                true,
                 4,
                 4
         );
@@ -212,6 +213,7 @@ public class DataInitializer implements CommandLineRunner {
                 "C02",
                 "First Class",
                 20,
+                false,
                 null,
                 null
         );
@@ -221,6 +223,7 @@ public class DataInitializer implements CommandLineRunner {
                 "C03",
                 "Soft Sleeper",
                 24,
+                true,
                 6,
                 4
         );
@@ -230,6 +233,7 @@ public class DataInitializer implements CommandLineRunner {
                 "C04",
                 "Soft Seat",
                 40,
+                false,
                 null,
                 null
         );
@@ -239,6 +243,7 @@ public class DataInitializer implements CommandLineRunner {
                 "C05",
                 "Standard Class",
                 40,
+                false,
                 null,
                 null
         );
@@ -248,6 +253,7 @@ public class DataInitializer implements CommandLineRunner {
                 "C06",
                 "Economy Class",
                 48,
+                false,
                 null,
                 null
         );
@@ -536,6 +542,7 @@ public class DataInitializer implements CommandLineRunner {
                                     String coachNumber,
                                     String coachType,
                                     Integer capacity,
+                                    Boolean sleeperCoach,
                                     Integer compartmentCount,
                                     Integer berthsPerCompartment) {
         Coach coach = coachRepository.findAll()
@@ -549,12 +556,22 @@ public class DataInitializer implements CommandLineRunner {
                         .coachNumber(coachNumber)
                         .build());
 
+        boolean isSleeper = Boolean.TRUE.equals(sleeperCoach);
+
         coach.setTrain(train);
         coach.setCoachNumber(coachNumber);
         coach.setCoachType(coachType);
-        coach.setCapacity(capacity);
-        coach.setCompartmentCount(compartmentCount);
-        coach.setBerthsPerCompartment(berthsPerCompartment);
+        coach.setSleeperCoach(isSleeper);
+
+        if (isSleeper) {
+            coach.setCompartmentCount(compartmentCount);
+            coach.setBerthsPerCompartment(berthsPerCompartment);
+            coach.setCapacity(compartmentCount * berthsPerCompartment);
+        } else {
+            coach.setCapacity(capacity);
+            coach.setCompartmentCount(null);
+            coach.setBerthsPerCompartment(null);
+        }
 
         return coachRepository.save(coach);
     }
