@@ -10,14 +10,14 @@ import lombok.Setter;
 @Setter
 @Data
 public class ChangePasswordRequest {
-    @NotBlank(message = "Mật khẩu không được để trống")
-    @Size(min = 6, message = "Mat khau toi thieu 6 ky tu")
+    @NotBlank(message = "The current password cannot be left blank.")
+    @Size(min = 6, message = "The current password must be 6 characters long.")
     private String currentPassword;
 
-    @NotBlank(message = "Mật khẩu không được để trống")
-    @Size(min = 6, message = "Mat khau toi thieu 6 ky tu")
+    @NotBlank(message = "The new password cannot be left blank.")
+    @Size(min = 6, message = "The new password must be 6 characters long.")
     private String newPassword;
 
-    @NotBlank(message = "Xác nhận mật khẩu")
+    @NotBlank(message = "Password confirmation cannot be left blank.")
     private String confirmNewPassword;
 }

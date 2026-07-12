@@ -1,100 +1,208 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layouts/customer-layout :: layout('Confirm Booking', ~{::section}, 'booking')}">
-<section class="booking-shell booking-section">
-    <div class="booking-progress">
-        <div class="booking-progress-item done"><span>1</span>Search</div>
-        <div class="booking-progress-item done"><span>2</span>Select trip</div>
-        <div class="booking-progress-item done"><span>3</span>Select seats</div>
-        <div class="booking-progress-item done"><span>4</span>Passengers</div>
-        <div class="booking-progress-item active"><span>5</span>Confirm</div>
-        <div class="booking-progress-item"><span>6</span>Done</div>
-    </div>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: layout('Booking Summary', ~{::section}, 'booking')}">
 
-    <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+<section class="rail-summary-page">
+    <link rel="stylesheet" th:href="@{/css/rail-booking-summary.css}">
 
-    <div class="detail-grid">
-        <aside class="railjet-card card sticky-summary">
-            <div class="card-header">Booking summary</div>
-            <div class="card-body">
-                <div class="summary-box mb-3">
-                    <span class="summary-label">Trip</span>
-                    <strong th:text="${trip.train != null ? trip.train.trainName : 'Train trip'}">SE1</strong>
-                    <small th:text="${trip.route != null ? trip.route.routeName : 'Route'}">Route</small>
-                </div>
-                <div class="summary-line">
-                    <span>Departure</span>
-                    <strong th:text="${segment.departureStop.station.stationName}">Ha Noi</strong>
-                </div>
-                <div class="summary-line">
-                    <span>Arrival</span>
-                    <strong th:text="${segment.arrivalStop.station.stationName}">Da Nang</strong>
-                </div>
-                <div class="summary-line">
-                    <span>Seats</span>
-                    <strong th:text="${#lists.size(selectedSeats)}">1</strong>
-                </div>
-                <hr>
-                <div class="summary-line total">
-                    <span>Total amount</span>
-                    <strong th:text="${totalAmount}">0</strong>
-                </div>
-                <form th:action="@{/booking/confirmation}" method="post" class="booking-actions mt-4">
-                    <button class="btn btn-primary w-100" type="submit">Create booking</button>
-                    <a class="btn btn-outline-primary w-100" th:href="@{/booking/passenger-info}">Back</a>
-                </form>
-            </div>
-        </aside>
+    <div class="rail-summary-container">
+        <header class="rail-summary-hero">
+            <h1>Booking Summary</h1>
+            <p>Review your itinerary before creating the booking.</p>
+        </header>
 
-        <div class="booking-section">
-            <div class="railjet-card card">
-                <div class="card-header">Journey</div>
-                <div class="card-body">
-                    <div class="confirm-route">
-                        <div>
-                            <span>Departure</span>
-                            <strong th:text="${segment.departureStop.station.stationName}">Ha Noi</strong>
-                            <small th:text="${trip.departureTime}">08:00</small>
+        <div class="rail-alert"
+             th:if="${error}"
+             th:text="${error}">
+        </div>
+
+        <div class="rail-summary-layout">
+            <main class="rail-summary-left">
+                <article class="rail-glass-card rail-card-body">
+                    <div class="rail-title-row">
+                        <h2 class="rail-section-title">
+                            <i class="bi bi-train-front"></i>
+                            Outbound Journey
+                        </h2>
+
+                        <span class="rail-direct-chip">Direct</span>
+                    </div>
+
+                    <div class="rail-journey-board">
+                        <div class="rail-time-box">
+                            <h3 th:text="${trip.departureTime != null ? #temporals.format(trip.departureTime, 'HH:mm') : '--:--'}">
+                                08:30
+                            </h3>
+
+                            <strong th:text="${segment.departureStop.station.stationName}">
+                                Departure Station
+                            </strong>
+
+                            <small>
+                                <i class="bi bi-calendar3"></i>
+
+                                <span th:text="${trip.departureTime != null ? #temporals.format(trip.departureTime, 'dd MMM yyyy') : '-'}">
+                                    24 Oct 2024
+                                </span>
+                            </small>
                         </div>
-                        <div class="route-line"></div>
-                        <div class="text-lg-end">
-                            <span>Arrival</span>
-                            <strong th:text="${segment.arrivalStop.station.stationName}">Da Nang</strong>
-                            <small th:text="${trip.arrivalTime}">18:00</small>
+
+                        <div class="rail-duration">
+                            <i class="bi bi-arrow-right"></i>
+
+                            <span>Direct</span>
+                        </div>
+
+                        <div class="rail-time-box">
+                            <h3 th:text="${trip.arrivalTime != null ? #temporals.format(trip.arrivalTime, 'HH:mm') : '--:--'}">
+                                11:45
+                            </h3>
+
+                            <strong th:text="${segment.arrivalStop.station.stationName}">
+                                Arrival Station
+                            </strong>
+
+                            <small>
+                                <i class="bi bi-calendar3"></i>
+
+                                <span th:text="${trip.arrivalTime != null ? #temporals.format(trip.arrivalTime, 'dd MMM yyyy') : '-'}">
+                                    24 Oct 2024
+                                </span>
+                            </small>
                         </div>
                     </div>
-                </div>
-            </div>
+                </article>
 
-            <div class="railjet-card card">
-                <div class="card-header">Passengers and seats</div>
-                <div class="card-body table-responsive">
-                    <table class="table align-middle mb-0">
-                        <thead>
-                        <tr>
-                            <th>Passenger</th>
-                            <th>Seat</th>
-                            <th>Type</th>
-                            <th class="text-end">Price</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="seat, stat : ${selectedSeats}">
-                            <td th:text="${passengerInfo.passengers[stat.index].fullName}">Passenger</td>
-                            <td>
-                                <strong th:text="${seat.coach.coachNumber + ' - ' + seat.seatNumber}">A - 01</strong>
-                            </td>
-                            <td th:text="${seat.seatType}">Standard</td>
-                            <td class="text-end">
-                                <span th:text="${trip.basePrice}">0</span>
-                                <span> + </span>
-                                <span th:text="${seat.extraPrice}">0</span>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                <article class="rail-glass-card rail-card-body">
+                    <h2 class="rail-section-title">
+                        <i class="bi bi-person"></i>
+                        Passenger Details
+                    </h2>
+
+                    <div class="rail-passenger-list">
+                        <div class="rail-passenger-grid"
+                             th:each="seat, stat : ${selectedSeats}">
+
+                            <div class="rail-passenger-card">
+                                <small th:text="${stat.index == 0 ? 'Primary Traveler' : 'Passenger'}">
+                                    Primary Traveler
+                                </small>
+
+                                <strong th:text="${passengerInfo.passengers[stat.index].fullName}">
+                                    Passenger Name
+                                </strong>
+
+                                <span th:text="${passengerInfo.passengers[stat.index].passengerType}">
+                                    Adult
+                                </span>
+                            </div>
+
+                            <div class="rail-passenger-card">
+                                <small>Seat Allocation</small>
+
+                                <div class="seat-code">
+                                    <i class="bi bi-seat-recline-normal"></i>
+
+                                    <span>
+                                        <span th:text="${seat.coach != null ? seat.coach.coachNumber : 'Coach'}">
+                                            C01
+                                        </span>
+
+                                        <span>-</span>
+
+                                        <span th:text="${seat.seatNumber}">
+                                            A3
+                                        </span>
+                                    </span>
+                                </div>
+
+                                <span th:text="${seat.seatType}">
+                                    First Class
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rail-passenger-nav">
+                        <small>
+                            Passenger summary
+                        </small>
+
+                        <div class="rail-mini-buttons">
+                            <button class="rail-mini-button" type="button" disabled>
+                                <i class="bi bi-chevron-left"></i>
+                            </button>
+
+                            <button class="rail-mini-button active" type="button" disabled>
+                                <i class="bi bi-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            </main>
+
+            <aside class="rail-glass-card rail-fare-card">
+                <h2 class="rail-fare-title">Fare Summary</h2>
+
+                <div class="rail-fare-lines">
+                    <div class="rail-fare-line">
+                        <span>
+                            Base Fare
+                            <br>
+                            <small>
+                                <span th:text="${#lists.size(selectedSeats)}">1</span>
+                                passenger(s)
+                            </small>
+                        </span>
+
+                        <strong th:text="${trip.basePrice != null ? #numbers.formatDecimal(trip.basePrice, 0, 'COMMA', 0, 'POINT') + ' VND' : '0 VND'}">
+                            0 VND
+                        </strong>
+                    </div>
+
+                    <div class="rail-fare-line">
+                        <span>Seat Selection</span>
+
+                        <strong th:text="${#lists.size(selectedSeats)} + ' seat(s)'">
+                            1 seat
+                        </strong>
+                    </div>
+
+                    <div class="rail-fare-line">
+                        <span>Taxes & Fees</span>
+
+                        <strong>Included</strong>
+                    </div>
                 </div>
-            </div>
+
+                <div class="rail-fare-total">
+                    <span>
+                        Total
+                        <br>
+                        Due
+                    </span>
+
+                    <strong th:text="${#numbers.formatDecimal(totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">
+                        0 VND
+                    </strong>
+                </div>
+
+                <form th:action="@{/booking/confirmation}" method="post">
+                    <button class="rail-primary-btn" type="submit">
+                        Create Booking
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
+                </form>
+
+                <a class="rail-secondary-btn mt-3" th:href="@{/booking/passenger-info}">
+                    <i class="bi bi-arrow-left"></i>
+                    Back to Passenger Details
+                </a>
+
+                <p class="rail-policy-note">
+                    By creating a booking, you agree to our Terms of Service and Privacy Policy.
+                </p>
+            </aside>
         </div>
     </div>
 </section>

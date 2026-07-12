@@ -9,22 +9,22 @@ import lombok.Data;
 @Data
 public class RegisterRequest {
 
-    @NotBlank(message = "Ho ten khong duoc de trong")
-    @Size(max = 100, message = "Họ tên tối đa 100 ký tự")
+    @NotBlank(message = "The full name cannot be left blank!")
+    @Size(max = 100, message = "Full name (maximum 100 characters)")
     @Pattern(
             regexp = "^[\\p{L}\\s]+$",
-            message = "Họ tên chỉ được chứa chữ cái và khoảng trắng"
+            message = "Full names can only contain letters and spaces."
     )
     private String fullName;
 
-    @NotBlank(message = "Email khong duoc de trong")
-    @Email(message = "Email khong hop le")
+    @NotBlank(message = "Email address should not be left blank.")
+    @Email(message = "Invalid email")
     private String email;
 
-    @NotBlank(message = "Mat khau khong duoc de trong")
-    @Size(min = 6, message = "Mat khau toi thieu 6 ky tu")
+    @NotBlank(message = "The password cannot be left blank.")
+    @Size(min = 6, message = "The password must be 6 characters long.")
     private String password;
 
-    @NotBlank(message = "Xac nhan mat khau")
+    @NotBlank(message = "Password confirmation cannot be left blank.")
     private String confirmPassword;
 }

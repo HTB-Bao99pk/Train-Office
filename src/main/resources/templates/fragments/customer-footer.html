@@ -3,14 +3,16 @@
         <div class="customer-footer-inner">
             <div>
                 <h5>RailJet Velocity</h5>
-                <p>Đặt vé nhanh, quản lý hành trình rõ ràng.</p>
+                <p>Book faster and manage your journeys with clarity.</p>
             </div>
+
             <div class="footer-links">
-                <a th:href="@{/booking/search}">Tìm chuyến</a>
-                <a th:href="@{/booking/history}">Đặt chỗ của tôi</a>
-                <a th:href="@{/profile}" th:if="${session.currentUser != null}">Hồ sơ</a>
-                <a th:href="@{/logout}" th:if="${session.currentUser != null}">Đăng xuất</a>
+                <a th:href="@{/booking/search}">Search Trip</a>
+                <a th:href="@{/booking/history}">My Bookings</a>
+                <a th:href="@{/profile}" th:if="${session.currentUser != null}">Profile</a>
+                <a th:href="@{/logout}" th:if="${session.currentUser != null}">Logout</a>
             </div>
+
             <span class="footer-copy">© 2026 RailJet.</span>
         </div>
     </div>

@@ -1,32 +1,49 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layouts/customer-layout :: layout('Thanh toán thất bại', ~{::section}, 'payments')}">
-<section class="container customer-page">
-    <div class="page-hero text-center">
-        <span class="page-eyebrow">Payment failed</span>
-        <h1 class="page-title">Thanh toán chưa hoàn tất</h1>
-        <p class="page-subtitle mx-auto">
-            Giao dịch không thành công hoặc đã bị hủy. Vui lòng kiểm tra lại thông tin và thử thanh toán lại.
-        </p>
-    </div>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: layout('Payment Failed', ~{::section}, 'booking')}">
 
-    <div class="railjet-card card">
-        <div class="card-body p-4 p-lg-5 text-center">
-            <div class="d-inline-flex align-items-center justify-content-center mb-3 rounded-3"
-                 style="width:76px;height:76px;background:#ffdad6;color:#ba1a1a;font-size:38px">
-                <i class="bi bi-x-circle"></i>
+<section class="rail-payment-page rail-payment-failed-page">
+    <link rel="stylesheet" th:href="@{/css/rail-payment.css}">
+
+    <div class="rail-payment-shell">
+        <div class="rail-payment-card rail-payment-result-card rail-payment-result-failed">
+            <div class="rail-payment-status-icon rail-payment-status-failed">
+                <i class="bi bi-exclamation-circle"></i>
             </div>
-            <h2 class="fw-bold mb-2">Không thể xác nhận thanh toán</h2>
-            <p class="text-muted mb-4">Nếu tiền đã bị trừ, hãy lưu lại mã booking và liên hệ hỗ trợ để đối soát.</p>
-            <div class="d-flex flex-wrap justify-content-center gap-2">
-                <a class="btn btn-primary px-4" th:href="@{/admin/payments/1}">
-                    <i class="bi bi-arrow-repeat me-1"></i> Thử lại
+
+            <h1 class="rail-payment-title">Payment Failed</h1>
+            <p class="rail-payment-subtitle">
+                Payment was not completed. Please try again or choose another payment method.
+            </p>
+
+            <div class="rail-payment-summary-box">
+                <div class="rail-payment-summary-row">
+                    <span>Booking Number</span>
+                    <strong th:text="${bookingCode != null ? bookingCode : (booking != null ? booking.bookingCode : 'RJ1782996611446')}">RJ1782996611446</strong>
+                </div>
+
+                <div class="rail-payment-summary-row">
+                    <span>Status</span>
+                    <strong class="rail-payment-status-text rail-payment-status-text-failed"
+                            th:text="${paymentStatus != null ? paymentStatus : 'PENDING_PAYMENT'}">PENDING_PAYMENT</strong>
+                </div>
+            </div>
+
+            <a class="rail-payment-primary-btn"
+               th:href="@{/payments}">
+                Retry Payment
+            </a>
+
+            <div class="rail-payment-action-row">
+                <a class="rail-payment-secondary-btn"
+                   th:href="@{/booking/history}">
+                    My Bookings
                 </a>
-                <a class="btn btn-outline-primary px-4" th:href="@{/profile}">
-                    <i class="bi bi-clock-history me-1"></i> Kiểm tra booking
-                </a>
-                <a class="btn btn-outline-primary px-4" th:href="@{/profile}">
-                    <i class="bi bi-search me-1"></i> Tìm chuyến khác
+
+                <a class="rail-payment-secondary-btn"
+                   th:href="@{/support}">
+                    Support
                 </a>
             </div>
         </div>
