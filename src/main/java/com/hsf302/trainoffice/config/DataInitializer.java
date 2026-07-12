@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +31,7 @@ public class DataInitializer implements CommandLineRunner {
     private final TrainRepository trainRepository;
     private final CoachRepository coachRepository;
     private final SeatRepository seatRepository;
+    private final CompartmentRepository compartmentRepository;
     private final TrainTripRepository trainTripRepository;
     private final TripStationRepository tripStationRepository;
 
@@ -39,6 +43,7 @@ public class DataInitializer implements CommandLineRunner {
                            TrainRepository trainRepository,
                            CoachRepository coachRepository,
                            SeatRepository seatRepository,
+                           CompartmentRepository compartmentRepository,
                            TrainTripRepository trainTripRepository,
                            TripStationRepository tripStationRepository) {
         this.userRepository = userRepository;
@@ -49,6 +54,7 @@ public class DataInitializer implements CommandLineRunner {
         this.trainRepository = trainRepository;
         this.coachRepository = coachRepository;
         this.seatRepository = seatRepository;
+        this.compartmentRepository = compartmentRepository;
         this.trainTripRepository = trainTripRepository;
         this.tripStationRepository = tripStationRepository;
     }
@@ -60,7 +66,7 @@ public class DataInitializer implements CommandLineRunner {
         createAdminWallet();
 
         Map<String, Station> stations = seedAllVietnamStations();
-        Map<String, Train> trains = seedTrainsWithCoachesAndSeats();
+        Map<String, Train> trains = seedTrainsWithCoachesCompartmentsAndSeats();
 
         seedRoutesAndTrips(stations, trains);
 
@@ -69,7 +75,7 @@ public class DataInitializer implements CommandLineRunner {
         System.out.println("Admin email: admin@railjet.com");
         System.out.println("Admin password: 123456");
         System.out.println("Stations: 34 provinces/cities");
-        System.out.println("Trains, coaches, seats, routes, trips initialized.");
+        System.out.println("Trains, coaches, compartments, seats, routes, trips initialized.");
         System.out.println("======================================");
     }
 
@@ -157,7 +163,7 @@ public class DataInitializer implements CommandLineRunner {
         );
     }
 
-    private Map<String, Train> seedTrainsWithCoachesAndSeats() {
+    private Map<String, Train> seedTrainsWithCoachesCompartmentsAndSeats() {
         Map<String, Train> trains = new LinkedHashMap<>();
 
         List<TrainSeed> trainSeeds = List.of(
@@ -185,26 +191,73 @@ public class DataInitializer implements CommandLineRunner {
             Train train = findOrCreateTrain(seed.code(), seed.name(), seed.type());
             trains.put(seed.code(), train);
 
-            seedCoachesAndSeatsForTrain(train);
+            seedCoachesCompartmentsAndSeatsForTrain(train);
         }
 
         return trains;
     }
 
-    private void seedCoachesAndSeatsForTrain(Train train) {
-        Coach vipSleeper = findOrCreateCoach(train, "C01", "VIP Sleeper", 16);
-        Coach firstClass = findOrCreateCoach(train, "C02", "First Class", 20);
-        Coach softSleeper = findOrCreateCoach(train, "C03", "Soft Sleeper", 24);
-        Coach softSeat = findOrCreateCoach(train, "C04", "Soft Seat", 40);
-        Coach standard = findOrCreateCoach(train, "C05", "Standard Class", 40);
-        Coach economy = findOrCreateCoach(train, "C06", "Economy Class", 48);
+    private void seedCoachesCompartmentsAndSeatsForTrain(Train train) {
+        Coach vipSleeper = findOrCreateCoach(
+                train,
+                "C01",
+                "VIP Sleeper",
+                16,
+                4,
+                4
+        );
 
-        createSeatsForCoach(vipSleeper, "VIP Sleeper", new BigDecimal("180000"));
-        createSeatsForCoach(firstClass, "First Class", new BigDecimal("90000"));
-        createSeatsForCoach(softSleeper, "Soft Sleeper", new BigDecimal("65000"));
-        createSeatsForCoach(softSeat, "Soft Seat", new BigDecimal("30000"));
-        createSeatsForCoach(standard, "Standard Class", BigDecimal.ZERO);
-        createSeatsForCoach(economy, "Economy Class", BigDecimal.ZERO);
+        Coach firstClass = findOrCreateCoach(
+                train,
+                "C02",
+                "First Class",
+                20,
+                null,
+                null
+        );
+
+        Coach softSleeper = findOrCreateCoach(
+                train,
+                "C03",
+                "Soft Sleeper",
+                24,
+                6,
+                4
+        );
+
+        Coach softSeat = findOrCreateCoach(
+                train,
+                "C04",
+                "Soft Seat",
+                40,
+                null,
+                null
+        );
+
+        Coach standard = findOrCreateCoach(
+                train,
+                "C05",
+                "Standard Class",
+                40,
+                null,
+                null
+        );
+
+        Coach economy = findOrCreateCoach(
+                train,
+                "C06",
+                "Economy Class",
+                48,
+                null,
+                null
+        );
+
+        createSleeperCompartmentsAndBerths(vipSleeper, "VIP Sleeper", new BigDecimal("180000"));
+        createNormalSeatsForCoach(firstClass, "First Class", new BigDecimal("90000"));
+        createSleeperCompartmentsAndBerths(softSleeper, "Soft Sleeper", new BigDecimal("65000"));
+        createNormalSeatsForCoach(softSeat, "Soft Seat", new BigDecimal("30000"));
+        createNormalSeatsForCoach(standard, "Standard Class", BigDecimal.ZERO);
+        createNormalSeatsForCoach(economy, "Economy Class", BigDecimal.ZERO);
     }
 
     private void seedRoutesAndTrips(Map<String, Station> stations,
@@ -295,7 +348,7 @@ public class DataInitializer implements CommandLineRunner {
         syncRouteStations(southCoast, southCoastStations);
 
         LocalDateTime baseDate = LocalDateTime.now()
-                .plusDays(1)
+                .withHour(0)
                 .withMinute(0)
                 .withSecond(0)
                 .withNano(0);
@@ -303,7 +356,14 @@ public class DataInitializer implements CommandLineRunner {
         createTripsForRoute(
                 northSouth,
                 northSouthStations,
-                List.of(trains.get("SE1"), trains.get("SE2"), trains.get("SE3"), trains.get("SE4"), trains.get("RJ01"), trains.get("RJ02")),
+                List.of(
+                        trains.get("SE1"),
+                        trains.get("SE2"),
+                        trains.get("SE3"),
+                        trains.get("SE4"),
+                        trains.get("RJ01"),
+                        trains.get("RJ02")
+                ),
                 baseDate.withHour(6),
                 32,
                 new BigDecimal("870000")
@@ -312,7 +372,11 @@ public class DataInitializer implements CommandLineRunner {
         createTripsForRoute(
                 haNoiHaiPhongQuangNinh,
                 coastalNorthStations,
-                List.of(trains.get("HP01"), trains.get("QN01"), trains.get("RJ03")),
+                List.of(
+                        trains.get("HP01"),
+                        trains.get("QN01"),
+                        trains.get("RJ03")
+                ),
                 baseDate.withHour(7),
                 4,
                 new BigDecimal("220000")
@@ -321,7 +385,10 @@ public class DataInitializer implements CommandLineRunner {
         createTripsForRoute(
                 mountainNorth,
                 mountainNorthStations,
-                List.of(trains.get("LP01"), trains.get("SE5")),
+                List.of(
+                        trains.get("LP01"),
+                        trains.get("SE5")
+                ),
                 baseDate.withHour(20),
                 12,
                 new BigDecimal("520000")
@@ -330,7 +397,10 @@ public class DataInitializer implements CommandLineRunner {
         createTripsForRoute(
                 centralHeritage,
                 centralHeritageStations,
-                List.of(trains.get("DH01"), trains.get("SE6")),
+                List.of(
+                        trains.get("DH01"),
+                        trains.get("SE6")
+                ),
                 baseDate.withHour(8),
                 3,
                 new BigDecimal("180000")
@@ -339,7 +409,10 @@ public class DataInitializer implements CommandLineRunner {
         createTripsForRoute(
                 centralHighland,
                 centralHighlandStations,
-                List.of(trains.get("RJ02"), trains.get("SE5")),
+                List.of(
+                        trains.get("RJ02"),
+                        trains.get("SE5")
+                ),
                 baseDate.withHour(9),
                 18,
                 new BigDecimal("650000")
@@ -348,7 +421,10 @@ public class DataInitializer implements CommandLineRunner {
         createTripsForRoute(
                 mekong,
                 mekongStations,
-                List.of(trains.get("CT01"), trains.get("CT02")),
+                List.of(
+                        trains.get("CT01"),
+                        trains.get("CT02")
+                ),
                 baseDate.withHour(10),
                 8,
                 new BigDecimal("360000")
@@ -357,7 +433,10 @@ public class DataInitializer implements CommandLineRunner {
         createTripsForRoute(
                 southCoast,
                 southCoastStations,
-                List.of(trains.get("NT01"), trains.get("RJ03")),
+                List.of(
+                        trains.get("NT01"),
+                        trains.get("RJ03")
+                ),
                 baseDate.withHour(13),
                 7,
                 new BigDecimal("420000")
@@ -388,9 +467,10 @@ public class DataInitializer implements CommandLineRunner {
                         BigDecimal.valueOf(dayOffset * 25000L)
                 );
 
-                TrainTrip trip = findOrCreateTrip(
+                TrainTrip trip = findOrCreateOrUpdateSeedTrip(
                         train,
                         route,
+                        i,
                         departure,
                         arrival,
                         finalPrice
@@ -406,82 +486,82 @@ public class DataInitializer implements CommandLineRunner {
     private Station findOrCreateStation(String stationCode,
                                         String stationName,
                                         String city) {
-        return stationRepository.findByStationCode(stationCode)
-                .orElseGet(() -> stationRepository.save(
-                        Station.builder()
-                                .stationCode(stationCode)
-                                .stationName(stationName)
-                                .city(city)
-                                .build()
-                ));
+        Station station = stationRepository.findByStationCode(stationCode)
+                .orElseGet(() -> Station.builder()
+                        .stationCode(stationCode)
+                        .build());
+
+        station.setStationCode(stationCode);
+        station.setStationName(stationName);
+        station.setCity(city);
+
+        return stationRepository.save(station);
     }
 
     private Route findOrCreateRoute(String routeCode,
                                     String routeName,
                                     Double distanceKm) {
-        if (!routeRepository.existsByRouteCode(routeCode)) {
-            return routeRepository.save(
-                    Route.builder()
-                            .routeCode(routeCode)
-                            .routeName(routeName)
-                            .distanceKm(distanceKm)
-                            .build()
-            );
-        }
-
-        return routeRepository.findAll()
+        Route route = routeRepository.findAll()
                 .stream()
-                .filter(route -> routeCode.equalsIgnoreCase(route.getRouteCode()))
+                .filter(item -> routeCode.equalsIgnoreCase(item.getRouteCode()))
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Route exists but cannot be loaded: " + routeCode));
+                .orElseGet(() -> Route.builder()
+                        .routeCode(routeCode)
+                        .build());
+
+        route.setRouteCode(routeCode);
+        route.setRouteName(routeName);
+        route.setDistanceKm(distanceKm);
+
+        return routeRepository.save(route);
     }
 
     private Train findOrCreateTrain(String trainCode,
                                     String trainName,
                                     String trainType) {
-        return trainRepository.findByTrainCode(trainCode)
-                .orElseGet(() -> trainRepository.save(
-                        Train.builder()
-                                .trainCode(trainCode)
-                                .trainName(trainName)
-                                .trainType(trainType)
-                                .status(TrainStatus.AVAILABLE)
-                                .build()
-                ));
+        Train train = trainRepository.findByTrainCode(trainCode)
+                .orElseGet(() -> Train.builder()
+                        .trainCode(trainCode)
+                        .build());
+
+        train.setTrainCode(trainCode);
+        train.setTrainName(trainName);
+        train.setTrainType(trainType);
+        train.setStatus(TrainStatus.AVAILABLE);
+
+        return trainRepository.save(train);
     }
 
     private Coach findOrCreateCoach(Train train,
                                     String coachNumber,
                                     String coachType,
-                                    Integer capacity) {
-        boolean exists = coachRepository.existsByTrain_TrainIdAndCoachNumber(
-                train.getTrainId(),
-                coachNumber
-        );
-
-        if (!exists) {
-            return coachRepository.save(
-                    Coach.builder()
-                            .train(train)
-                            .coachNumber(coachNumber)
-                            .coachType(coachType)
-                            .capacity(capacity)
-                            .build()
-            );
-        }
-
-        return coachRepository.findAll()
+                                    Integer capacity,
+                                    Integer compartmentCount,
+                                    Integer berthsPerCompartment) {
+        Coach coach = coachRepository.findAll()
                 .stream()
-                .filter(coach -> coach.getTrain() != null
-                        && coach.getTrain().getTrainId().equals(train.getTrainId())
-                        && coachNumber.equalsIgnoreCase(coach.getCoachNumber()))
+                .filter(item -> item.getTrain() != null
+                        && item.getTrain().getTrainId().equals(train.getTrainId())
+                        && coachNumber.equalsIgnoreCase(item.getCoachNumber()))
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Coach exists but cannot be loaded: " + coachNumber));
+                .orElseGet(() -> Coach.builder()
+                        .train(train)
+                        .coachNumber(coachNumber)
+                        .build());
+
+        coach.setTrain(train);
+        coach.setCoachNumber(coachNumber);
+        coach.setCoachType(coachType);
+        coach.setCapacity(capacity);
+        coach.setCompartmentCount(compartmentCount);
+        coach.setBerthsPerCompartment(berthsPerCompartment);
+
+        return coachRepository.save(coach);
     }
 
-    private void createSeatsForCoach(Coach coach,
-                                     String seatType,
-                                     BigDecimal extraPrice) {
+    private void createNormalSeatsForCoach(Coach coach,
+                                           String seatType,
+                                           BigDecimal extraPrice) {
         String[] columns = {"A", "B", "C", "D"};
         int capacity = coach.getCapacity() == null ? 40 : coach.getCapacity();
         int created = 0;
@@ -503,8 +583,10 @@ public class DataInitializer implements CommandLineRunner {
                 if (!exists) {
                     Seat seat = Seat.builder()
                             .coach(coach)
+                            .compartment(null)
                             .seatNumber(seatNumber)
                             .seatType(seatType)
+                            .berthLevel(null)
                             .extraPrice(extraPrice)
                             .build();
 
@@ -518,31 +600,151 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 
-    private TrainTrip findOrCreateTrip(Train train,
-                                       Route route,
-                                       LocalDateTime departureTime,
-                                       LocalDateTime arrivalTime,
-                                       BigDecimal basePrice) {
-        return trainTripRepository.findAll()
+    private void createSleeperCompartmentsAndBerths(Coach coach,
+                                                    String seatType,
+                                                    BigDecimal extraPrice) {
+        int compartmentCount = coach.getCompartmentCount() == null ? 0 : coach.getCompartmentCount();
+        int berthsPerCompartment = coach.getBerthsPerCompartment() == null ? 0 : coach.getBerthsPerCompartment();
+
+        if (compartmentCount <= 0 || berthsPerCompartment <= 0) {
+            return;
+        }
+
+        List<Seat> reusableOldSeats = new ArrayList<>(
+                seatRepository.findByCoach_CoachIdOrderBySeatNumberAsc(coach.getCoachId())
+                        .stream()
+                        .filter(seat -> seat.getCompartment() == null)
+                        .toList()
+        );
+
+        int oldSeatIndex = 0;
+
+        for (int compartmentIndex = 1; compartmentIndex <= compartmentCount; compartmentIndex++) {
+            String compartmentNumber = String.format("K%02d", compartmentIndex);
+
+            Compartment compartment = compartmentRepository
+                    .findByCoach_CoachIdAndCompartmentNumber(coach.getCoachId(), compartmentNumber)
+                    .orElseGet(() -> compartmentRepository.save(
+                            Compartment.builder()
+                                    .coach(coach)
+                                    .compartmentNumber(compartmentNumber)
+                                    .compartmentType(seatType)
+                                    .capacity(berthsPerCompartment)
+                                    .build()
+                    ));
+
+            compartment.setCoach(coach);
+            compartment.setCompartmentNumber(compartmentNumber);
+            compartment.setCompartmentType(seatType);
+            compartment.setCapacity(berthsPerCompartment);
+            compartmentRepository.save(compartment);
+
+            for (int berthIndex = 1; berthIndex <= berthsPerCompartment; berthIndex++) {
+                String seatNumber = generateSleeperSeatNumber(compartmentNumber, berthIndex);
+                String berthLevel = resolveBerthLevel(berthIndex);
+
+                boolean exists = seatRepository.existsByCoach_CoachIdAndSeatNumber(
+                        coach.getCoachId(),
+                        seatNumber
+                );
+
+                if (exists) {
+                    continue;
+                }
+
+                Seat seat;
+
+                if (oldSeatIndex < reusableOldSeats.size()) {
+                    seat = reusableOldSeats.get(oldSeatIndex);
+                    oldSeatIndex++;
+                } else {
+                    seat = new Seat();
+                    seat.setCoach(coach);
+                }
+
+                seat.setCoach(coach);
+                seat.setCompartment(compartment);
+                seat.setSeatNumber(seatNumber);
+                seat.setSeatType(seatType);
+                seat.setBerthLevel(berthLevel);
+                seat.setExtraPrice(extraPrice);
+
+                seatRepository.save(seat);
+            }
+        }
+    }
+
+    private String generateSleeperSeatNumber(String compartmentNumber, int berthIndex) {
+        String suffix = switch (berthIndex) {
+            case 1 -> "L1A";
+            case 2 -> "L1B";
+            case 3 -> "L2A";
+            case 4 -> "L2B";
+            case 5 -> "L3A";
+            case 6 -> "L3B";
+            default -> "B" + berthIndex;
+        };
+
+        return compartmentNumber + "-" + suffix;
+    }
+
+    private String resolveBerthLevel(int berthIndex) {
+        if (berthIndex == 1 || berthIndex == 2) {
+            return "LOWER";
+        }
+
+        if (berthIndex == 3 || berthIndex == 4) {
+            return "UPPER";
+        }
+
+        if (berthIndex == 5 || berthIndex == 6) {
+            return "MIDDLE";
+        }
+
+        return "LEVEL_" + berthIndex;
+    }
+
+    private TrainTrip findOrCreateOrUpdateSeedTrip(Train train,
+                                                   Route route,
+                                                   int tripIndex,
+                                                   LocalDateTime departureTime,
+                                                   LocalDateTime arrivalTime,
+                                                   BigDecimal basePrice) {
+        List<TrainTrip> existingTrips = trainTripRepository.findAll()
                 .stream()
                 .filter(trip -> trip.getTrain() != null
                         && trip.getTrain().getTrainId().equals(train.getTrainId())
                         && trip.getRoute() != null
-                        && trip.getRoute().getRouteId().equals(route.getRouteId())
-                        && trip.getDepartureTime() != null
-                        && trip.getDepartureTime().toLocalDate().equals(departureTime.toLocalDate())
-                        && trip.getDepartureTime().getHour() == departureTime.getHour())
-                .findFirst()
-                .orElseGet(() -> trainTripRepository.save(
-                        TrainTrip.builder()
-                                .train(train)
-                                .route(route)
-                                .departureTime(departureTime)
-                                .arrivalTime(arrivalTime)
-                                .basePrice(basePrice)
-                                .status(TripStatus.SCHEDULED)
-                                .build()
-                ));
+                        && trip.getRoute().getRouteId().equals(route.getRouteId()))
+                .sorted(Comparator.comparing(
+                        TrainTrip::getDepartureTime,
+                        Comparator.nullsLast(Comparator.naturalOrder())
+                ))
+                .toList();
+
+        if (existingTrips.size() > tripIndex) {
+            TrainTrip trip = existingTrips.get(tripIndex);
+
+            trip.setTrain(train);
+            trip.setRoute(route);
+            trip.setDepartureTime(departureTime);
+            trip.setArrivalTime(arrivalTime);
+            trip.setBasePrice(basePrice);
+            trip.setStatus(TripStatus.SCHEDULED);
+
+            return trainTripRepository.save(trip);
+        }
+
+        return trainTripRepository.save(
+                TrainTrip.builder()
+                        .train(train)
+                        .route(route)
+                        .departureTime(departureTime)
+                        .arrivalTime(arrivalTime)
+                        .basePrice(basePrice)
+                        .status(TripStatus.SCHEDULED)
+                        .build()
+        );
     }
 
     private void syncRouteStations(Route route,
@@ -550,7 +752,23 @@ public class DataInitializer implements CommandLineRunner {
         List<RouteStation> existing = routeStationRepository
                 .findByRoute_RouteIdOrderByStationOrderAsc(route.getRouteId());
 
-        if (existing.size() == stations.size()) {
+        boolean sameOrder = existing.size() == stations.size();
+
+        if (sameOrder) {
+            for (int i = 0; i < stations.size(); i++) {
+                RouteStation routeStation = existing.get(i);
+
+                if (routeStation.getStation() == null
+                        || !routeStation.getStation().getStationId().equals(stations.get(i).getStationId())
+                        || routeStation.getStationOrder() == null
+                        || routeStation.getStationOrder() != i + 1) {
+                    sameOrder = false;
+                    break;
+                }
+            }
+        }
+
+        if (sameOrder) {
             return;
         }
 
@@ -575,15 +793,36 @@ public class DataInitializer implements CommandLineRunner {
         List<TripStation> existing = tripStationRepository
                 .findByTrainTrip_TripIdOrderByStationOrderAsc(trip.getTripId());
 
-        if (existing.size() == stations.size()) {
+        if (existing.size() != stations.size()) {
+            if (!existing.isEmpty()) {
+                tripStationRepository.deleteAll(existing);
+                tripStationRepository.flush();
+            }
+
+            for (int i = 0; i < stations.size(); i++) {
+                TripStation tripStation = new TripStation();
+
+                applyTripStationData(tripStation, trip, stations, i);
+
+                tripStationRepository.save(tripStation);
+            }
+
             return;
         }
 
-        if (!existing.isEmpty()) {
-            tripStationRepository.deleteAll(existing);
-            tripStationRepository.flush();
-        }
+        for (int i = 0; i < stations.size(); i++) {
+            TripStation tripStation = existing.get(i);
 
+            applyTripStationData(tripStation, trip, stations, i);
+
+            tripStationRepository.save(tripStation);
+        }
+    }
+
+    private void applyTripStationData(TripStation tripStation,
+                                      TrainTrip trip,
+                                      List<Station> stations,
+                                      int index) {
         long totalMinutes = Math.max(
                 60,
                 Duration.between(trip.getDepartureTime(), trip.getArrivalTime()).toMinutes()
@@ -591,38 +830,31 @@ public class DataInitializer implements CommandLineRunner {
 
         int stationCount = stations.size();
 
-        for (int i = 0; i < stationCount; i++) {
-            LocalDateTime arrivalTime;
-            LocalDateTime departureTime;
+        LocalDateTime arrivalTime;
+        LocalDateTime departureTime;
 
-            if (i == 0) {
-                arrivalTime = null;
-                departureTime = trip.getDepartureTime();
-            } else if (i == stationCount - 1) {
-                arrivalTime = trip.getArrivalTime();
-                departureTime = null;
-            } else {
-                long minutesFromStart = totalMinutes * i / (stationCount - 1);
-                arrivalTime = trip.getDepartureTime().plusMinutes(minutesFromStart);
-                departureTime = arrivalTime.plusMinutes(10);
-            }
-
-            TripStation tripStation = TripStation.builder()
-                    .trainTrip(trip)
-                    .station(stations.get(i))
-                    .stationOrder(i + 1)
-                    .arrivalTime(arrivalTime)
-                    .departureTime(departureTime)
-                    .build();
-
-            tripStationRepository.save(tripStation);
+        if (index == 0) {
+            arrivalTime = null;
+            departureTime = trip.getDepartureTime();
+        } else if (index == stationCount - 1) {
+            arrivalTime = trip.getArrivalTime();
+            departureTime = null;
+        } else {
+            long minutesFromStart = totalMinutes * index / (stationCount - 1);
+            arrivalTime = trip.getDepartureTime().plusMinutes(minutesFromStart);
+            departureTime = arrivalTime.plusMinutes(10);
         }
+
+        tripStation.setTrainTrip(trip);
+        tripStation.setStation(stations.get(index));
+        tripStation.setStationOrder(index + 1);
+        tripStation.setArrivalTime(arrivalTime);
+        tripStation.setDepartureTime(departureTime);
     }
 
     private List<Station> stationList(Map<String, Station> stations,
                                       String... codes) {
-        return List.of(codes)
-                .stream()
+        return Arrays.stream(codes)
                 .map(code -> {
                     Station station = stations.get(code);
 

@@ -13,12 +13,15 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
 
     boolean existsByCoach_CoachIdAndSeatNumber(Long coachId, String seatNumber);
 
+    List<Seat> findByCoach_CoachIdOrderBySeatNumberAsc(Long coachId);
+
     @Query("""
             select s
             from Seat s
                  join fetch s.coach c
+                 left join fetch s.compartment cp
             where c.train.trainId = :trainId
-            order by c.coachNumber asc, s.seatNumber asc
+            order by c.coachNumber asc, cp.compartmentNumber asc, s.seatNumber asc
             """)
     List<Seat> findSeatsByTrainId(@Param("trainId") Long trainId);
 }

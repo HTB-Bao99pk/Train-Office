@@ -39,6 +39,17 @@ public class Coach {
     @Column(name = "capacity", nullable = false)
     private Integer capacity;
 
+    @Column(name = "compartment_count")
+    private Integer compartmentCount;
+
+    @Column(name = "berths_per_compartment")
+    private Integer berthsPerCompartment;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "coach", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<Compartment> compartments = new ArrayList<>();
+
     @Builder.Default
     @OneToMany(mappedBy = "coach", fetch = FetchType.LAZY)
     @ToString.Exclude

@@ -56,6 +56,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             "passenger",
             "seat",
             "seat.coach",
+            "seat.compartment",
             "trainTrip",
             "trainTrip.train"
     })
@@ -71,7 +72,8 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             "trainTrip.train",
             "passenger",
             "seat",
-            "seat.coach"
+            "seat.coach",
+            "seat.compartment"
     })
     List<Ticket> findByBooking_User_UserIdOrderByTicketIdAsc(Long userId);
 
@@ -86,7 +88,8 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             "trainTrip.train",
             "passenger",
             "seat",
-            "seat.coach"
+            "seat.coach",
+            "seat.compartment"
     })
     Optional<Ticket> findWithDetailsByTicketId(Long ticketId);
 }

@@ -99,7 +99,9 @@
                             <p id="currentCoachMeta">Choose a coach to view available seats.</p>
                         </div>
                     </div>
-
+                    <div id="railCompartmentTabs" class="rj-compartment-tabs">
+                        <!-- JS will generate compartment tabs here -->
+                    </div>
                     <div class="rj-coach-shell">
                         <div class="rj-coach-front">
                             <i class="bi bi-arrow-up"></i>
@@ -113,7 +115,9 @@
                                    th:data-coach-id="${item.seat.coach != null ? item.seat.coach.coachId : 0}"
                                    th:data-coach-number="${item.seat.coach != null ? item.seat.coach.coachNumber : 'Unknown'}"
                                    th:data-coach-type="${item.seat.coach != null ? item.seat.coach.coachType : item.seat.seatType}"
-                                   th:data-coach-capacity="${item.seat.coach != null and item.seat.coach.capacity != null ? item.seat.coach.capacity : 0}">
+                                   th:data-coach-capacity="${item.seat.coach != null and item.seat.coach.capacity != null ? item.seat.coach.capacity : 0}"                                th:data-compartment-id="${item.seat.compartment != null ? item.seat.compartment.compartmentId : 0}"
+                                   th:data-compartment-number="${item.seat.compartment != null ? item.seat.compartment.compartmentNumber : 'Open Cabin'}"
+                                   th:data-berth-level="${item.seat.berthLevel != null ? item.seat.berthLevel : ''}">
 
                                 <input class="rail-seat-checkbox"
                                        type="checkbox"
@@ -125,7 +129,10 @@
                                        th:data-seat-extra-price="${item.seat.extraPrice != null ? item.seat.extraPrice : 0}"
                                        th:data-coach-id="${item.seat.coach != null ? item.seat.coach.coachId : 0}"
                                        th:data-coach-number="${item.seat.coach != null ? item.seat.coach.coachNumber : 'Unknown'}"
-                                       th:data-coach-type="${item.seat.coach != null ? item.seat.coach.coachType : item.seat.seatType}">
+                                       th:data-coach-type="${item.seat.coach != null ? item.seat.coach.coachType : item.seat.seatType}"
+                                       th:data-compartment-id="${item.seat.compartment != null ? item.seat.compartment.compartmentId : 0}"
+                                       th:data-compartment-number="${item.seat.compartment != null ? item.seat.compartment.compartmentNumber : 'Open Cabin'}"
+                                       th:data-berth-level="${item.seat.berthLevel != null ? item.seat.berthLevel : ''}">
 
                                 <span class="rj-seat-box">
                                     <span class="rj-seat-cap"></span>
@@ -134,7 +141,11 @@
                                           th:text="${item.seat.seatNumber}">
                                         01A
                                     </span>
-
+<span class="rj-seat-berth"
+      th:if="${item.seat.berthLevel != null}"
+      th:text="${item.seat.berthLevel}">
+    LOWER
+</span>
                                     <i class="bi bi-check-circle-fill rj-seat-check"></i>
                                     <i class="bi bi-x-lg rj-seat-x"></i>
                                 </span>

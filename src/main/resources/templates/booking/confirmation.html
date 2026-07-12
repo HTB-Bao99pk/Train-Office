@@ -104,21 +104,43 @@
                                     <i class="bi bi-seat-recline-normal"></i>
 
                                     <span>
-                                        <span th:text="${seat.coach != null ? seat.coach.coachNumber : 'Coach'}">
-                                            C01
-                                        </span>
+            <span>Coach </span>
 
-                                        <span>-</span>
+            <span th:text="${seat.coach != null ? seat.coach.coachNumber : '-'}">
+                C01
+            </span>
 
-                                        <span th:text="${seat.seatNumber}">
-                                            A3
-                                        </span>
-                                    </span>
+            <span th:if="${seat.compartment != null}">
+                , Compartment
+            </span>
+
+            <span th:if="${seat.compartment != null}"
+                  th:text="${seat.compartment.compartmentNumber}">
+                K01
+            </span>
+
+            <span> - </span>
+
+            <span th:text="${seat.seatNumber}">
+                A3
+            </span>
+        </span>
                                 </div>
 
-                                <span th:text="${seat.seatType}">
-                                    First Class
-                                </span>
+                                <span>
+        <span th:text="${seat.seatType}">
+            First Class
+        </span>
+
+        <span th:if="${seat.berthLevel != null}">
+            •
+        </span>
+
+        <span th:if="${seat.berthLevel != null}"
+              th:text="${seat.berthLevel}">
+            LOWER
+        </span>
+    </span>
                             </div>
                         </div>
                     </div>

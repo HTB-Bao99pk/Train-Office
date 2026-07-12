@@ -115,13 +115,29 @@
                         C
                     </strong>
                 </div>
-
                 <div class="rail-print-meta">
-                    <small>Seat</small>
+                    <small>Compartment</small>
 
-                    <strong class="highlight"
-                            th:text="${ticket.seat != null ? ticket.seat.seatNumber : '-'}">
-                        12A
+                    <strong th:text="${ticket.seat != null and ticket.seat.compartment != null ? ticket.seat.compartment.compartmentNumber : '-'}">
+                        K01
+                    </strong>
+                </div>
+                <div class="rail-print-meta">
+                    <small>Seat / Berth</small>
+
+                    <strong class="highlight">
+        <span th:text="${ticket.seat != null ? ticket.seat.seatNumber : '-'}">
+            12A
+        </span>
+
+                        <span th:if="${ticket.seat != null and ticket.seat.berthLevel != null}">
+            -
+        </span>
+
+                        <span th:if="${ticket.seat != null and ticket.seat.berthLevel != null}"
+                              th:text="${ticket.seat.berthLevel}">
+            LOWER
+        </span>
                     </strong>
                 </div>
             </div>

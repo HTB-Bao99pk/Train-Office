@@ -269,12 +269,18 @@
                                     1
                                 </strong>
                             </div>
-
                             <div class="rail-booking-ticket-field">
-                                <small>Seat</small>
+                                <small>Compartment</small>
 
-                                <strong th:text="${ticket.seat != null ? ticket.seat.seatNumber : '-'}">
-                                    A1
+                                <strong th:text="${ticket.seat != null and ticket.seat.compartment != null ? ticket.seat.compartment.compartmentNumber : '-'}">
+                                    K01
+                                </strong>
+                            </div>
+                            <div class="rail-booking-ticket-field">
+                                <small>Compartment</small>
+
+                                <strong th:text="${ticket.seat != null and ticket.seat.compartment != null ? ticket.seat.compartment.compartmentNumber : '-'}">
+                                    K01
                                 </strong>
                             </div>
 

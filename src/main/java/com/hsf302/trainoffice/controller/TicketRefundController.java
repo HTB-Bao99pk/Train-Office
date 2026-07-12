@@ -46,6 +46,7 @@ public class TicketRefundController {
                     "errorMessage",
                     ex.getMessage()
             );
+
         } catch (Exception ex) {
             redirectAttributes.addFlashAttribute(
                     "errorMessage",

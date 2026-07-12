@@ -125,7 +125,53 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label" for="compartmentCount">Compartment Count</label>
 
+                <div class="input-group">
+                    <div class="input-group-prepend">
+            <span class="input-group-text">
+                <i class="fas fa-door-closed"></i>
+            </span>
+                    </div>
+
+                    <input id="compartmentCount"
+                           name="compartmentCount"
+                           type="number"
+                           min="0"
+                           class="form-control"
+                           th:value="${coach != null ? coach.compartmentCount : ''}"
+                           placeholder="Example: 10 for sleeper coach">
+                </div>
+
+                <small class="form-text text-muted">
+                    Only required for sleeper coaches.
+                </small>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label" for="berthsPerCompartment">Berths Per Compartment</label>
+
+                <div class="input-group">
+                    <div class="input-group-prepend">
+            <span class="input-group-text">
+                <i class="fas fa-bed"></i>
+            </span>
+                    </div>
+
+                    <input id="berthsPerCompartment"
+                           name="berthsPerCompartment"
+                           type="number"
+                           min="0"
+                           class="form-control"
+                           th:value="${coach != null ? coach.berthsPerCompartment : ''}"
+                           placeholder="Example: 4 or 6">
+                </div>
+
+                <small class="form-text text-muted">
+                    Example: 4 berths = 2 lower + 2 upper.
+                </small>
+            </div>
             <div class="card-footer d-flex justify-content-end gap-2">
                 <a class="btn btn-outline-secondary"
                    th:href="@{/admin/coaches(trainId=${selectedTrainId})}">

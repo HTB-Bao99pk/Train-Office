@@ -133,21 +133,35 @@
                 </div>
 
                 <div class="rail-mini-cell">
-                    <small>Seat</small>
+                    <small>Location</small>
 
                     <strong>
                         <span>Coach </span>
 
                         <span th:text="${ticket.seat != null and ticket.seat.coach != null ? ticket.seat.coach.coachNumber : '-'}">
-                            4
-                        </span>
+            C01
+        </span>
 
-                        <span>, </span>
+                        <span th:if="${ticket.seat != null and ticket.seat.compartment != null}">
+            , Compartment
+        </span>
+
+                        <span th:if="${ticket.seat != null and ticket.seat.compartment != null}"
+                              th:text="${ticket.seat.compartment.compartmentNumber}">
+            K01
+        </span>
+
+                        <span>, Seat </span>
 
                         <span th:text="${ticket.seat != null ? ticket.seat.seatNumber : '-'}">
-                            12A
-                        </span>
+            12A
+        </span>
                     </strong>
+
+                    <span th:if="${ticket.seat != null and ticket.seat.berthLevel != null}"
+                          th:text="${ticket.seat.berthLevel}">
+        LOWER
+    </span>
                 </div>
 
                 <div class="rail-mini-cell">

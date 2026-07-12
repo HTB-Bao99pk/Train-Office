@@ -11,7 +11,10 @@ import java.util.List;
 @Table(
         name = "seats",
         uniqueConstraints = @UniqueConstraint(name = "uk_seats_coach_number", columnNames = {"coach_id", "seat_number"}),
-        indexes = @Index(name = "idx_seats_coach", columnList = "coach_id")
+        indexes = {
+                @Index(name = "idx_seats_coach", columnList = "coach_id"),
+                @Index(name = "idx_seats_compartment", columnList = "compartment_id")
+        }
 )
 @Getter
 @Setter
@@ -31,11 +34,19 @@ public class Seat {
     @ToString.Exclude
     private Coach coach;
 
-    @Column(name = "seat_number", nullable = false, length = 20)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "compartment_id")
+    @ToString.Exclude
+    private Compartment compartment;
+
+    @Column(name = "seat_number", nullable = false, length = 40)
     private String seatNumber;
 
     @Column(name = "seat_type", nullable = false, length = 50)
     private String seatType;
+
+    @Column(name = "berth_level", length = 20)
+    private String berthLevel;
 
     @Column(name = "extra_price", nullable = false, precision = 12, scale = 2)
     private BigDecimal extraPrice;

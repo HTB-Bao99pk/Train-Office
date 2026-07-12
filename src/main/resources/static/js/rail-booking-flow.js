@@ -132,6 +132,7 @@ function setupSeatSelection() {
     const selectedTotalText = document.getElementById('selectedTotalText');
 
     const coachTabs = document.getElementById('railCoachTabs');
+    const compartmentTabs = document.getElementById('railCompartmentTabs');
     const previousCoachBtn = document.getElementById('previousCoachBtn');
     const nextCoachBtn = document.getElementById('nextCoachBtn');
 
@@ -145,7 +146,7 @@ function setupSeatSelection() {
 
     let coaches = [];
     let activeCoachIndex = 0;
-
+    let activeCompartmentIndex = 0;
     function formatVnd(value) {
         return new Intl.NumberFormat('en-US').format(value) + ' VND';
     }
@@ -276,7 +277,8 @@ function setupSeatSelection() {
                     totalSeats: 0,
                     availableSeats: 0,
                     minExtraPrice: extraPrice,
-                    maxExtraPrice: extraPrice
+                    maxExtraPrice: extraPrice,
+                    compartments: new Map()
                 });
             }
 
@@ -290,12 +292,39 @@ function setupSeatSelection() {
 
             coach.minExtraPrice = Math.min(coach.minExtraPrice, extraPrice);
             coach.maxExtraPrice = Math.max(coach.maxExtraPrice, extraPrice);
+            const compartmentId = option.dataset.compartmentId || checkbox.dataset.compartmentId || '0';
+            const compartmentNumber = option.dataset.compartmentNumber || checkbox.dataset.compartmentNumber || 'Open Cabin';
+
+            if (!coach.compartments.has(compartmentId)) {
+                coach.compartments.set(compartmentId, {
+                    id: compartmentId,
+                    number: compartmentNumber,
+                    totalSeats: 0,
+                    availableSeats: 0
+                });
+            }
+
+            const compartment = coach.compartments.get(compartmentId);
+
+            compartment.totalSeats += 1;
+
+            if (!option.classList.contains('booked')) {
+                compartment.availableSeats += 1;
+            }
         });
 
         coaches = Array.from(coachMap.values()).sort(function (a, b) {
             return String(a.number).localeCompare(String(b.number), undefined, {
                 numeric: true,
                 sensitivity: 'base'
+            });
+        });
+        coaches.forEach(function (coach) {
+            coach.compartments = Array.from(coach.compartments.values()).sort(function (a, b) {
+                return String(a.number).localeCompare(String(b.number), undefined, {
+                    numeric: true,
+                    sensitivity: 'base'
+                });
             });
         });
     }
@@ -367,6 +396,91 @@ function setupSeatSelection() {
         return index >= 0 ? index : 0;
     }
 
+    function renderCompartmentTabs(coach) {
+        if (!compartmentTabs) {
+            return;
+        }
+
+        compartmentTabs.innerHTML = '';
+
+        if (!coach || !coach.compartments || coach.compartments.length <= 1) {
+            compartmentTabs.classList.add('is-hidden');
+            return;
+        }
+
+        compartmentTabs.classList.remove('is-hidden');
+
+        coach.compartments.forEach(function (compartment, index) {
+            const button = document.createElement('button');
+
+            button.type = 'button';
+            button.className = 'rj-compartment-tab';
+            button.dataset.compartmentId = compartment.id;
+
+            button.innerHTML =
+                '<strong>' + compartment.number + '</strong>' +
+                '<small>' + compartment.availableSeats + '/' + compartment.totalSeats + ' available</small>';
+
+            button.addEventListener('click', function () {
+                showCompartment(index);
+            });
+
+            compartmentTabs.appendChild(button);
+        });
+    }
+
+    function showCompartment(index) {
+        const activeCoach = coaches[activeCoachIndex];
+
+        if (!activeCoach || !activeCoach.compartments || !activeCoach.compartments.length) {
+            return;
+        }
+
+        if (index < 0) {
+            index = activeCoach.compartments.length - 1;
+        }
+
+        if (index >= activeCoach.compartments.length) {
+            index = 0;
+        }
+
+        activeCompartmentIndex = index;
+
+        const activeCompartment = activeCoach.compartments[activeCompartmentIndex];
+
+        seatOptions.forEach(function (option) {
+            const sameCoach = option.dataset.coachId === activeCoach.id;
+            const sameCompartment = option.dataset.compartmentId === activeCompartment.id;
+
+            option.classList.toggle('hidden-by-coach', !sameCoach || !sameCompartment);
+        });
+
+        document.querySelectorAll('.rj-compartment-tab').forEach(function (button) {
+            button.classList.toggle('active', button.dataset.compartmentId === activeCompartment.id);
+        });
+
+        if (currentCoachMeta) {
+            currentCoachMeta.textContent =
+                activeCoach.type +
+                ' • Compartment ' +
+                activeCompartment.number +
+                ' • ' +
+                activeCompartment.availableSeats +
+                ' available of ' +
+                activeCompartment.totalSeats +
+                ' berths';
+        }
+
+        if (currentCoachSeatCount) {
+            currentCoachSeatCount.textContent =
+                activeCompartment.number + ' • ' + activeCompartment.availableSeats + ' available';
+        }
+
+        if (seatMap) {
+            seatMap.scrollTop = 0;
+        }
+    }
+
     function showCoach(index) {
         if (!coaches.length) {
             return;
@@ -384,10 +498,18 @@ function setupSeatSelection() {
 
         const activeCoach = coaches[activeCoachIndex];
 
-        seatOptions.forEach(function (option) {
-            const sameCoach = option.dataset.coachId === activeCoach.id;
-            option.classList.toggle('hidden-by-coach', !sameCoach);
-        });
+        activeCompartmentIndex = 0;
+
+        renderCompartmentTabs(activeCoach);
+
+        if (activeCoach.compartments && activeCoach.compartments.length) {
+            showCompartment(0);
+        } else {
+            seatOptions.forEach(function (option) {
+                const sameCoach = option.dataset.coachId === activeCoach.id;
+                option.classList.toggle('hidden-by-coach', !sameCoach);
+            });
+        }
 
         document.querySelectorAll('.rj-coach-tab').forEach(function (button) {
             button.classList.toggle('active', button.dataset.coachId === activeCoach.id);
@@ -487,7 +609,8 @@ function setupSeatSelection() {
             const coachNumber = checkbox.dataset.coachNumber || 'Unknown';
             const coachType = checkbox.dataset.coachType || seatType;
             const extraPrice = getSeatExtraPrice(checkbox);
-
+            const compartmentNumber = checkbox.dataset.compartmentNumber || 'Open Cabin';
+            const berthLevel = checkbox.dataset.berthLevel || '';
             const item = document.createElement('div');
             item.className = 'rail-selected-item';
 
@@ -496,7 +619,7 @@ function setupSeatSelection() {
                 '<div class="rail-selected-seat-code">' + seatLabel + '</div>' +
                 '<div class="rail-selected-seat-type">' +
                 '<strong>Coach ' + coachNumber + '</strong>' +
-                '<small>' + coachType + '</small>' +
+                '<small>' + coachType + ' • ' + compartmentNumber + (berthLevel ? ' • ' + berthLevel : '') + '</small>' +
                 '</div>' +
                 '</div>' +
                 '<div class="rail-selected-price">' +

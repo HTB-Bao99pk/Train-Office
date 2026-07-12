@@ -635,3 +635,68 @@
         align-items: flex-start !important;
     }
 }
+
+
+/* =========================================================
+   Compartment / Sleeper berth UI
+   ========================================================= */
+
+.rj-compartment-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin: 16px 0 18px;
+}
+
+.rj-compartment-tabs.is-hidden {
+    display: none;
+}
+
+.rj-compartment-tab {
+    min-height: 58px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    color: #d4e4fa;
+    background: rgba(13, 28, 45, .72);
+    border: 1px solid rgba(142, 213, 255, .16);
+    text-align: left;
+    cursor: pointer;
+    transition: .18s ease;
+}
+
+.rj-compartment-tab strong {
+    display: block;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.rj-compartment-tab small {
+    display: block;
+    margin-top: 4px;
+    color: #8ed5ff;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.rj-compartment-tab:hover,
+.rj-compartment-tab.active {
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, .14);
+    box-shadow: 0 0 0 1px rgba(56, 189, 248, .28);
+}
+
+.rj-seat-berth {
+    display: block;
+    margin-top: 4px;
+    color: #8ed5ff;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: .08em;
+}
+
+@media (max-width: 720px) {
+    .rj-compartment-tabs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
