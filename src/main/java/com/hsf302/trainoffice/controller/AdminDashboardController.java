@@ -62,13 +62,15 @@ public class AdminDashboardController {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime next30Days = LocalDate.now().plusDays(30).atTime(23, 59, 59);
 
-        model.addAttribute("trips",
-                trainTripRepository.findByStatusAndDepartureTimeGreaterThanEqualAndDepartureTimeLessThanOrderByDepartureTimeAsc(
+        List<?> upcomingTrips = trainTripRepository
+                .findByStatusAndDepartureTimeGreaterThanEqualAndDepartureTimeLessThanOrderByDepartureTimeAsc(
                         TripStatus.SCHEDULED,
                         now,
                         next30Days
-                )
-        );
+                );
+
+        model.addAttribute("upcomingTripsTotal", upcomingTrips.size());
+        model.addAttribute("trips", upcomingTrips.stream().limit(8).toList());
         model.addAttribute("chartLabels", List.of("Revenue"));
         model.addAttribute("chartData", List.of(walletBalance));
 

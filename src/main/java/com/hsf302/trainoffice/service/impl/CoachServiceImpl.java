@@ -7,6 +7,10 @@ import com.hsf302.trainoffice.repository.CoachRepository;
 import com.hsf302.trainoffice.repository.CompartmentRepository;
 import com.hsf302.trainoffice.repository.SeatRepository;
 import com.hsf302.trainoffice.service.CoachService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +24,7 @@ public class CoachServiceImpl implements CoachService {
     private final CoachRepository coachRepository;
     private final SeatRepository seatRepository;
     private final CompartmentRepository compartmentRepository;
-
+    private static final int COACHES_PER_PAGE = 8;
     public CoachServiceImpl(CoachRepository coachRepository,
                             SeatRepository seatRepository,
                             CompartmentRepository compartmentRepository) {
@@ -180,6 +184,27 @@ public class CoachServiceImpl implements CoachService {
 
             seatRepository.save(seat);
         }
+    }
+
+    @Override
+    public Page<Coach> listAll(int pageNumber, String keyword, Long trainId) {
+        int safePageNumber = Math.max(pageNumber, 1);
+
+        Pageable pageable = PageRequest.of(
+                safePageNumber - 1,
+                COACHES_PER_PAGE,
+                Sort.by("coachNumber").ascending()
+        );
+
+        return coachRepository.searchCoaches(normalizeKeyword(keyword), trainId, pageable);
+    }
+
+    private String normalizeKeyword(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return null;
+        }
+
+        return keyword.trim();
     }
 
     private void generateSleeperCompartmentsAndBerths(Coach coach) {

@@ -5,6 +5,7 @@ import com.hsf302.trainoffice.entity.Train;
 import com.hsf302.trainoffice.service.CoachService;
 import com.hsf302.trainoffice.service.TrainService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,31 +30,34 @@ public class CoachController {
     @GetMapping
     public String listCoaches(
             Model model,
-            @RequestParam(value = "trainId", required = false) Long trainId
+            @RequestParam(value = "trainId", required = false) Long trainId,
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "page", defaultValue = "1") int page
     ) {
-        List<Coach> coaches;
+        int safePage = Math.max(page, 1);
+        String cleanKeyword = normalizeKeyword(keyword);
+
         List<Train> allTrains = trainService.getAllTrains();
         Train selectedTrain = null;
 
         if (trainId != null) {
-            Optional<Train> trainOpt = allTrains.stream()
+            selectedTrain = allTrains.stream()
                     .filter(train -> train.getTrainId().equals(trainId))
-                    .findFirst();
-
-            if (trainOpt.isPresent()) {
-                selectedTrain = trainOpt.get();
-                coaches = selectedTrain.getCoaches();
-            } else {
-                coaches = List.of();
-            }
-        } else {
-            coaches = coachService.getAllCoaches();
+                    .findFirst()
+                    .orElse(null);
         }
 
-        model.addAttribute("coaches", coaches);
+        Page<Coach> coachPage = coachService.listAll(safePage, cleanKeyword, trainId);
+
+        model.addAttribute("coaches", coachPage.getContent());
         model.addAttribute("allTrains", allTrains);
         model.addAttribute("selectedTrainId", trainId);
         model.addAttribute("selectedTrain", selectedTrain);
+        model.addAttribute("keyword", cleanKeyword);
+
+        model.addAttribute("currentPage", safePage);
+        model.addAttribute("totalPages", coachPage.getTotalPages());
+        model.addAttribute("totalItems", coachPage.getTotalElements());
 
         return "coaches/list";
     }
@@ -156,5 +160,13 @@ public class CoachController {
         }
 
         return "redirect:/admin/coaches";
+    }
+
+    private String normalizeKeyword(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return null;
+        }
+
+        return keyword.trim();
     }
 }

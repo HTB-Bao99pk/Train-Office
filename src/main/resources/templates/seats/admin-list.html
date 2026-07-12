@@ -1,45 +1,82 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layouts/admin-layout :: layout('Seat Management', ~{::section}, 'seats')}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/admin-layout :: layout('Seat Inventory', ~{::section}, 'seats')}">
+
 <section>
     <div class="admin-page-hero">
         <div>
-            <span class="admin-page-kicker"><i class="fas fa-chair mr-1"></i> Seat Inventory</span>
-            <h2>Seat Management</h2>
-            <p th:if="${selectedCoach != null}" th:text="'Filtered by coach: ' + ${selectedCoach.coachNumber}">Filtered by coach</p>
-            <p th:if="${selectedCoach == null}">Filter by coach to add or review seat inventory.</p>
+            <span class="admin-page-kicker">
+                <i class="fas fa-chair mr-1"></i>
+                Seat Inventory
+            </span>
+
+            <h2>Seat Inventory</h2>
+
+            <p th:if="${selectedCoach != null}"
+               th:text="'Filtered by coach: ' + ${selectedCoach.coachNumber}">
+                Filtered by coach
+            </p>
+
+            <p th:if="${selectedCoach == null}">
+                Seats are generated automatically from coach capacity or sleeper compartment layout.
+            </p>
         </div>
-        <a class="btn btn-primary"
-           th:if="${selectedCoachId != null}"
-           th:href="@{/admin/seats/new(coachId=${selectedCoachId})}">
-            <i class="fas fa-plus mr-1"></i> Add Seat
-        </a>
-        <button class="btn btn-outline-secondary" th:if="${selectedCoachId == null}" disabled>
-            <i class="fas fa-filter mr-1"></i> Select coach to add
+
+        <button class="btn btn-outline-secondary" disabled>
+            <i class="fas fa-lock mr-1"></i>
+            Read-only inventory
         </button>
+    </div>
+
+    <div class="alert alert-info">
+        <strong>Seat management note:</strong>
+        Seats are generated automatically. To change seat quantity, update coach capacity.
+        For sleeper coaches, update compartment count and berths per compartment in the coach form.
     </div>
 
     <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
     <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
 
-    <div class="card admin-filter-card">
+    <div class="card admin-filter-card mb-3">
         <div class="card-header">
             <form th:action="@{/admin/seats}" method="get" class="row g-2">
-                <div class="col-lg-9 col-md-12">
+                <div class="col-lg-4 col-md-12">
                     <label class="form-label">Filter by coach</label>
-                    <select class="form-control" name="coachId" onchange="this.form.submit()">
+
+                    <select class="form-control" name="coachId">
                         <option value="">All coaches</option>
+
                         <option th:each="coach : ${allCoaches}"
                                 th:value="${coach.coachId}"
                                 th:selected="${selectedCoachId != null and selectedCoachId == coach.coachId}"
-                                th:text="${coach.train != null ? coach.train.trainCode + ' / ' + coach.coachNumber : coach.coachNumber}">
+                                th:text="${coach.train != null ? coach.train.trainCode + ' / ' + coach.coachNumber + ' / ' + coach.coachType : coach.coachNumber}">
+                            Coach
                         </option>
                     </select>
                 </div>
+
+                <div class="col-lg-5 col-md-12">
+                    <label class="form-label">Search seats</label>
+
+                    <input type="text"
+                           name="keyword"
+                           class="form-control"
+                           th:value="${keyword}"
+                           placeholder="Search seat code, coach, type, compartment, berth level">
+                </div>
+
                 <div class="col-lg-3 col-md-12 d-flex align-items-end">
-                    <a class="btn btn-outline-secondary w-100" th:href="@{/admin/seats}">
-                        <i class="fas fa-times mr-1"></i> Clear Filter
-                    </a>
+                    <div class="w-100 d-flex gap-2">
+                        <button class="btn btn-primary flex-fill" type="submit">
+                            <i class="fas fa-search mr-1"></i>
+                            Search
+                        </button>
+
+                        <a class="btn btn-outline-secondary"
+                           th:href="@{/admin/seats}">
+                            Clear
+                        </a>
+                    </div>
                 </div>
             </form>
         </div>
@@ -49,62 +86,152 @@
         <div class="card-header d-flex align-items-center justify-content-between">
             <div>
                 <span class="admin-card-title">Seat Directory</span>
-                <small th:text="${#lists.size(seats)} + ' seats shown'">0 seats shown</small>
+                <small th:text="${totalItems} + ' seats found'">0 seats found</small>
             </div>
-            <span class="badge badge-info">Seats</span>
+
+            <span class="badge badge-info">Read only</span>
         </div>
+
         <div class="card-body table-responsive p-0">
             <table class="table table-hover mb-0">
                 <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Seat</th>
+                    <th>Seat / Berth</th>
+                    <th>Train</th>
                     <th>Coach</th>
+                    <th>Compartment</th>
+                    <th>Berth Level</th>
                     <th>Type</th>
                     <th>Extra Price</th>
-                    <th class="text-right">Actions</th>
                 </tr>
                 </thead>
+
                 <tbody>
                 <tr th:each="seat : ${seats}">
-                    <td><span class="text-muted" th:text="'#' + ${seat.seatId}">#1</span></td>
+                    <td>
+                        <span class="text-muted" th:text="'#' + ${seat.seatId}">#1</span>
+                    </td>
+
                     <td>
                         <div class="admin-identity">
-                            <span class="admin-avatar"><i class="fas fa-chair"></i></span>
+                            <span class="admin-avatar">
+                                <i class="fas fa-chair"></i>
+                            </span>
+
                             <span>
-                                <strong th:text="${seat.seatNumber}">A1</strong>
-                                <small th:text="${seat.coach != null ? seat.coach.coachNumber : 'No coach'}">Coach</small>
+                                <strong th:text="${seat.seatNumber}">01A</strong>
+
+                                <small th:if="${seat.compartment == null}">
+                                    Normal seat
+                                </small>
+
+                                <small th:if="${seat.compartment != null}"
+                                       th:text="'Sleeper berth in ' + ${seat.compartment.compartmentNumber}">
+                                    Sleeper berth
+                                </small>
                             </span>
                         </div>
                     </td>
+
                     <td>
                         <span class="badge badge-primary admin-badge-soft"
-                              th:text="${seat.coach != null ? seat.coach.coachNumber : 'N/A'}">C01</span>
+                              th:text="${seat.coach != null and seat.coach.train != null ? seat.coach.train.trainCode : 'N/A'}">
+                            SE1
+                        </span>
                     </td>
-                    <td><span class="seat-type-badge" th:text="${seat.seatType}">STANDARD</span></td>
-                    <td th:text="${seat.extraPrice}">0</td>
-                    <td class="text-right">
-                        <a class="btn btn-sm btn-outline-warning" th:href="@{/admin/seats/edit/{id}(id=${seat.seatId})}">
-                            <i class="fas fa-edit"></i><span>Edit</span>
-                        </a>
-                        <a class="btn btn-sm btn-outline-danger"
-                           th:href="@{/admin/seats/delete/{id}(id=${seat.seatId},coachId=${selectedCoachId})}"
-                           onclick="return confirm('Delete this seat?')">
-                            <i class="fas fa-trash"></i><span>Delete</span>
-                        </a>
+
+                    <td>
+                        <span class="badge badge-secondary admin-badge-soft"
+                              th:text="${seat.coach != null ? seat.coach.coachNumber : 'N/A'}">
+                            C01
+                        </span>
+                    </td>
+
+                    <td>
+                        <span th:if="${seat.compartment != null}"
+                              class="badge badge-info admin-badge-soft"
+                              th:text="${seat.compartment.compartmentNumber}">
+                            K01
+                        </span>
+
+                        <span th:if="${seat.compartment == null}" class="text-muted">
+                            -
+                        </span>
+                    </td>
+
+                    <td>
+                        <span th:if="${seat.berthLevel != null}"
+                              class="badge badge-dark"
+                              th:text="${seat.berthLevel}">
+                            LOWER
+                        </span>
+
+                        <span th:if="${seat.berthLevel == null}" class="text-muted">
+                            -
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="seat-type-badge" th:text="${seat.seatType}">
+                            Standard
+                        </span>
+                    </td>
+
+                    <td th:text="${seat.extraPrice != null ? #numbers.formatDecimal(seat.extraPrice, 0, 'COMMA', 0, 'POINT') + ' VND' : '0 VND'}">
+                        0 VND
                     </td>
                 </tr>
+
                 <tr th:if="${#lists.isEmpty(seats)}">
-                    <td colspan="6">
+                    <td colspan="8">
                         <div class="admin-empty-state">
                             <i class="fas fa-chair"></i>
                             <strong>No seats found</strong>
-                            <span>Select another coach or add seats after choosing a coach.</span>
+                            <span>Try another keyword or select another coach.</span>
                         </div>
                     </td>
                 </tr>
                 </tbody>
             </table>
+        </div>
+
+        <div class="card-footer d-flex align-items-center justify-content-between flex-wrap"
+             th:if="${totalPages > 1}">
+            <small class="text-muted"
+                   th:text="'Page ' + ${currentPage} + ' of ' + ${totalPages}">
+                Page 1 of 1
+            </small>
+
+            <nav>
+                <ul class="pagination mb-0">
+                    <li class="page-item"
+                        th:classappend="${currentPage <= 1} ? ' disabled'">
+                        <a class="page-link"
+                           th:href="@{/admin/seats(page=${currentPage - 1}, keyword=${keyword}, coachId=${selectedCoachId})}">
+                            Previous
+                        </a>
+                    </li>
+
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(1, totalPages)}"
+                        th:classappend="${i == currentPage} ? ' active'">
+                        <a class="page-link"
+                           th:href="@{/admin/seats(page=${i}, keyword=${keyword}, coachId=${selectedCoachId})}"
+                           th:text="${i}">
+                            1
+                        </a>
+                    </li>
+
+                    <li class="page-item"
+                        th:classappend="${currentPage >= totalPages} ? ' disabled'">
+                        <a class="page-link"
+                           th:href="@{/admin/seats(page=${currentPage + 1}, keyword=${keyword}, coachId=${selectedCoachId})}">
+                            Next
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
 </section>

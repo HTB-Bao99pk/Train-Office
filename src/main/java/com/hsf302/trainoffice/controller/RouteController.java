@@ -1,9 +1,10 @@
 package com.hsf302.trainoffice.controller;
 
+import com.hsf302.trainoffice.config.AdminErrorMessageUtil;
 import com.hsf302.trainoffice.entity.Route;
 import com.hsf302.trainoffice.service.RouteService;
-import com.hsf302.trainoffice.config.AdminErrorMessageUtil;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,8 +22,22 @@ public class RouteController {
     }
 
     @GetMapping
-    public String listRoutes(Model model) {
-        model.addAttribute("routes", routeService.getAllRoutes());
+    public String listRoutes(
+            Model model,
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "keyword", required = false) String keyword
+    ) {
+        int safePage = Math.max(page, 1);
+        String cleanKeyword = normalizeKeyword(keyword);
+
+        Page<Route> routePage = routeService.listAll(safePage, cleanKeyword);
+
+        model.addAttribute("routes", routePage.getContent());
+        model.addAttribute("currentPage", safePage);
+        model.addAttribute("totalPages", routePage.getTotalPages());
+        model.addAttribute("totalItems", routePage.getTotalElements());
+        model.addAttribute("keyword", cleanKeyword);
+
         return "routes/admin-list";
     }
 
@@ -100,5 +115,13 @@ public class RouteController {
         }
 
         return "redirect:/admin/routes";
+    }
+
+    private String normalizeKeyword(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return null;
+        }
+
+        return keyword.trim();
     }
 }
