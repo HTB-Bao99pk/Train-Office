@@ -123,6 +123,7 @@ public class AdminDashboardController {
                 Map.of("key", "trips", "label", "Trips", "icon", " fas fa-calendar-alt"),
                 Map.of("key", "payments", "label", "Payments", "icon", " fas fa-credit-card"),
                 Map.of("key", "refunds", "label", "Refunds", "icon", " fas fa-undo"),
+                Map.of("key", "groupDiscounts", "label", "Group Discounts", "icon", " fas fa-users"),
                 Map.of("key", "discounts", "label", "Discount Policies", "icon", " fas fa-percent")
         );
     }
@@ -139,7 +140,8 @@ public class AdminDashboardController {
                 Map.entry("trips", "/admin/trips"),
                 Map.entry("discounts", "/admin/discount-policies"),
                 Map.entry("payments", "/admin/payments"),
-                Map.entry("refunds", "/admin/refunds")
+                Map.entry("refunds", "/admin/refunds"),
+                Map.entry("groupDiscounts", "/admin/group-discount-policies")
         );
     }
 }
