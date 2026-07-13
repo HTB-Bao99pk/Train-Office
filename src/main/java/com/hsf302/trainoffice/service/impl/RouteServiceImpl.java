@@ -94,5 +94,9 @@ public class RouteServiceImpl implements RouteService {
         if (route.getRouteName() != null) {
             route.setRouteName(route.getRouteName().trim());
         }
+
+        if (route.getDistanceKm() == null || route.getDistanceKm() < 0) {
+            route.setDistanceKm(0.0);
+        }
     }
 }

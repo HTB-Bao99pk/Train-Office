@@ -54,12 +54,16 @@ public class RouteStationServiceImpl implements RouteStationService {
             routeStation.setStationOrder(nextStationOrder(routeId));
         }
 
+        normalizeDistance(routeStation);
         validateUnique(routeId, null, station.getStationId(), routeStation.getStationOrder());
 
         routeStation.setRoute(route);
         routeStation.setStation(station);
 
-        return routeStationRepository.save(routeStation);
+        RouteStation saved = routeStationRepository.save(routeStation);
+        recalculateRouteDistance(routeId);
+
+        return saved;
     }
 
     @Override
@@ -78,12 +82,17 @@ public class RouteStationServiceImpl implements RouteStationService {
             form.setStationOrder(existing.getStationOrder());
         }
 
+        normalizeDistance(form);
         validateUnique(routeId, routeStationId, station.getStationId(), form.getStationOrder());
 
         existing.setStation(station);
         existing.setStationOrder(form.getStationOrder());
+        existing.setDistanceFromStartKm(form.getDistanceFromStartKm());
 
-        return routeStationRepository.save(existing);
+        RouteStation saved = routeStationRepository.save(existing);
+        recalculateRouteDistance(routeId);
+
+        return saved;
     }
 
     @Override
@@ -100,6 +109,7 @@ public class RouteStationServiceImpl implements RouteStationService {
         routeStationRepository.flush();
 
         compactStationOrders(routeId);
+        recalculateRouteDistance(routeId);
     }
 
     @Override
@@ -128,12 +138,6 @@ public class RouteStationServiceImpl implements RouteStationService {
             }
         }
 
-        /*
-         * Important:
-         * route_stations has unique constraint: route_id + station_order.
-         * So we first move all orders to temporary negative values,
-         * then assign final positive orders.
-         */
         int tempOrder = -1;
 
         for (RouteStation routeStation : currentStations) {
@@ -149,6 +153,9 @@ public class RouteStationServiceImpl implements RouteStationService {
         }
 
         routeStationRepository.saveAll(stationMap.values());
+        routeStationRepository.flush();
+
+        recalculateRouteDistance(routeId);
     }
 
     private Station resolveStation(RouteStation routeStation) {
@@ -158,6 +165,12 @@ public class RouteStationServiceImpl implements RouteStationService {
 
         return stationRepository.findById(routeStation.getStation().getStationId())
                 .orElseThrow(() -> new IllegalArgumentException("Station does not exist"));
+    }
+
+    private void normalizeDistance(RouteStation routeStation) {
+        if (routeStation.getDistanceFromStartKm() == null || routeStation.getDistanceFromStartKm() < 0) {
+            routeStation.setDistanceFromStartKm(0.0);
+        }
     }
 
     private int nextStationOrder(Long routeId) {
@@ -173,11 +186,39 @@ public class RouteStationServiceImpl implements RouteStationService {
         List<RouteStation> routeStations = routeStationRepository
                 .findByRoute_RouteIdOrderByStationOrderAsc(routeId);
 
+        int tempOrder = -1;
+
+        for (RouteStation routeStation : routeStations) {
+            routeStation.setStationOrder(tempOrder--);
+        }
+
+        routeStationRepository.saveAllAndFlush(routeStations);
+
         for (int index = 0; index < routeStations.size(); index++) {
             routeStations.get(index).setStationOrder(index + 1);
         }
 
         routeStationRepository.saveAll(routeStations);
+    }
+
+    private void recalculateRouteDistance(Long routeId) {
+        Route route = routeRepository.findById(routeId)
+                .orElseThrow(() -> new IllegalArgumentException("Route does not exist"));
+
+        List<RouteStation> routeStations = routeStationRepository
+                .findByRoute_RouteIdOrderByStationOrderAsc(routeId);
+
+        double totalDistance = 0.0;
+
+        if (!routeStations.isEmpty()) {
+            RouteStation lastStation = routeStations.get(routeStations.size() - 1);
+            totalDistance = lastStation.getDistanceFromStartKm() == null
+                    ? 0.0
+                    : lastStation.getDistanceFromStartKm();
+        }
+
+        route.setDistanceKm(totalDistance);
+        routeRepository.save(route);
     }
 
     private void validateUnique(Long routeId, Long currentRouteStationId, Long stationId, Integer stationOrder) {

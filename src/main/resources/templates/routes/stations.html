@@ -67,6 +67,7 @@
                         <th>Station</th>
                         <th>Code</th>
                         <th>City</th>
+                        <th>Distance</th>
                         <th class="text-right">Actions</th>
                     </tr>
                     </thead>
@@ -114,6 +115,13 @@
                         </td>
 
                         <td>
+    <span class="badge badge-info admin-badge-soft"
+          th:text="${routeStation.distanceFromStartKm != null ? routeStation.distanceFromStartKm + ' km' : '0 km'}">
+        0 km
+    </span>
+                        </td>
+
+                        <td>
                             <span class="badge badge-primary admin-badge-soft"
                                   th:text="${routeStation.station != null ? routeStation.station.stationCode : '-'}">
                                 HN
@@ -141,7 +149,7 @@
                     </tr>
 
                     <tr th:if="${#lists.isEmpty(routeStations)}">
-                        <td colspan="6">
+                        <td colspan="7">
                             <div class="admin-empty-state">
                                 <i class="fas fa-list-ol"></i>
                                 <strong>No stations assigned</strong>

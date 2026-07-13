@@ -85,6 +85,30 @@
                 </div>
             </div>
 
+            <div class="col-lg-4 mb-3">
+                <label class="form-label" for="distanceFromStartKm">Distance from start (km)</label>
+
+                <div class="input-group">
+                    <div class="input-group-prepend">
+            <span class="input-group-text">
+                <i class="fas fa-road"></i>
+            </span>
+                    </div>
+
+                    <input id="distanceFromStartKm"
+                           class="form-control"
+                           type="number"
+                           min="0"
+                           step="0.1"
+                           th:field="*{distanceFromStartKm}"
+                           placeholder="Example: 1726">
+                </div>
+
+                <small class="form-text text-muted">
+                    First station should be 0. Last station will become route distance.
+                </small>
+            </div>
+
             <div class="card-footer d-flex justify-content-end gap-2">
                 <a class="btn btn-outline-secondary"
                    th:href="@{/admin/routes/{routeId}/stations(routeId=${route.routeId})}">
@@ -96,6 +120,8 @@
                     Save Placement
                 </button>
             </div>
+
+
         </form>
     </div>
 </section>

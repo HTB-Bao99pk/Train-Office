@@ -40,4 +40,8 @@ public class RouteStation {
 
     @Column(name = "station_order", nullable = false)
     private Integer stationOrder;
+
+    @Column(name = "distance_from_start_km", nullable = false, columnDefinition = "float default 0")
+    @Builder.Default
+    private Double distanceFromStartKm = 0.0;
 }
