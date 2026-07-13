@@ -6,11 +6,10 @@ import com.hsf302.trainoffice.service.RouteStationService;
 import com.hsf302.trainoffice.service.StationService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
 public class RouteStationController {
@@ -115,6 +114,20 @@ public class RouteStationController {
         }
     }
 
+    @PostMapping("/admin/routes/{routeId}/stations/reorder")
+    public String reorder(@PathVariable Long routeId,
+                          @RequestParam("stationIds") List<Long> stationIds,
+                          RedirectAttributes redirectAttributes) {
+        try {
+            routeStationService.reorderStations(routeId, stationIds);
+            redirectAttributes.addFlashAttribute("successMessage", "Station order updated successfully!");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+
+        return "redirect:/admin/routes/" + routeId + "/stations";
+    }
+
     @GetMapping("/admin/routes/{routeId}/stations/delete/{routeStationId}")
     public String delete(@PathVariable Long routeId,
                          @PathVariable Long routeStationId,
@@ -125,6 +138,7 @@ public class RouteStationController {
         } catch (IllegalArgumentException ex) {
             redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
         }
+
         return "redirect:/admin/routes/" + routeId + "/stations";
     }
 

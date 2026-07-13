@@ -4,16 +4,23 @@
 <section>
     <div class="admin-page-hero">
         <div>
-            <span class="admin-page-kicker"><i class="fas fa-map-marked-alt mr-1"></i> Route Station</span>
+            <span class="admin-page-kicker">
+                <i class="fas fa-map-marked-alt mr-1"></i>
+                Route Station
+            </span>
+
             <h2>Route Station Form</h2>
+
             <p>
                 <span th:text="${route.routeCode}">HN-SG</span>
                 <span>-</span>
                 <span th:text="${route.routeName}">Ha Noi - Sai Gon</span>
             </p>
         </div>
+
         <a class="btn btn-outline-primary" th:href="@{/admin/routes/{routeId}/stations(routeId=${route.routeId})}">
-            <i class="fas fa-arrow-left mr-1"></i> Back to sequence
+            <i class="fas fa-arrow-left mr-1"></i>
+            Back to sequence
         </a>
     </div>
 
@@ -22,17 +29,27 @@
     <div class="card admin-form-card route-station-form-card">
         <div class="card-header">
             <span class="admin-card-title">Station Placement</span>
-            <small>Select one station and assign its travel order inside the route.</small>
+            <small>
+                Select one station. Leave station order empty to append it to the end automatically.
+            </small>
         </div>
+
         <form th:action="${formAction}" th:object="${routeStation}" method="post">
             <div class="card-body">
                 <div class="row">
                     <div class="col-lg-8 mb-3">
                         <label class="form-label" for="station">Station</label>
+
                         <div class="input-group">
-                            <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span></div>
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </span>
+                            </div>
+
                             <select id="station" class="form-control" name="station.stationId" required>
                                 <option value="">Select station</option>
+
                                 <option th:each="station : ${stations}"
                                         th:value="${station.stationId}"
                                         th:selected="${routeStation.station != null and routeStation.station.stationId == station.stationId}"
@@ -45,21 +62,38 @@
 
                     <div class="col-lg-4 mb-3">
                         <label class="form-label" for="stationOrder">Station Order</label>
+
                         <div class="input-group">
-                            <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-list-ol"></i></span></div>
-                            <input id="stationOrder" class="form-control" type="number" min="1"
-                                   th:field="*{stationOrder}" required>
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="fas fa-list-ol"></i>
+                                </span>
+                            </div>
+
+                            <input id="stationOrder"
+                                   class="form-control"
+                                   type="number"
+                                   min="1"
+                                   th:field="*{stationOrder}"
+                                   placeholder="Auto if empty">
                         </div>
+
+                        <small class="form-text text-muted">
+                            Empty = automatically added to the end of this route.
+                        </small>
                     </div>
                 </div>
             </div>
+
             <div class="card-footer d-flex justify-content-end gap-2">
                 <a class="btn btn-outline-secondary"
                    th:href="@{/admin/routes/{routeId}/stations(routeId=${route.routeId})}">
                     Cancel
                 </a>
+
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save mr-1"></i> Save Placement
+                    <i class="fas fa-save mr-1"></i>
+                    Save Placement
                 </button>
             </div>
         </form>

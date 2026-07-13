@@ -16,4 +16,6 @@ public interface RouteStationService {
     RouteStation updateRouteStation(Long routeId, Long routeStationId, RouteStation routeStation);
 
     void deleteRouteStation(Long routeId, Long routeStationId);
+
+    void reorderStations(Long routeId, List<Long> routeStationIds);
 }

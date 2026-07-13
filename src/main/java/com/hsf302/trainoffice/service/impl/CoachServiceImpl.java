@@ -14,7 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.hsf302.trainoffice.repository.TicketRepository;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.math.BigDecimal;
@@ -222,9 +222,8 @@ public class CoachServiceImpl implements CoachService {
                     .seatType(seatType)
                     .berthLevel(null)
                     .extraPrice(extraPrice)
+                    .active(true)
                     .build();
-
-            seatRepository.save(seat);
         }
     }
 
@@ -305,6 +304,7 @@ public class CoachServiceImpl implements CoachService {
                 seat.setSeatType(coach.getCoachType());
                 seat.setBerthLevel(berthLevel);
                 seat.setExtraPrice(extraPrice);
+                seat.setActive(true);
 
                 seatRepository.save(seat);
             }
