@@ -51,6 +51,10 @@ public class Seat {
     @Column(name = "extra_price", nullable = false, precision = 12, scale = 2)
     private BigDecimal extraPrice;
 
+    @Column(name = "active", nullable = false, columnDefinition = "bit default 1")
+    @Builder.Default
+    private Boolean active = true;
+
     @Builder.Default
     @OneToMany(mappedBy = "seat", fetch = FetchType.LAZY)
     @ToString.Exclude

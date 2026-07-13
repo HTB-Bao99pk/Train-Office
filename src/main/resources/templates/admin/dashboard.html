@@ -191,12 +191,22 @@
     </div>
 
     <div class="row">
+        <!-- Recent Activity -->
         <div class="col-xl-6">
             <div class="card dashboard-card dashboard-preview-card">
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <div>
                         <span class="dashboard-card-title">Recent Activity</span>
-                        <small>Latest booking records</small>
+
+                        <small>
+                            Latest booking records
+                            <span th:if="${recentTotalItems != null}">
+                                • Showing
+                                <span th:text="${#lists.size(recentBookings)}">0</span>
+                                of
+                                <span th:text="${recentTotalItems}">0</span>
+                            </span>
+                        </small>
                     </div>
 
                     <a th:href="@{/admin/payments}" class="btn btn-sm btn-outline-primary">
@@ -279,9 +289,29 @@
                         </tbody>
                     </table>
                 </div>
+
+                <div class="dashboard-mini-pagination"
+                     th:if="${recentTotalPages != null and recentTotalPages > 1}">
+                    <a class="btn btn-sm btn-outline-secondary"
+                       th:classappend="${recentCurrentPage <= 1} ? ' disabled'"
+                       th:href="@{/admin/dashboard(recentPage=${recentCurrentPage - 1}, upcomingPage=${upcomingCurrentPage})}">
+                        Previous
+                    </a>
+
+                    <span th:text="'Page ' + ${recentCurrentPage} + ' of ' + ${recentTotalPages}">
+                        Page 1 of 1
+                    </span>
+
+                    <a class="btn btn-sm btn-outline-secondary"
+                       th:classappend="${recentCurrentPage >= recentTotalPages} ? ' disabled'"
+                       th:href="@{/admin/dashboard(recentPage=${recentCurrentPage + 1}, upcomingPage=${upcomingCurrentPage})}">
+                        Next
+                    </a>
+                </div>
             </div>
         </div>
 
+        <!-- Upcoming Trips -->
         <div class="col-xl-6">
             <div class="card dashboard-card dashboard-preview-card">
                 <div class="card-header d-flex align-items-center justify-content-between">
@@ -290,12 +320,13 @@
 
                         <small>
                             <span>Trip schedule preview</span>
+
                             <span th:if="${upcomingTripsTotal != null}">
-        • Showing
-        <span th:text="${#lists.size(trips)}">0</span>
-        of
-        <span th:text="${upcomingTripsTotal}">0</span>
-    </span>
+                                • Showing
+                                <span th:text="${#lists.size(trips)}">0</span>
+                                of
+                                <span th:text="${upcomingTripsTotal}">0</span>
+                            </span>
                         </small>
                     </div>
 
@@ -368,24 +399,25 @@
                         </tr>
                         </tbody>
                     </table>
-                    <div class="dashboard-mini-pagination"
-                         th:if="${recentTotalPages != null and recentTotalPages > 1}">
-                        <a class="btn btn-sm btn-outline-secondary"
-                           th:classappend="${recentCurrentPage <= 1} ? ' disabled'"
-                           th:href="@{/admin/dashboard(recentPage=${recentCurrentPage - 1}, upcomingPage=${upcomingCurrentPage})}">
-                            Previous
-                        </a>
+                </div>
 
-                        <span th:text="'Page ' + ${recentCurrentPage} + ' of ' + ${recentTotalPages}">
-        Page 1 of 1
-    </span>
+                <div class="dashboard-mini-pagination"
+                     th:if="${upcomingTotalPages != null and upcomingTotalPages > 1}">
+                    <a class="btn btn-sm btn-outline-secondary"
+                       th:classappend="${upcomingCurrentPage <= 1} ? ' disabled'"
+                       th:href="@{/admin/dashboard(recentPage=${recentCurrentPage}, upcomingPage=${upcomingCurrentPage - 1})}">
+                        Previous
+                    </a>
 
-                        <a class="btn btn-sm btn-outline-secondary"
-                           th:classappend="${recentCurrentPage >= recentTotalPages} ? ' disabled'"
-                           th:href="@{/admin/dashboard(recentPage=${recentCurrentPage + 1}, upcomingPage=${upcomingCurrentPage})}">
-                            Next
-                        </a>
-                    </div>
+                    <span th:text="'Page ' + ${upcomingCurrentPage} + ' of ' + ${upcomingTotalPages}">
+                        Page 1 of 1
+                    </span>
+
+                    <a class="btn btn-sm btn-outline-secondary"
+                       th:classappend="${upcomingCurrentPage >= upcomingTotalPages} ? ' disabled'"
+                       th:href="@{/admin/dashboard(recentPage=${recentCurrentPage}, upcomingPage=${upcomingCurrentPage + 1})}">
+                        Next
+                    </a>
                 </div>
             </div>
         </div>
@@ -479,17 +511,10 @@
             overflow-wrap: anywhere;
         }
 
-        .dashboard-preview-card .card-body {
-            max-height: 620px;
-            overflow: auto;
-        }
-
         .dashboard-preview-card .badge {
             white-space: nowrap;
         }
-    </style>
 
-    <style>
         .dashboard-mini-pagination {
             display: flex;
             align-items: center;

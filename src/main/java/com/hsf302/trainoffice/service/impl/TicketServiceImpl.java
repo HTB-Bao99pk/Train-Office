@@ -63,7 +63,7 @@ public class TicketServiceImpl implements TicketService {
     public List<Seat> getSeatsForTrip(Long tripId) {
         TrainTrip trip = trainTripRepository.findById(tripId)
                 .orElseThrow(() -> new IllegalArgumentException("Train trip does not exist"));
-        return seatRepository.findSeatsByTrainId(trip.getTrain().getTrainId());
+        return seatRepository.findActiveSeatsByTrainId(trip.getTrain().getTrainId());
     }
 
     @Override

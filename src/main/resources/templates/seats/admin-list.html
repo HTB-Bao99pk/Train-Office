@@ -128,6 +128,7 @@
                     <th>Coach</th>
                     <th>Compartment</th>
                     <th>Berth Level</th>
+                    <th>Status</th>
                     <th>Type</th>
                     <th class="text-right">Extra Price</th>
                 </tr>
@@ -203,6 +204,18 @@
                     </td>
 
                     <td>
+    <span th:if="${seat.active == true}"
+          class="badge badge-success">
+        ACTIVE
+    </span>
+
+                        <span th:if="${seat.active != true}"
+                              class="badge badge-secondary">
+        RETIRED
+    </span>
+                    </td>
+
+                    <td>
                         <span class="seat-type-badge" th:text="${seat.seatType}">
                             Standard
                         </span>
@@ -215,7 +228,7 @@
                 </tr>
 
                 <tr th:if="${#lists.isEmpty(seats)}">
-                    <td colspan="8">
+                    <td colspan="9">
                         <div class="admin-empty-state">
                             <i class="fas fa-chair"></i>
                             <strong>No seats found</strong>

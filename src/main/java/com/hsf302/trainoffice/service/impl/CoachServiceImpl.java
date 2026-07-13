@@ -184,15 +184,20 @@ public class CoachServiceImpl implements CoachService {
                 continue;
             }
 
-            if (desired || hasTicket) {
-                seat.setCoach(coach);
-                seat.setCompartment(null);
-                seat.setBerthLevel(null);
-                seat.setSeatType(seatType);
-                seat.setExtraPrice(extraPrice);
-
+            if (!desired) {
+                seat.setActive(false);
                 seatRepository.save(seat);
+                continue;
             }
+
+            seat.setCoach(coach);
+            seat.setCompartment(null);
+            seat.setBerthLevel(null);
+            seat.setSeatType(seatType);
+            seat.setExtraPrice(extraPrice);
+            seat.setActive(true);
+
+            seatRepository.save(seat);
         }
 
         seatRepository.flush();
@@ -247,6 +252,12 @@ public class CoachServiceImpl implements CoachService {
 
             if (!desired && !hasTicket) {
                 seatRepository.delete(seat);
+                continue;
+            }
+
+            if (!desired) {
+                seat.setActive(false);
+                seatRepository.save(seat);
             }
         }
 

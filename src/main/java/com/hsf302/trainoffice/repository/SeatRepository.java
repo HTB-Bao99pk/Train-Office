@@ -35,6 +35,7 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
                 or lower(c.coachNumber) like lower(concat('%', :keyword, '%'))
                 or lower(t.trainCode) like lower(concat('%', :keyword, '%'))
                 or lower(cp.compartmentNumber) like lower(concat('%', :keyword, '%'))
+                or lower(str(s.active)) like lower(concat('%', :keyword, '%'))
           )
         order by t.trainCode asc,
                  c.coachNumber asc,
@@ -42,6 +43,17 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
                  s.seatNumber asc
         """)
     Page<Seat> searchSeats(String keyword, Long trainId, Long coachId, Pageable pageable);
+
+    @Query("""
+            select s
+            from Seat s
+                 join fetch s.coach c
+                 left join fetch s.compartment cp
+            where c.train.trainId = :trainId
+              and s.active = true
+            order by c.coachNumber asc, cp.compartmentNumber asc, s.seatNumber asc
+            """)
+    List<Seat> findActiveSeatsByTrainId(@Param("trainId") Long trainId);
 
     @Query("""
             select s
