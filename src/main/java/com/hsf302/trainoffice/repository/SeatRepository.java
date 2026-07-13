@@ -20,23 +20,28 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
 
     @EntityGraph(attributePaths = {"coach", "coach.train", "compartment"})
     @Query("""
-            select s
-            from Seat s
-                 join s.coach c
-                 join c.train t
-                 left join s.compartment cp
-            where (:coachId is null or c.coachId = :coachId)
-              and (
-                    :keyword is null
-                    or lower(s.seatNumber) like lower(concat('%', :keyword, '%'))
-                    or lower(s.seatType) like lower(concat('%', :keyword, '%'))
-                    or lower(s.berthLevel) like lower(concat('%', :keyword, '%'))
-                    or lower(c.coachNumber) like lower(concat('%', :keyword, '%'))
-                    or lower(t.trainCode) like lower(concat('%', :keyword, '%'))
-                    or lower(cp.compartmentNumber) like lower(concat('%', :keyword, '%'))
-              )
-            """)
-    Page<Seat> searchSeats(String keyword, Long coachId, Pageable pageable);
+        select s
+        from Seat s
+             join s.coach c
+             join c.train t
+             left join s.compartment cp
+        where (:trainId is null or t.trainId = :trainId)
+          and (:coachId is null or c.coachId = :coachId)
+          and (
+                :keyword is null
+                or lower(s.seatNumber) like lower(concat('%', :keyword, '%'))
+                or lower(s.seatType) like lower(concat('%', :keyword, '%'))
+                or lower(s.berthLevel) like lower(concat('%', :keyword, '%'))
+                or lower(c.coachNumber) like lower(concat('%', :keyword, '%'))
+                or lower(t.trainCode) like lower(concat('%', :keyword, '%'))
+                or lower(cp.compartmentNumber) like lower(concat('%', :keyword, '%'))
+          )
+        order by t.trainCode asc,
+                 c.coachNumber asc,
+                 cp.compartmentNumber asc,
+                 s.seatNumber asc
+        """)
+    Page<Seat> searchSeats(String keyword, Long trainId, Long coachId, Pageable pageable);
 
     @Query("""
             select s
@@ -47,4 +52,6 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
             order by c.coachNumber asc, cp.compartmentNumber asc, s.seatNumber asc
             """)
     List<Seat> findSeatsByTrainId(@Param("trainId") Long trainId);
+
+    long countByCompartment_CompartmentId(Long compartmentId);
 }

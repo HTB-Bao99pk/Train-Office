@@ -3,13 +3,18 @@ package com.hsf302.trainoffice.controller;
 import com.hsf302.trainoffice.common.enums.BookingStatus;
 import com.hsf302.trainoffice.common.enums.RefundStatus;
 import com.hsf302.trainoffice.common.enums.TripStatus;
+import com.hsf302.trainoffice.entity.Booking;
+import com.hsf302.trainoffice.entity.TrainTrip;
 import com.hsf302.trainoffice.repository.BookingRepository;
 import com.hsf302.trainoffice.repository.RefundRepository;
 import com.hsf302.trainoffice.repository.TrainTripRepository;
 import com.hsf302.trainoffice.service.AdminWalletService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -22,10 +27,13 @@ import java.util.Map;
 @Controller
 public class AdminDashboardController {
 
+    private static final int DASHBOARD_PAGE_SIZE = 5;
+
     private final AdminWalletService adminWalletService;
     private final BookingRepository bookingRepository;
     private final RefundRepository refundRepository;
     private final TrainTripRepository trainTripRepository;
+
     public AdminDashboardController(AdminWalletService adminWalletService,
                                     BookingRepository bookingRepository,
                                     RefundRepository refundRepository,
@@ -37,7 +45,12 @@ public class AdminDashboardController {
     }
 
     @GetMapping({"/admin", "/admin/dashboard"})
-    public String dashboard(Model model) {
+    public String dashboard(Model model,
+                            @RequestParam(value = "recentPage", defaultValue = "1") int recentPage,
+                            @RequestParam(value = "upcomingPage", defaultValue = "1") int upcomingPage) {
+        int safeRecentPage = Math.max(recentPage, 1);
+        int safeUpcomingPage = Math.max(upcomingPage, 1);
+
         BigDecimal walletBalance = adminWalletService.getBalance();
 
         long totalBookings = bookingRepository.count();
@@ -58,19 +71,31 @@ public class AdminDashboardController {
         model.addAttribute("pendingItems", pendingRefunds);
         model.addAttribute("issueItems", 0);
 
-        model.addAttribute("recentBookings", bookingRepository.findTop5ByOrderByBookingDateDesc());
+        Page<Booking> recentBookingPage = bookingRepository.findAllByOrderByBookingDateDesc(
+                PageRequest.of(safeRecentPage - 1, DASHBOARD_PAGE_SIZE)
+        );
+
+        model.addAttribute("recentBookings", recentBookingPage.getContent());
+        model.addAttribute("recentCurrentPage", safeRecentPage);
+        model.addAttribute("recentTotalPages", recentBookingPage.getTotalPages());
+        model.addAttribute("recentTotalItems", recentBookingPage.getTotalElements());
+
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime next30Days = LocalDate.now().plusDays(30).atTime(23, 59, 59);
 
-        List<?> upcomingTrips = trainTripRepository
+        Page<TrainTrip> upcomingTripPage = trainTripRepository
                 .findByStatusAndDepartureTimeGreaterThanEqualAndDepartureTimeLessThanOrderByDepartureTimeAsc(
                         TripStatus.SCHEDULED,
                         now,
-                        next30Days
+                        next30Days,
+                        PageRequest.of(safeUpcomingPage - 1, DASHBOARD_PAGE_SIZE)
                 );
 
-        model.addAttribute("upcomingTripsTotal", upcomingTrips.size());
-        model.addAttribute("trips", upcomingTrips.stream().limit(8).toList());
+        model.addAttribute("trips", upcomingTripPage.getContent());
+        model.addAttribute("upcomingCurrentPage", safeUpcomingPage);
+        model.addAttribute("upcomingTotalPages", upcomingTripPage.getTotalPages());
+        model.addAttribute("upcomingTripsTotal", upcomingTripPage.getTotalElements());
+
         model.addAttribute("chartLabels", List.of("Revenue"));
         model.addAttribute("chartData", List.of(walletBalance));
 

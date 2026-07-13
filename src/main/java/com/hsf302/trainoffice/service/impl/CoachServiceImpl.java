@@ -6,6 +6,7 @@ import com.hsf302.trainoffice.entity.Seat;
 import com.hsf302.trainoffice.repository.CoachRepository;
 import com.hsf302.trainoffice.repository.CompartmentRepository;
 import com.hsf302.trainoffice.repository.SeatRepository;
+import com.hsf302.trainoffice.repository.TicketRepository;
 import com.hsf302.trainoffice.service.CoachService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,7 +14,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.hsf302.trainoffice.repository.TicketRepository;
+import java.util.HashSet;
+import java.util.Set;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -25,12 +28,16 @@ public class CoachServiceImpl implements CoachService {
     private final SeatRepository seatRepository;
     private final CompartmentRepository compartmentRepository;
     private static final int COACHES_PER_PAGE = 8;
+    private final TicketRepository ticketRepository;;
+
     public CoachServiceImpl(CoachRepository coachRepository,
                             SeatRepository seatRepository,
-                            CompartmentRepository compartmentRepository) {
+                            CompartmentRepository compartmentRepository,
+                            TicketRepository ticketRepository) {
         this.coachRepository = coachRepository;
         this.seatRepository = seatRepository;
         this.compartmentRepository = compartmentRepository;
+        this.ticketRepository = ticketRepository;
     }
 
     @Override
@@ -75,9 +82,9 @@ public class CoachServiceImpl implements CoachService {
         Coach savedCoach = coachRepository.save(coach);
 
         if (isSleeperCoach(savedCoach)) {
-            generateSleeperCompartmentsAndBerths(savedCoach);
+            syncSleeperCompartmentsAndBerths(savedCoach);
         } else {
-            generateNormalSeats(savedCoach);
+            syncNormalSeats(savedCoach);
         }
 
         return savedCoach;
@@ -150,7 +157,192 @@ public class CoachServiceImpl implements CoachService {
     }
 
 
+    private void syncNormalSeats(Coach coach) {
+        int capacity = coach.getCapacity() == null ? 0 : coach.getCapacity();
 
+        if (capacity <= 0) {
+            return;
+        }
+
+        String seatType = coach.getCoachType();
+        BigDecimal extraPrice = resolveExtraPrice(seatType);
+
+        Set<String> desiredSeatNumbers = new HashSet<>();
+
+        for (int index = 1; index <= capacity; index++) {
+            desiredSeatNumbers.add(generateNormalSeatNumber(index));
+        }
+
+        List<Seat> existingSeats = seatRepository.findByCoach_CoachIdOrderBySeatNumberAsc(coach.getCoachId());
+
+        for (Seat seat : existingSeats) {
+            boolean desired = desiredSeatNumbers.contains(seat.getSeatNumber());
+            boolean hasTicket = seat.getSeatId() != null && ticketRepository.existsBySeat_SeatId(seat.getSeatId());
+
+            if (!desired && !hasTicket) {
+                seatRepository.delete(seat);
+                continue;
+            }
+
+            if (desired || hasTicket) {
+                seat.setCoach(coach);
+                seat.setCompartment(null);
+                seat.setBerthLevel(null);
+                seat.setSeatType(seatType);
+                seat.setExtraPrice(extraPrice);
+
+                seatRepository.save(seat);
+            }
+        }
+
+        seatRepository.flush();
+        deleteEmptyCompartments(coach);
+
+        for (int index = 1; index <= capacity; index++) {
+            String seatNumber = generateNormalSeatNumber(index);
+
+            boolean exists = seatRepository.existsByCoach_CoachIdAndSeatNumber(
+                    coach.getCoachId(),
+                    seatNumber
+            );
+
+            if (exists) {
+                continue;
+            }
+
+            Seat seat = Seat.builder()
+                    .coach(coach)
+                    .compartment(null)
+                    .seatNumber(seatNumber)
+                    .seatType(seatType)
+                    .berthLevel(null)
+                    .extraPrice(extraPrice)
+                    .build();
+
+            seatRepository.save(seat);
+        }
+    }
+
+    private void syncSleeperCompartmentsAndBerths(Coach coach) {
+        int compartmentCount = coach.getCompartmentCount();
+        int berthsPerCompartment = coach.getBerthsPerCompartment();
+
+        BigDecimal extraPrice = resolveExtraPrice(coach.getCoachType());
+
+        Set<String> desiredSeatNumbers = new HashSet<>();
+
+        for (int compartmentIndex = 1; compartmentIndex <= compartmentCount; compartmentIndex++) {
+            String compartmentNumber = generateCompartmentNumber(compartmentIndex);
+
+            for (int berthIndex = 1; berthIndex <= berthsPerCompartment; berthIndex++) {
+                desiredSeatNumbers.add(generateSleeperSeatNumber(compartmentNumber, berthIndex));
+            }
+        }
+
+        List<Seat> existingSeats = seatRepository.findByCoach_CoachIdOrderBySeatNumberAsc(coach.getCoachId());
+
+        for (Seat seat : existingSeats) {
+            boolean desired = desiredSeatNumbers.contains(seat.getSeatNumber());
+            boolean hasTicket = seat.getSeatId() != null && ticketRepository.existsBySeat_SeatId(seat.getSeatId());
+
+            if (!desired && !hasTicket) {
+                seatRepository.delete(seat);
+            }
+        }
+
+        seatRepository.flush();
+
+        for (int compartmentIndex = 1; compartmentIndex <= compartmentCount; compartmentIndex++) {
+            String compartmentNumber = generateCompartmentNumber(compartmentIndex);
+
+            Compartment compartment = compartmentRepository
+                    .findByCoach_CoachIdAndCompartmentNumber(coach.getCoachId(), compartmentNumber)
+                    .orElseGet(() -> compartmentRepository.save(
+                            Compartment.builder()
+                                    .coach(coach)
+                                    .compartmentNumber(compartmentNumber)
+                                    .compartmentType(coach.getCoachType())
+                                    .capacity(berthsPerCompartment)
+                                    .build()
+                    ));
+
+            compartment.setCoach(coach);
+            compartment.setCompartmentType(coach.getCoachType());
+            compartment.setCapacity(berthsPerCompartment);
+            compartmentRepository.save(compartment);
+
+            for (int berthIndex = 1; berthIndex <= berthsPerCompartment; berthIndex++) {
+                String seatNumber = generateSleeperSeatNumber(compartmentNumber, berthIndex);
+                String berthLevel = resolveBerthLevel(berthIndex);
+
+                Seat seat = seatRepository.findByCoach_CoachIdOrderBySeatNumberAsc(coach.getCoachId())
+                        .stream()
+                        .filter(item -> item.getSeatNumber().equals(seatNumber))
+                        .findFirst()
+                        .orElse(null);
+
+                if (seat == null) {
+                    seat = Seat.builder()
+                            .coach(coach)
+                            .seatNumber(seatNumber)
+                            .build();
+                }
+
+                seat.setCoach(coach);
+                seat.setCompartment(compartment);
+                seat.setSeatNumber(seatNumber);
+                seat.setSeatType(coach.getCoachType());
+                seat.setBerthLevel(berthLevel);
+                seat.setExtraPrice(extraPrice);
+
+                seatRepository.save(seat);
+            }
+        }
+
+        seatRepository.flush();
+        deleteUnusedCompartments(coach, compartmentCount);
+    }
+
+    private void deleteUnusedCompartments(Coach coach, int compartmentCount) {
+        List<Compartment> compartments = compartmentRepository
+                .findByCoach_CoachIdOrderByCompartmentNumberAsc(coach.getCoachId());
+
+        for (Compartment compartment : compartments) {
+            int compartmentIndex = parseCompartmentIndex(compartment.getCompartmentNumber());
+
+            boolean shouldDelete = compartmentIndex > compartmentCount;
+            boolean empty = seatRepository.countByCompartment_CompartmentId(compartment.getCompartmentId()) == 0;
+
+            if (shouldDelete && empty) {
+                compartmentRepository.delete(compartment);
+            }
+        }
+    }
+
+    private void deleteEmptyCompartments(Coach coach) {
+        List<Compartment> compartments = compartmentRepository
+                .findByCoach_CoachIdOrderByCompartmentNumberAsc(coach.getCoachId());
+
+        for (Compartment compartment : compartments) {
+            boolean empty = seatRepository.countByCompartment_CompartmentId(compartment.getCompartmentId()) == 0;
+
+            if (empty) {
+                compartmentRepository.delete(compartment);
+            }
+        }
+    }
+
+    private int parseCompartmentIndex(String compartmentNumber) {
+        if (compartmentNumber == null) {
+            return 0;
+        }
+
+        try {
+            return Integer.parseInt(compartmentNumber.replaceAll("\\D+", ""));
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
     private void generateNormalSeats(Coach coach) {
         int capacity = coach.getCapacity() == null ? 0 : coach.getCapacity();
 

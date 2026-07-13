@@ -1,6 +1,8 @@
 package com.hsf302.trainoffice.repository;
 
 import com.hsf302.trainoffice.entity.Booking;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -56,4 +58,14 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     long countByBookingStatus(BookingStatus bookingStatus);
 
     List<Booking> findTop5ByOrderByBookingDateDesc();
+
+    @EntityGraph(attributePaths = {
+            "user",
+            "trainTrip",
+            "trainTrip.train",
+            "trainTrip.route",
+            "departureStation",
+            "arrivalStation"
+    })
+    Page<Booking> findAllByOrderByBookingDateDesc(Pageable pageable);
 }

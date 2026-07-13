@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface SeatService {
     List<Seat> getAllSeats();
 
-    Page<Seat> listAll(int pageNumber, String keyword, Long coachId);
+    Page<Seat> listAll(int pageNumber, String keyword, Long trainId, Long coachId);
 
     Optional<Seat> getSeatById(Long id);
 

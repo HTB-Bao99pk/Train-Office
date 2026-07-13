@@ -2,8 +2,10 @@ package com.hsf302.trainoffice.controller;
 
 import com.hsf302.trainoffice.entity.Coach;
 import com.hsf302.trainoffice.entity.Seat;
+import com.hsf302.trainoffice.entity.Train;
 import com.hsf302.trainoffice.service.CoachService;
 import com.hsf302.trainoffice.service.SeatService;
+import com.hsf302.trainoffice.service.TrainService;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,14 +19,19 @@ public class SeatController {
 
     private final SeatService seatService;
     private final CoachService coachService;
+    private final TrainService trainService;
 
-    public SeatController(SeatService seatService, CoachService coachService) {
+    public SeatController(SeatService seatService,
+                          CoachService coachService,
+                          TrainService trainService) {
         this.seatService = seatService;
         this.coachService = coachService;
+        this.trainService = trainService;
     }
 
     @GetMapping
     public String listSeats(Model model,
+                            @RequestParam(value = "trainId", required = false) Long trainId,
                             @RequestParam(value = "coachId", required = false) Long coachId,
                             @RequestParam(value = "keyword", required = false) String keyword,
                             @RequestParam(value = "page", defaultValue = "1") int page) {
@@ -32,20 +39,57 @@ public class SeatController {
         int safePage = Math.max(page, 1);
         String cleanKeyword = normalizeKeyword(keyword);
 
+        List<Train> allTrains = trainService.getAllTrains();
         List<Coach> allCoaches = coachService.getAllCoaches();
-        Coach selectedCoach = null;
 
-        if (coachId != null) {
-            selectedCoach = allCoaches.stream()
-                    .filter(coach -> coach.getCoachId().equals(coachId))
+        List<Coach> filteredCoaches = allCoaches;
+
+        if (trainId != null) {
+            filteredCoaches = allCoaches.stream()
+                    .filter(coach -> coach.getTrain() != null
+                            && coach.getTrain().getTrainId().equals(trainId))
+                    .toList();
+
+            if (coachId != null) {
+                Long checkingCoachId = coachId;
+
+                boolean coachBelongsToSelectedTrain = filteredCoaches.stream()
+                        .anyMatch(coach -> coach.getCoachId().equals(checkingCoachId));
+
+                if (!coachBelongsToSelectedTrain) {
+                    coachId = null;
+                }
+            }
+        }
+
+        Train selectedTrain = null;
+
+        if (trainId != null) {
+            selectedTrain = allTrains.stream()
+                    .filter(train -> train.getTrainId().equals(trainId))
                     .findFirst()
                     .orElse(null);
         }
 
-        Page<Seat> seatPage = seatService.listAll(safePage, cleanKeyword, coachId);
+        Coach selectedCoach = null;
+
+        if (coachId != null) {
+            Long finalCoachId = coachId;
+
+            selectedCoach = filteredCoaches.stream()
+                    .filter(coach -> coach.getCoachId().equals(finalCoachId))
+                    .findFirst()
+                    .orElse(null);
+        }
+
+        Page<Seat> seatPage = seatService.listAll(safePage, cleanKeyword, trainId, coachId);
 
         model.addAttribute("seats", seatPage.getContent());
-        model.addAttribute("allCoaches", allCoaches);
+        model.addAttribute("allTrains", allTrains);
+        model.addAttribute("allCoaches", filteredCoaches);
+
+        model.addAttribute("selectedTrainId", trainId);
+        model.addAttribute("selectedTrain", selectedTrain);
         model.addAttribute("selectedCoachId", coachId);
         model.addAttribute("selectedCoach", selectedCoach);
         model.addAttribute("keyword", cleanKeyword);

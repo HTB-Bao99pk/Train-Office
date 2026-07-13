@@ -29,16 +29,15 @@ public class SeatServiceImpl implements SeatService {
     }
 
     @Override
-    public Page<Seat> listAll(int pageNumber, String keyword, Long coachId) {
+    public Page<Seat> listAll(int pageNumber, String keyword, Long trainId, Long coachId) {
         int safePageNumber = Math.max(pageNumber, 1);
 
         Pageable pageable = PageRequest.of(
                 safePageNumber - 1,
-                SEATS_PER_PAGE,
-                Sort.by("seatNumber").ascending()
+                SEATS_PER_PAGE
         );
 
-        return seatRepository.searchSeats(normalizeKeyword(keyword), coachId, pageable);
+        return seatRepository.searchSeats(normalizeKeyword(keyword), trainId, coachId, pageable);
     }
 
     @Override
