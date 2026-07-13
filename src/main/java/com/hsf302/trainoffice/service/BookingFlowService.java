@@ -22,6 +22,8 @@ public interface BookingFlowService {
 
     void savePassengerInfo(BookingSession bookingSession, PassengerInfoForm form);
 
+    void applyGroupDiscount(BookingSession bookingSession, Long groupDiscountPolicyId);
+
     BookingConfirmationView buildConfirmation(BookingSession bookingSession);
 
     CreateBookingRequest buildCreateBookingRequest(BookingSession bookingSession);

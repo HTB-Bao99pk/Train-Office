@@ -66,4 +66,8 @@ public interface BookingPageService {
                          RedirectAttributes redirectAttributes);
 
     String loginRequired(RedirectAttributes redirectAttributes);
+
+    String applyGroupDiscount(Long groupDiscountPolicyId,
+                              HttpSession session,
+                              RedirectAttributes redirectAttributes);
 }

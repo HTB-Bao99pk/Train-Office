@@ -14,4 +14,6 @@ public class BookingSession implements Serializable {
     private int passengerCount;
     private List<Long> seatIds = new ArrayList<>();
     private PassengerInfoForm passengerInfo;
+
+    private Long selectedGroupDiscountPolicyId;
 }

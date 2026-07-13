@@ -216,7 +216,8 @@ public class BookingServiceImpl implements com.hsf302.trainoffice.service.Bookin
         booking.setTotalAmount(bookingPricingService.calculateTotal(
                 booking.getTrainTrip(),
                 seats,
-                request.getPassengers()
+                request.getPassengers(),
+                request.getGroupDiscountPolicyId()
         ));
         booking = bookingRepository.save(booking);
 

@@ -34,6 +34,8 @@ public class CreateBookingRequest {
 
     private PaymentMethod paymentMethod;
 
+    private Long groupDiscountPolicyId;
+
     @Valid
     @NotEmpty(message = "At least one passenger is required")
     private List<PassengerBookingRequest> passengers = new ArrayList<>();

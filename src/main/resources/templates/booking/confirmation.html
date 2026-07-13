@@ -167,27 +167,124 @@
                 <h2 class="rail-fare-title">Fare Summary</h2>
 
                 <div class="rail-fare-lines">
-                    <div class="rail-fare-line">
-                        <span>
-                            Base Fare
-                            <br>
-                            <small>
-                                <span th:text="${#lists.size(selectedSeats)}">1</span>
-                                passenger(s)
-                            </small>
-                        </span>
+                    <form th:action="@{/booking/group-discount}"
+                          method="post"
+                          class="rail-group-discount-form">
 
-                        <strong th:text="${trip.basePrice != null ? #numbers.formatDecimal(trip.basePrice, 0, 'COMMA', 0, 'POINT') + ' VND' : '0 VND'}">
-                            0 VND
+                        <div class="rail-discount-copy">
+        <span class="rail-discount-icon">
+            <i class="bi bi-tags-fill"></i>
+        </span>
+
+                            <span>
+            <strong>Group Discount</strong>
+            <small>Select a group/combo policy to apply</small>
+        </span>
+                        </div>
+
+                        <div class="rail-discount-select-wrap">
+                            <select class="rail-discount-select"
+                                    name="groupDiscountPolicyId"
+                                    onchange="this.form.submit()">
+                                <option value="">No group discount</option>
+
+                                <option th:each="policy : ${availableGroupDiscountPolicies}"
+                                        th:value="${policy.policyId}"
+                                        th:selected="${selectedGroupDiscountPolicyId != null and selectedGroupDiscountPolicyId == policy.policyId}"
+                                        th:text="${policy.policyName + ' - ' + policy.discountPercent + '%'}">
+                                    Group Policy
+                                </option>
+                            </select>
+
+                            <i class="bi bi-chevron-down"></i>
+                        </div>
+                    </form>
+
+                    <div class="rail-fare-line"
+                         th:each="item : ${fareBreakdownItems}">
+        <span>
+            <strong th:text="${item.passengerName}">
+                Passenger
+            </strong>
+
+            <br>
+
+            <small>
+                <span th:text="${item.passengerPolicyName}">
+                    Passenger Policy
+                </span>
+
+                <span> • </span>
+
+                <span th:text="${item.passengerDiscountPercent + '%'}">
+                    0%
+                </span>
+
+                <span> discount</span>
+            </small>
+
+            <br>
+
+            <small>
+                <span th:text="${item.coachNumber + ' - ' + item.seatNumber}">
+                    C01 - 01A
+                </span>
+
+                <span> • </span>
+
+                <span th:text="${item.seatType}">
+                    Seat Type
+                </span>
+            </small>
+        </span>
+
+                        <strong>
+            <span th:if="${item.passengerDiscountAmount != null and item.passengerDiscountAmount > 0}">
+                <span style="text-decoration: line-through; opacity: .65;"
+                      th:text="${#numbers.formatDecimal(item.originalPrice, 0, 'COMMA', 0, 'POINT') + ' VND'}">
+                    0 VND
+                </span>
+                <br>
+            </span>
+
+                            <span th:text="${#numbers.formatDecimal(item.finalPrice, 0, 'COMMA', 0, 'POINT') + ' VND'}">
+                0 VND
+            </span>
                         </strong>
                     </div>
 
                     <div class="rail-fare-line">
-                        <span>Seat Selection</span>
+                        <span>Passenger Subtotal</span>
 
-                        <strong th:text="${#lists.size(selectedSeats)} + ' seat(s)'">
-                            1 seat
+                        <strong th:text="${#numbers.formatDecimal(priceSummary.passengerSubtotal, 0, 'COMMA', 0, 'POINT') + ' VND'}">
+                            0 VND
                         </strong>
+                    </div>
+
+                    <div class="rail-fare-line"
+                         th:if="${priceSummary.groupDiscountPolicyId != null}">
+        <span>
+            <strong th:text="${priceSummary.groupDiscountPolicyName}">
+                Group Discount
+            </strong>
+
+            <br>
+
+            <small th:text="${priceSummary.groupDiscountPercent + '% group discount applied'}">
+                0% group discount applied
+            </small>
+        </span>
+
+                        <strong th:text="'- ' + ${#numbers.formatDecimal(priceSummary.groupDiscountAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">
+                            - 0 VND
+                        </strong>
+                    </div>
+
+                    <div class="rail-fare-line"
+                         th:if="${priceSummary.groupDiscountPolicyId == null}">
+                        <span>Group Discount</span>
+
+                        <strong>Not applied</strong>
                     </div>
 
                     <div class="rail-fare-line">

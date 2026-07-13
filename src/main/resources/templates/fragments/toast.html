@@ -1,2 +1,39 @@
-﻿<div class="toast-container position-fixed top-0 end-0 p-3" xmlns:th="http://www.thymeleaf.org" th:fragment="toast"><div id="appToast" class="toast railjet-toast" th:classappend="${toastMessage != null or successMessage != null or errorMessage != null} ? ' show'" role="alert"><div class="toast-header"><strong class="me-auto" th:text="${toastTitle ?: 'RailJet'}">RailJet</strong><small>Now</small><button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button></div><div class="toast-body" th:text="${toastMessage ?: (successMessage ?: (errorMessage ?: 'Ready / Sẵn sàng'))}">Ready</div></div></div>
+﻿<div class="toast-container rail-toast-container position-fixed top-0 end-0 p-3"
+     xmlns:th="http://www.thymeleaf.org"
+     th:fragment="toast">
 
+    <div id="appToast"
+         class="toast rail-toast"
+         th:classappend="${toastMessage != null or successMessage != null or errorMessage != null} ? ' show'"
+         role="alert"
+         aria-live="assertive"
+         aria-atomic="true">
+
+        <div class="rail-toast-icon"
+             th:classappend="${errorMessage != null} ? ' error' : ' success'">
+            <i th:class="${errorMessage != null} ? 'bi bi-exclamation-triangle-fill' : 'bi bi-check-circle-fill'"></i>
+        </div>
+
+        <div class="rail-toast-content">
+            <div class="rail-toast-title-row">
+                <strong th:text="${toastTitle ?: (errorMessage != null ? 'Action failed' : 'RailJet')}">
+                    RailJet
+                </strong>
+
+                <small>Now</small>
+            </div>
+
+            <div class="rail-toast-message"
+                 th:text="${toastMessage ?: (successMessage ?: (errorMessage ?: 'Ready / Sẵn sàng'))}">
+                Ready
+            </div>
+        </div>
+
+        <button type="button"
+                class="rail-toast-close"
+                data-bs-dismiss="toast"
+                aria-label="Close">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+</div>

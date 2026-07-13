@@ -176,4 +176,15 @@ public class BookingController {
                 redirectAttributes
         );
     }
+
+    @PostMapping("/booking/group-discount")
+    public String applyGroupDiscount(@RequestParam(value = "groupDiscountPolicyId", required = false) Long groupDiscountPolicyId,
+                                     HttpSession session,
+                                     RedirectAttributes redirectAttributes) {
+        return bookingPageService.applyGroupDiscount(
+                groupDiscountPolicyId,
+                session,
+                redirectAttributes
+        );
+    }
 }

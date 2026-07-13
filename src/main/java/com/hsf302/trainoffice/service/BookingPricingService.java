@@ -1,5 +1,6 @@
 package com.hsf302.trainoffice.service;
 
+import com.hsf302.trainoffice.dto.BookingPriceSummary;
 import com.hsf302.trainoffice.dto.PassengerBookingRequest;
 import com.hsf302.trainoffice.entity.Seat;
 import com.hsf302.trainoffice.entity.TrainTrip;
@@ -18,4 +19,14 @@ public interface BookingPricingService {
     BigDecimal calculateTotal(TrainTrip trainTrip,
                               List<Seat> seats,
                               List<PassengerBookingRequest> passengers);
+
+    BigDecimal calculateTotal(TrainTrip trainTrip,
+                              List<Seat> seats,
+                              List<PassengerBookingRequest> passengers,
+                              Long groupDiscountPolicyId);
+
+    BookingPriceSummary buildPriceSummary(TrainTrip trainTrip,
+                                          List<Seat> seats,
+                                          List<PassengerBookingRequest> passengers,
+                                          Long groupDiscountPolicyId);
 }

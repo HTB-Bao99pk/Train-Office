@@ -246,6 +246,39 @@ public class BookingPageServiceImpl implements BookingPageService {
     }
 
     @Override
+    public String applyGroupDiscount(Long groupDiscountPolicyId,
+                                     HttpSession session,
+                                     RedirectAttributes redirectAttributes) {
+        if (currentUser(session) == null) {
+            redirectAttributes.addFlashAttribute("error", "Vui lòng đăng nhập để tiếp tục mua vé.");
+            return "redirect:/login";
+        }
+
+        BookingSession bookingSession = getBookingSession(session);
+
+        if (bookingSession == null || bookingSession.getPassengerInfo() == null) {
+            redirectAttributes.addFlashAttribute("error", "Please complete booking information first");
+            return "redirect:/booking/search";
+        }
+
+        try {
+            bookingFlowService.applyGroupDiscount(bookingSession, groupDiscountPolicyId);
+            session.setAttribute(BOOKING_SESSION_KEY, bookingSession);
+
+            if (groupDiscountPolicyId == null) {
+                redirectAttributes.addFlashAttribute("successMessage", "Group discount removed.");
+            } else {
+                redirectAttributes.addFlashAttribute("successMessage", "Group discount applied.");
+            }
+
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("error", ex.getMessage());
+        }
+
+        return "redirect:/booking/confirmation";
+    }
+
+    @Override
     public String showConfirmation(HttpSession session,
                                    Model model,
                                    RedirectAttributes redirectAttributes) {
@@ -512,6 +545,10 @@ public class BookingPageServiceImpl implements BookingPageService {
         model.addAttribute("segment", confirmation.getSegment());
         model.addAttribute("selectedSeats", confirmation.getSelectedSeats());
         model.addAttribute("totalAmount", confirmation.getTotalAmount());
+        model.addAttribute("priceSummary", confirmation.getPriceSummary());
+        model.addAttribute("fareBreakdownItems", confirmation.getPriceSummary().getPassengerItems());
+        model.addAttribute("availableGroupDiscountPolicies", confirmation.getAvailableGroupDiscountPolicies());
+        model.addAttribute("selectedGroupDiscountPolicyId", confirmation.getBookingSession().getSelectedGroupDiscountPolicyId());
     }
 
     private BookingSession getBookingSession(HttpSession session) {

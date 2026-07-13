@@ -19,7 +19,9 @@ import com.hsf302.trainoffice.service.TicketService;
 import com.hsf302.trainoffice.service.TrainTripService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.hsf302.trainoffice.dto.BookingPriceSummary;
+import com.hsf302.trainoffice.entity.GroupDiscountPolicy;
+import com.hsf302.trainoffice.service.GroupDiscountPolicyService;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -35,14 +37,18 @@ public class BookingFlowServiceImpl implements BookingFlowService {
     private final BookingService bookingService;
     private final BookingPricingService bookingPricingService;
     private static final int PAYMENT_HOLD_MINUTES = 15;
+    private final GroupDiscountPolicyService groupDiscountPolicyService;
+
     public BookingFlowServiceImpl(TrainTripService trainTripService,
                                   TicketService ticketService,
                                   BookingService bookingService,
-                                  BookingPricingService bookingPricingService) {
+                                  BookingPricingService bookingPricingService,
+                                  GroupDiscountPolicyService groupDiscountPolicyService) {
         this.trainTripService = trainTripService;
         this.ticketService = ticketService;
         this.bookingService = bookingService;
         this.bookingPricingService = bookingPricingService;
+        this.groupDiscountPolicyService = groupDiscountPolicyService;
     }
 
     @Override
@@ -109,7 +115,6 @@ public class BookingFlowServiceImpl implements BookingFlowService {
             firstPassenger.setIdentityNumber(user.getIdentityNumber());
             firstPassenger.setDateOfBirth(user.getDateOfBirth());
             firstPassenger.setGender(user.getGender());
-            firstPassenger.setPassengerType("ADULT");
         }
 
         return form;
@@ -144,18 +149,52 @@ public class BookingFlowServiceImpl implements BookingFlowService {
 
         List<Seat> selectedSeats = selectedSeatsInOrder(bookingSession);
 
+        List<GroupDiscountPolicy> availableGroupDiscountPolicies = groupDiscountPolicyService
+                .getActivePolicies()
+                .stream()
+                .filter(policy -> groupDiscountPolicyService.matchesPassengerCount(policy, selectedSeats.size()))
+                .toList();
+
+        BookingPriceSummary priceSummary = bookingPricingService.buildPriceSummary(
+                trip,
+                selectedSeats,
+                bookingSession.getPassengerInfo().getPassengers(),
+                bookingSession.getSelectedGroupDiscountPolicyId()
+        );
+
         return new BookingConfirmationView(
                 bookingSession,
                 bookingSession.getPassengerInfo(),
                 trip,
                 segment,
                 selectedSeats,
-                bookingPricingService.calculateTotal(
-                        trip,
-                        selectedSeats,
-                        bookingSession.getPassengerInfo().getPassengers()
-                )
+                priceSummary.getTotalAmount(),
+                priceSummary,
+                availableGroupDiscountPolicies
         );
+    }
+
+    @Override
+    public void applyGroupDiscount(BookingSession bookingSession, Long groupDiscountPolicyId) {
+        validateReadyForConfirmation(bookingSession);
+
+        if (groupDiscountPolicyId == null) {
+            bookingSession.setSelectedGroupDiscountPolicyId(null);
+            return;
+        }
+
+        GroupDiscountPolicy policy = groupDiscountPolicyService.getPolicyById(groupDiscountPolicyId)
+                .orElseThrow(() -> new IllegalArgumentException("Selected group discount policy does not exist."));
+
+        if (!Boolean.TRUE.equals(policy.getActive())) {
+            throw new IllegalArgumentException("Selected group discount policy is inactive.");
+        }
+
+        if (!groupDiscountPolicyService.matchesPassengerCount(policy, bookingSession.getPassengerCount())) {
+            throw new IllegalArgumentException("Selected group discount policy does not match passenger count.");
+        }
+
+        bookingSession.setSelectedGroupDiscountPolicyId(groupDiscountPolicyId);
     }
 
     @Override
@@ -171,6 +210,7 @@ public class BookingFlowServiceImpl implements BookingFlowService {
         request.setBookerEmail(passengerInfo.getContactEmail());
         request.setPassengers(passengerInfo.getPassengers());
         request.setSeatIds(bookingSession.getSeatIds());
+        request.setGroupDiscountPolicyId(bookingSession.getSelectedGroupDiscountPolicyId());
         return request;
     }
 
