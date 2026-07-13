@@ -63,12 +63,12 @@
                     <thead>
                     <tr>
                         <th class="drag-col"></th>
-                        <th>Order</th>
-                        <th>Station</th>
-                        <th>Code</th>
-                        <th>City</th>
-                        <th>Distance</th>
-                        <th class="text-right">Actions</th>
+                        <th class="order-col">Order</th>
+                        <th class="station-col">Station</th>
+                        <th class="code-col">Code</th>
+                        <th class="city-col">City</th>
+                        <th class="km-col">KM Marker</th>
+                        <th class="actions-col text-right">Actions</th>
                     </tr>
                     </thead>
 
@@ -88,7 +88,7 @@
                                    th:value="${routeStation.routeStationId}">
                         </td>
 
-                        <td>
+                        <td class="order-col">
                             <span class="route-order-badge"
                                   data-order-preview
                                   th:text="${routeStation.stationOrder}">
@@ -96,7 +96,7 @@
                             </span>
                         </td>
 
-                        <td>
+                        <td class="station-col">
                             <div class="admin-identity">
                                 <span class="admin-avatar">
                                     <i class="fas fa-map-marker-alt"></i>
@@ -114,32 +114,26 @@
                             </div>
                         </td>
 
-                        <td>
-    <span class="badge badge-info admin-badge-soft"
-          th:text="${routeStation.distanceFromStartKm != null ? routeStation.distanceFromStartKm + ' km' : '0 km'}">
-        0 km
-    </span>
+                        <td class="code-col">
+                            <span class="badge badge-primary admin-badge-soft"
+                                  th:text="${routeStation.station != null ? routeStation.station.stationCode : '-'}">
+                                HN
+                            </span>
                         </td>
 
-                        <td>
-    <span class="badge badge-primary admin-badge-soft"
-          th:text="${routeStation.station != null ? routeStation.station.stationCode : '-'}">
-        HN
-    </span>
-                        </td>
-
-                        <td th:text="${routeStation.station != null ? routeStation.station.city : '-'}">
+                        <td class="city-col"
+                            th:text="${routeStation.station != null ? routeStation.station.city : '-'}">
                             Ha Noi
                         </td>
 
-                        <td>
-    <span class="badge badge-info admin-badge-soft"
-          th:text="${routeStation.distanceFromStartKm != null ? routeStation.distanceFromStartKm + ' km' : '0 km'}">
-        0 km
-    </span>
+                        <td class="km-col">
+                            <span class="badge badge-info admin-badge-soft"
+                                  th:text="${routeStation.distanceFromStartKm != null ? routeStation.distanceFromStartKm + ' km' : '0 km'}">
+                                0 km
+                            </span>
                         </td>
 
-                        <td class="text-right">
+                        <td class="actions-col text-right">
                             <a class="btn btn-sm btn-outline-warning"
                                th:href="@{/admin/routes/{routeId}/stations/edit/{id}(routeId=${route.routeId},id=${routeStation.routeStationId})}">
                                 <i class="fas fa-edit"></i>
@@ -275,14 +269,53 @@
             overflow: hidden;
         }
 
+        .route-station-table {
+            width: 100%;
+            table-layout: fixed;
+        }
+
         .route-station-table th,
         .route-station-table td {
             vertical-align: middle;
+            white-space: normal;
+            overflow-wrap: anywhere;
+        }
+
+        .route-station-table thead th {
+            white-space: nowrap;
+            font-size: 12px;
+            background: #061c38;
+            color: #fff;
         }
 
         .drag-col {
             width: 54px;
             text-align: center;
+        }
+
+        .order-col {
+            width: 90px;
+        }
+
+        .station-col {
+            width: 290px;
+        }
+
+        .code-col {
+            width: 110px;
+        }
+
+        .city-col {
+            width: 190px;
+        }
+
+        .km-col {
+            width: 140px;
+        }
+
+        .actions-col {
+            width: 210px;
+            white-space: nowrap !important;
         }
 
         .drag-handle {
@@ -318,6 +351,12 @@
             color: #0b6fa4;
             background: #e8f6ff;
             border: 1px solid rgba(11, 111, 164, .18);
+        }
+
+        @media (max-width: 1100px) {
+            .route-station-table {
+                min-width: 980px;
+            }
         }
     </style>
 </section>

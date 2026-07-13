@@ -30,7 +30,7 @@
         <div class="card-header">
             <span class="admin-card-title">Station Placement</span>
             <small>
-                Select one station. Leave station order empty to append it to the end automatically.
+                Select one station, set its order, and enter the railway kilometer marker for this route.
             </small>
         </div>
 
@@ -42,9 +42,9 @@
 
                         <div class="input-group">
                             <div class="input-group-prepend">
-                <span class="input-group-text">
-                    <i class="fas fa-map-marker-alt"></i>
-                </span>
+                                <span class="input-group-text">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </span>
                             </div>
 
                             <select id="station" class="form-control" name="station.stationId" required>
@@ -65,9 +65,9 @@
 
                         <div class="input-group">
                             <div class="input-group-prepend">
-                <span class="input-group-text">
-                    <i class="fas fa-list-ol"></i>
-                </span>
+                                <span class="input-group-text">
+                                    <i class="fas fa-list-ol"></i>
+                                </span>
                             </div>
 
                             <input id="stationOrder"
@@ -84,13 +84,13 @@
                     </div>
 
                     <div class="col-lg-4 mb-3">
-                        <label class="form-label" for="distanceFromStartKm">Distance from start (km)</label>
+                        <label class="form-label" for="distanceFromStartKm">KM Marker</label>
 
                         <div class="input-group">
                             <div class="input-group-prepend">
-                <span class="input-group-text">
-                    <i class="fas fa-road"></i>
-                </span>
+                                <span class="input-group-text">
+                                    <i class="fas fa-road"></i>
+                                </span>
                             </div>
 
                             <input id="distanceFromStartKm"
@@ -99,11 +99,11 @@
                                    min="0"
                                    step="0.1"
                                    th:field="*{distanceFromStartKm}"
-                                   placeholder="Example: 1726">
+                                   placeholder="Example: 1500">
                         </div>
 
                         <small class="form-text text-muted">
-                            First station should be 0. Last station becomes route distance.
+                            Example: TPHCM = 1000, Cà Mau = 1500, route distance = 500 km.
                         </small>
                     </div>
                 </div>
@@ -120,8 +120,6 @@
                     Save Placement
                 </button>
             </div>
-
-
         </form>
     </div>
 </section>

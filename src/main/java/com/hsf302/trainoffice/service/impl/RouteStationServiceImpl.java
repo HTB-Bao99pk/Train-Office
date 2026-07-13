@@ -210,11 +210,19 @@ public class RouteStationServiceImpl implements RouteStationService {
 
         double totalDistance = 0.0;
 
-        if (!routeStations.isEmpty()) {
+        if (routeStations.size() >= 2) {
+            RouteStation firstStation = routeStations.get(0);
             RouteStation lastStation = routeStations.get(routeStations.size() - 1);
-            totalDistance = lastStation.getDistanceFromStartKm() == null
+
+            double startKm = firstStation.getDistanceFromStartKm() == null
+                    ? 0.0
+                    : firstStation.getDistanceFromStartKm();
+
+            double endKm = lastStation.getDistanceFromStartKm() == null
                     ? 0.0
                     : lastStation.getDistanceFromStartKm();
+
+            totalDistance = Math.abs(endKm - startKm);
         }
 
         route.setDistanceKm(totalDistance);
