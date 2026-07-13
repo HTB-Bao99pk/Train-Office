@@ -122,14 +122,21 @@
                         </td>
 
                         <td>
-                            <span class="badge badge-primary admin-badge-soft"
-                                  th:text="${routeStation.station != null ? routeStation.station.stationCode : '-'}">
-                                HN
-                            </span>
+    <span class="badge badge-primary admin-badge-soft"
+          th:text="${routeStation.station != null ? routeStation.station.stationCode : '-'}">
+        HN
+    </span>
                         </td>
 
                         <td th:text="${routeStation.station != null ? routeStation.station.city : '-'}">
                             Ha Noi
+                        </td>
+
+                        <td>
+    <span class="badge badge-info admin-badge-soft"
+          th:text="${routeStation.distanceFromStartKm != null ? routeStation.distanceFromStartKm + ' km' : '0 km'}">
+        0 km
+    </span>
                         </td>
 
                         <td class="text-right">
