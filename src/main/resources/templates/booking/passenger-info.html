@@ -126,24 +126,16 @@
                                     <select class="rail-select passenger-type-select"
                                             th:name="|passengers[${stat.index}].passengerType|"
                                             required>
-                                        <option value="ADULT"
-                                                th:selected="${passenger.passengerType == null or passenger.passengerType == 'ADULT'}">
-                                            Adult, 11-59 years old
-                                        </option>
+                                        <option value="">Select passenger type</option>
 
-                                        <option value="CHILD"
-                                                th:selected="${passenger.passengerType == 'CHILD'}">
-                                            Child, 6-10 years old - 50% discount
-                                        </option>
-
-                                        <option value="INFANT"
-                                                th:selected="${passenger.passengerType == 'INFANT'}">
-                                            Infant, under 6 years old - free ticket
-                                        </option>
-
-                                        <option value="SENIOR"
-                                                th:selected="${passenger.passengerType == 'SENIOR'}">
-                                            Senior, 60+ years old - 25% discount
+                                        <option th:each="policy : ${discountPolicies}"
+                                                th:value="${policy.policyCode}"
+                                                th:selected="${passenger.passengerType != null and passenger.passengerType == policy.policyCode}"
+                                                th:attr="data-min-age=${policy.minAge},
+                     data-max-age=${policy.maxAge},
+                     data-discount=${policy.discountPercent}"
+                                                th:text="${policy.policyName + ' - ' + policy.discountPercent + '% discount'}">
+                                            Adult - 0% discount
                                         </option>
                                     </select>
 

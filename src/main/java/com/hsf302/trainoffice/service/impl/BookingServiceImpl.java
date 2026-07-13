@@ -33,6 +33,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.Set;
+import com.hsf302.trainoffice.entity.DiscountPolicy;
+import com.hsf302.trainoffice.service.DiscountPolicyService;
+
 
 @Service
 public class BookingServiceImpl implements com.hsf302.trainoffice.service.BookingService {
@@ -49,6 +52,8 @@ public class BookingServiceImpl implements com.hsf302.trainoffice.service.Bookin
     private final TripStationRepository tripStationRepository;
     private final TrainTripRepository trainTripRepository;
     private final BookingPricingService bookingPricingService;
+    private final DiscountPolicyService discountPolicyService;
+
 
     public BookingServiceImpl(BookingRepository bookingRepository,
                               PassengerRepository passengerRepository,
@@ -57,6 +62,7 @@ public class BookingServiceImpl implements com.hsf302.trainoffice.service.Bookin
                               TicketRepository ticketRepository,
                               TripStationRepository tripStationRepository,
                               TrainTripRepository trainTripRepository,
+                              DiscountPolicyService discountPolicyService,
                               BookingPricingService bookingPricingService) {
         this.bookingRepository = bookingRepository;
         this.passengerRepository = passengerRepository;
@@ -66,6 +72,7 @@ public class BookingServiceImpl implements com.hsf302.trainoffice.service.Bookin
         this.tripStationRepository = tripStationRepository;
         this.trainTripRepository = trainTripRepository;
         this.bookingPricingService = bookingPricingService;
+        this.discountPolicyService = discountPolicyService;
     }
 
     @Override
@@ -346,34 +353,35 @@ public class BookingServiceImpl implements com.hsf302.trainoffice.service.Bookin
             passenger.setPassengerType(passengerType);
         }
 
+        String finalPassengerType = passengerType;
+
         int age = Period.between(passenger.getDateOfBirth(), LocalDate.now()).getYears();
 
-        switch (passengerType.toUpperCase()) {
-            case "INFANT" -> {
-                if (age >= 6) {
-                    throw new IllegalArgumentException("INFANT must be under 6 years old. Current age: " + age);
-                }
-            }
+        DiscountPolicy policy = discountPolicyService
+                .getActivePolicyByCode(finalPassengerType)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Invalid or inactive passenger discount policy: " + finalPassengerType
+                ));
 
-            case "CHILD" -> {
-                if (age < 6 || age > 10) {
-                    throw new IllegalArgumentException("CHILD must be from 6 to 10 years old. Current age: " + age);
-                }
-            }
+        if (!discountPolicyService.matchesAge(policy, age)) {
+            String ageRange = policy.getMaxAge() == null
+                    ? policy.getMinAge() + "+"
+                    : policy.getMinAge() + " - " + policy.getMaxAge();
 
-            case "ADULT" -> {
-                if (age < 11 || age >= 60) {
-                    throw new IllegalArgumentException("ADULT must be from 11 to 59 years old. Current age: " + age);
-                }
-            }
+            throw new IllegalArgumentException(
+                    "Passenger age does not match policy "
+                            + policy.getPolicyName()
+                            + ". Required age: "
+                            + ageRange
+                            + ". Current age: "
+                            + age
+            );
+        }
 
-            case "SENIOR" -> {
-                if (age < 60) {
-                    throw new IllegalArgumentException("SENIOR must be 60 years old or above. Current age: " + age);
-                }
+        if (age >= 16) {
+            if (passenger.getIdentityNumber() == null || passenger.getIdentityNumber().isBlank()) {
+                throw new IllegalArgumentException("Passengers from 16 years old must have identity number");
             }
-
-            default -> throw new IllegalArgumentException("Invalid passenger type: " + passengerType);
         }
 
         if (age < 16) {
@@ -383,6 +391,8 @@ public class BookingServiceImpl implements com.hsf302.trainoffice.service.Bookin
             }
         }
     }
+
+
     private String generateBookingNumber() {
         String bookingNumber;
         do {

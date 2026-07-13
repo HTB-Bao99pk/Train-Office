@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
+import com.hsf302.trainoffice.service.DiscountPolicyService;
 import java.util.List;
 import java.util.Locale;
 
@@ -36,17 +36,21 @@ public class BookingPageServiceImpl implements BookingPageService {
     private final BookingService bookingService;
     private final BookingFlowService bookingFlowService;
     private final TicketService ticketService;
+    private final DiscountPolicyService discountPolicyService;
+
 
     public BookingPageServiceImpl(TrainTripService trainTripService,
                                   StationService stationService,
                                   BookingService bookingService,
                                   BookingFlowService bookingFlowService,
+                                  DiscountPolicyService discountPolicyService,
                                   TicketService ticketService) {
         this.trainTripService = trainTripService;
         this.stationService = stationService;
         this.bookingService = bookingService;
         this.bookingFlowService = bookingFlowService;
         this.ticketService = ticketService;
+        this.discountPolicyService = discountPolicyService;
     }
 
     @Override
@@ -196,7 +200,7 @@ public class BookingPageServiceImpl implements BookingPageService {
 
         model.addAttribute("genders", Gender.values());
         model.addAttribute("bookingSession", bookingSession);
-
+        model.addAttribute("discountPolicies", discountPolicyService.getActivePolicies());
         return "booking/passenger-info";
     }
 
@@ -222,7 +226,7 @@ public class BookingPageServiceImpl implements BookingPageService {
                 || form.getPassengers().size() != bookingSession.getPassengerCount()) {
             model.addAttribute("genders", Gender.values());
             model.addAttribute("bookingSession", bookingSession);
-
+            model.addAttribute("discountPolicies", discountPolicyService.getActivePolicies());
             return "booking/passenger-info";
         }
 
@@ -236,7 +240,7 @@ public class BookingPageServiceImpl implements BookingPageService {
             model.addAttribute("error", ex.getMessage());
             model.addAttribute("genders", Gender.values());
             model.addAttribute("bookingSession", bookingSession);
-
+            model.addAttribute("discountPolicies", discountPolicyService.getActivePolicies());
             return "booking/passenger-info";
         }
     }

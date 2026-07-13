@@ -1,9 +1,11 @@
 package com.hsf302.trainoffice.service.impl;
 
 import com.hsf302.trainoffice.dto.PassengerBookingRequest;
+import com.hsf302.trainoffice.entity.DiscountPolicy;
 import com.hsf302.trainoffice.entity.Seat;
 import com.hsf302.trainoffice.entity.TrainTrip;
 import com.hsf302.trainoffice.service.BookingPricingService;
+import com.hsf302.trainoffice.service.DiscountPolicyService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -13,6 +15,12 @@ import java.util.List;
 @Service
 public class BookingPricingServiceImpl implements BookingPricingService {
 
+    private final DiscountPolicyService discountPolicyService;
+
+    public BookingPricingServiceImpl(DiscountPolicyService discountPolicyService) {
+        this.discountPolicyService = discountPolicyService;
+    }
+
     @Override
     public BigDecimal ticketPrice(TrainTrip trainTrip, Seat seat) {
         return ticketPrice(trainTrip, seat, "ADULT");
@@ -20,16 +28,31 @@ public class BookingPricingServiceImpl implements BookingPricingService {
 
     @Override
     public BigDecimal ticketPrice(TrainTrip trainTrip, Seat seat, String passengerType) {
-        BigDecimal basePrice = trainTrip.getBasePrice() == null
-                ? BigDecimal.ZERO
-                : trainTrip.getBasePrice();
+        BigDecimal originalPrice = originalTicketPrice(trainTrip, seat);
 
-        BigDecimal extraPrice = seat.getExtraPrice() == null
-                ? BigDecimal.ZERO
-                : seat.getExtraPrice();
+        DiscountPolicy policy = discountPolicyService
+                .getActivePolicyByCode(passengerType)
+                .orElse(null);
 
-        BigDecimal originalPrice = basePrice.add(extraPrice);
-        BigDecimal finalPrice = applyPassengerDiscount(originalPrice, passengerType);
+        if (policy == null || policy.getDiscountPercent() == null) {
+            return originalPrice.setScale(0, RoundingMode.HALF_UP);
+        }
+
+        BigDecimal discountPercent = policy.getDiscountPercent();
+
+        if (discountPercent.compareTo(BigDecimal.valueOf(100)) >= 0) {
+            return BigDecimal.ZERO;
+        }
+
+        BigDecimal discountAmount = originalPrice
+                .multiply(discountPercent)
+                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+
+        BigDecimal finalPrice = originalPrice.subtract(discountAmount);
+
+        if (finalPrice.compareTo(BigDecimal.ZERO) < 0) {
+            finalPrice = BigDecimal.ZERO;
+        }
 
         return finalPrice.setScale(0, RoundingMode.HALF_UP);
     }
@@ -66,19 +89,15 @@ public class BookingPricingServiceImpl implements BookingPricingService {
         return total;
     }
 
-    private BigDecimal applyPassengerDiscount(BigDecimal originalPrice, String passengerType) {
-        if ("INFANT".equalsIgnoreCase(passengerType)) {
-            return BigDecimal.ZERO;
-        }
+    private BigDecimal originalTicketPrice(TrainTrip trainTrip, Seat seat) {
+        BigDecimal basePrice = trainTrip.getBasePrice() == null
+                ? BigDecimal.ZERO
+                : trainTrip.getBasePrice();
 
-        if ("CHILD".equalsIgnoreCase(passengerType)) {
-            return originalPrice.multiply(BigDecimal.valueOf(0.5));
-        }
+        BigDecimal extraPrice = seat.getExtraPrice() == null
+                ? BigDecimal.ZERO
+                : seat.getExtraPrice();
 
-        if ("SENIOR".equalsIgnoreCase(passengerType)) {
-            return originalPrice.multiply(BigDecimal.valueOf(0.75));
-        }
-
-        return originalPrice;
+        return basePrice.add(extraPrice);
     }
 }

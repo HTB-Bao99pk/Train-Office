@@ -49,20 +49,27 @@ function setupPassengerValidation() {
         let valid = true;
 
         if (age >= 0) {
-            if (type === 'INFANT' && age >= 6) {
-                valid = false;
-            }
+            const selectedOption = typeSelect.options[typeSelect.selectedIndex];
 
-            if (type === 'CHILD' && (age < 6 || age > 10)) {
-                valid = false;
-            }
+            if (selectedOption) {
+                const minAgeRaw = selectedOption.dataset.minAge;
+                const maxAgeRaw = selectedOption.dataset.maxAge;
 
-            if (type === 'ADULT' && (age < 11 || age >= 60)) {
-                valid = false;
-            }
+                const minAge = minAgeRaw !== undefined && minAgeRaw !== ''
+                    ? Number(minAgeRaw)
+                    : null;
 
-            if (type === 'SENIOR' && age < 60) {
-                valid = false;
+                const maxAge = maxAgeRaw !== undefined && maxAgeRaw !== ''
+                    ? Number(maxAgeRaw)
+                    : null;
+
+                if (minAge !== null && age < minAge) {
+                    valid = false;
+                }
+
+                if (maxAge !== null && age > maxAge) {
+                    valid = false;
+                }
             }
         }
 
@@ -74,13 +81,13 @@ function setupPassengerValidation() {
         dobInput.classList.toggle('is-invalid', !valid);
 
         if (identityWrapper && identityInput) {
-            if (type === 'INFANT' || type === 'CHILD') {
+            if (age >= 16) {
+                identityWrapper.style.display = 'block';
+                identityInput.required = true;
+            } else {
                 identityWrapper.style.display = 'none';
                 identityInput.required = false;
                 identityInput.value = '';
-            } else {
-                identityWrapper.style.display = 'block';
-                identityInput.required = true;
             }
         }
 
