@@ -295,16 +295,19 @@ public class BookingServiceImpl implements com.hsf302.trainoffice.service.Bookin
 
             String passengerType = passenger.getPassengerType();
 
-            if ("ADULT".equalsIgnoreCase(passengerType)
-                    || "SENIOR".equalsIgnoreCase(passengerType)) {
-                if (passenger.getIdentityNumber() == null || passenger.getIdentityNumber().isBlank()) {
-                    throw new IllegalArgumentException("Adult and senior passengers must have identity number");
-                }
+            if (passenger.getDateOfBirth() != null) {
+                int age = Period.between(passenger.getDateOfBirth(), LocalDate.now()).getYears();
 
-                String identity = passenger.getIdentityNumber().trim();
+                if (age >= 16) {
+                    if (passenger.getIdentityNumber() == null || passenger.getIdentityNumber().isBlank()) {
+                        throw new IllegalArgumentException("Passengers from 16 years old must have identity number");
+                    }
 
-                if (!identities.add(identity)) {
-                    throw new IllegalArgumentException("Passenger identity number cannot duplicate within the same booking");
+                    String identity = passenger.getIdentityNumber().trim();
+
+                    if (!identities.add(identity)) {
+                        throw new IllegalArgumentException("Passenger identity number cannot duplicate within the same booking");
+                    }
                 }
             }
         }
