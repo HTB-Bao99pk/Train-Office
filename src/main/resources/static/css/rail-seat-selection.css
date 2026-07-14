@@ -1286,3 +1286,26 @@
     background: rgba(96, 165, 250, .14);
     border-color: rgba(96, 165, 250, .32);
 }
+.rj-seat-berth.lower {
+    color: #bbf7d0 !important;
+    background: rgba(52, 211, 153, .14) !important;
+    border: 1px solid rgba(52, 211, 153, .32) !important;
+    border-radius: 999px !important;
+    padding: 2px 6px !important;
+}
+
+.rj-seat-berth.middle {
+    color: #fde68a !important;
+    background: rgba(245, 158, 11, .14) !important;
+    border: 1px solid rgba(245, 158, 11, .32) !important;
+    border-radius: 999px !important;
+    padding: 2px 6px !important;
+}
+
+.rj-seat-berth.upper {
+    color: #bfdbfe !important;
+    background: rgba(96, 165, 250, .14) !important;
+    border: 1px solid rgba(96, 165, 250, .32) !important;
+    border-radius: 999px !important;
+    padding: 2px 6px !important;
+}

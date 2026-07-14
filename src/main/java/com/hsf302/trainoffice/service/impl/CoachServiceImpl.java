@@ -495,11 +495,11 @@ public class CoachServiceImpl implements CoachService {
         }
 
         if (berthIndex == 3 || berthIndex == 4) {
-            return "UPPER";
+            return "MIDDLE";
         }
 
         if (berthIndex == 5 || berthIndex == 6) {
-            return "MIDDLE";
+            return "UPPER";
         }
 
         return "LEVEL_" + berthIndex;
