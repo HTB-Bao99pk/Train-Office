@@ -136,8 +136,12 @@ public class BookingPricingServiceImpl implements BookingPricingService {
                     passengerType,
                     passengerPolicyName,
                     coachNumber,
+                    compartmentNumber(seat),
                     seat.getSeatNumber(),
                     seat.getSeatType(),
+                    seat.getBerthLevel(),
+                    formatBerthLevel(seat.getBerthLevel()),
+                    berthLevelCssClass(seat.getBerthLevel()),
                     originalPrice.setScale(0, RoundingMode.HALF_UP),
                     passengerDiscountPercent,
                     passengerDiscountAmount.setScale(0, RoundingMode.HALF_UP),
@@ -201,6 +205,44 @@ public class BookingPricingServiceImpl implements BookingPricingService {
                 : seat.getExtraPrice();
 
         return basePrice.add(extraPrice);
+    }
+
+    private String compartmentNumber(Seat seat) {
+        if (seat == null || seat.getCompartment() == null) {
+            return null;
+        }
+
+        return seat.getCompartment().getCompartmentNumber();
+    }
+
+    private String formatBerthLevel(String berthLevel) {
+        if (berthLevel == null || berthLevel.isBlank()) {
+            return null;
+        }
+
+        String normalized = berthLevel.trim().toUpperCase();
+
+        return switch (normalized) {
+            case "LOWER" -> "Level 1 / Lower berth";
+            case "MIDDLE" -> "Level 2 / Middle berth";
+            case "UPPER" -> "Level 3 / Upper berth";
+            default -> normalized.replace("_", " ");
+        };
+    }
+
+    private String berthLevelCssClass(String berthLevel) {
+        if (berthLevel == null || berthLevel.isBlank()) {
+            return "";
+        }
+
+        String normalized = berthLevel.trim().toLowerCase();
+
+        return switch (normalized) {
+            case "lower" -> "lower";
+            case "middle" -> "middle";
+            case "upper" -> "upper";
+            default -> "";
+        };
     }
 
     private BigDecimal calculatePercentAmount(BigDecimal amount, BigDecimal percent) {

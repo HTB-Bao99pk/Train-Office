@@ -131,14 +131,20 @@
                                         First Class
                                     </span>
 
-                                    <span th:if="${seat.berthLevel != null}">
-                                        •
-                                    </span>
+ <span th:if="${seat.berthLevel != null}">
+    •
+</span>
 
-                                    <span th:if="${seat.berthLevel != null}"
-                                          th:text="${seat.berthLevel}">
-                                        LOWER
-                                    </span>
+<span class="rail-berth-pill"
+      th:if="${seat.berthLevel != null}"
+      th:classappend="${seat.berthLevel == 'LOWER'} ? ' lower' :
+          (${seat.berthLevel == 'MIDDLE'} ? ' middle' :
+          (${seat.berthLevel == 'UPPER'} ? ' upper' : ''))"
+      th:text="${seat.berthLevel == 'LOWER' ? 'Level 1 / Lower berth' :
+          (seat.berthLevel == 'MIDDLE' ? 'Level 2 / Middle berth' :
+          (seat.berthLevel == 'UPPER' ? 'Level 3 / Upper berth' : seat.berthLevel))}">
+    Level 1 / Lower berth
+</span>
                                 </span>
                             </div>
                         </div>
@@ -296,6 +302,16 @@
                                 <span th:text="${item.seatType}">
                                     Seat Type
                                 </span>
+                                <span th:if="${item.berthLevelLabel != null}">
+    •
+</span>
+
+<span class="rail-berth-mini"
+      th:if="${item.berthLevelLabel != null}"
+      th:classappend="${item.berthLevelCssClass}"
+      th:text="${item.berthLevelLabel}">
+    Level 1 / Lower berth
+</span>
                             </small>
                         </span>
 

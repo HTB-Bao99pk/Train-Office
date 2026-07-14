@@ -182,6 +182,24 @@ function setupSeatSelection() {
         return Number.isNaN(parsed) ? 0 : parsed;
     }
 
+    function formatBerthLevel(value) {
+        const normalized = String(value || '').trim().toUpperCase();
+
+        if (normalized === 'LOWER') {
+            return 'Level 1 / Lower berth';
+        }
+
+        if (normalized === 'MIDDLE') {
+            return 'Level 2 / Middle berth';
+        }
+
+        if (normalized === 'UPPER') {
+            return 'Level 3 / Upper berth';
+        }
+
+        return normalized.replaceAll('_', ' ');
+    }
+
     function isTrue(value) {
         return String(value || '').toLowerCase() === 'true';
     }
@@ -667,6 +685,7 @@ function setupSeatSelection() {
 
             const compartmentNumber = hasCompartment ? checkbox.dataset.compartmentNumber : '';
             const berthLevel = checkbox.dataset.berthLevel || '';
+            const berthLabel = checkbox.dataset.berthLabel || formatBerthLevel(berthLevel);
             const item = document.createElement('div');
             item.className = 'rail-selected-item';
 
@@ -678,7 +697,7 @@ function setupSeatSelection() {
                 '<small>' +
                 coachType +
                 (hasCompartment ? ' • ' + compartmentNumber : '') +
-                (berthLevel ? ' • ' + berthLevel : '') +
+                (berthLevel ? ' • ' + berthLabel : '') +
                 '</small>' +
                 '</div>' +
                 '</div>' +

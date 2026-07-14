@@ -122,6 +122,10 @@
                                    th:data-has-compartment="${item.seat.compartment != null}"
                                    th:data-compartment-id="${item.seat.compartment != null ? item.seat.compartment.compartmentId : ''}"
                                    th:data-compartment-number="${item.seat.compartment != null ? item.seat.compartment.compartmentNumber : ''}"
+                                   th:data-berth-label="${item.seat.berthLevel == null ? '' :
+    (item.seat.berthLevel == 'LOWER' ? 'Level 1 / Lower berth' :
+    (item.seat.berthLevel == 'MIDDLE' ? 'Level 2 / Middle berth' :
+    (item.seat.berthLevel == 'UPPER' ? 'Level 3 / Upper berth' : item.seat.berthLevel)))}"
                                    th:data-berth-level="${item.seat.berthLevel != null ? item.seat.berthLevel : ''}">
 
                                 <input class="rail-seat-checkbox"
@@ -139,6 +143,10 @@
                                        th:data-has-compartment="${item.seat.compartment != null}"
                                        th:data-compartment-id="${item.seat.compartment != null ? item.seat.compartment.compartmentId : ''}"
                                        th:data-compartment-number="${item.seat.compartment != null ? item.seat.compartment.compartmentNumber : ''}"
+                                       th:data-berth-label="${item.seat.berthLevel == null ? '' :
+    (item.seat.berthLevel == 'LOWER' ? 'Level 1 / Lower berth' :
+    (item.seat.berthLevel == 'MIDDLE' ? 'Level 2 / Middle berth' :
+    (item.seat.berthLevel == 'UPPER' ? 'Level 3 / Upper berth' : item.seat.berthLevel)))}"
                                        th:data-berth-level="${item.seat.berthLevel != null ? item.seat.berthLevel : ''}">
 
                                 <span class="rj-seat-box">
@@ -149,11 +157,19 @@
                                         01A
                                     </span>
 
-                                    <span class="rj-seat-berth"
-                                          th:if="${item.seat.berthLevel != null}"
-                                          th:text="${item.seat.berthLevel}">
-                                        LOWER
-                                    </span>
+                   <span class="rj-seat-berth"
+                         th:if="${item.seat.berthLevel != null}"
+                         th:classappend="${item.seat.berthLevel == 'LOWER'} ? ' lower' :
+          (${item.seat.berthLevel == 'MIDDLE'} ? ' middle' :
+          (${item.seat.berthLevel == 'UPPER'} ? ' upper' : ''))"
+                         th:title="${item.seat.berthLevel == 'LOWER' ? 'Level 1 / Lower berth' :
+          (item.seat.berthLevel == 'MIDDLE' ? 'Level 2 / Middle berth' :
+          (item.seat.berthLevel == 'UPPER' ? 'Level 3 / Upper berth' : item.seat.berthLevel))}"
+                         th:text="${item.seat.berthLevel == 'LOWER' ? 'Level 1' :
+          (item.seat.berthLevel == 'MIDDLE' ? 'Level 2' :
+          (item.seat.berthLevel == 'UPPER' ? 'Level 3' : item.seat.berthLevel))}">
+    Level 1
+</span>
 
                                     <i class="bi bi-check-circle-fill rj-seat-check"></i>
                                     <i class="bi bi-x-lg rj-seat-x"></i>

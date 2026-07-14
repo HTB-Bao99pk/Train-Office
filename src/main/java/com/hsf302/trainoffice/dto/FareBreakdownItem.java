@@ -14,8 +14,13 @@ public class FareBreakdownItem {
     private String passengerPolicyName;
 
     private String coachNumber;
+    private String compartmentNumber;
     private String seatNumber;
     private String seatType;
+
+    private String berthLevel;
+    private String berthLevelLabel;
+    private String berthLevelCssClass;
 
     private BigDecimal originalPrice;
     private BigDecimal passengerDiscountPercent;

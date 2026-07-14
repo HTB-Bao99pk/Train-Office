@@ -1624,3 +1624,50 @@
     color: var(--rj-primary-soft, #8ed5ff);
     font-weight: 900;
 }
+
+/* =========================================================
+   Sleeper berth level display - confirmation
+   ========================================================= */
+
+.rail-berth-pill,
+.rail-berth-mini {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 22px;
+    padding: 0 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: .02em;
+    color: #dbeafe;
+    background: rgba(142, 213, 255, .12);
+    border: 1px solid rgba(142, 213, 255, .22);
+}
+
+.rail-berth-mini {
+    min-height: 18px;
+    padding: 0 6px;
+    font-size: 10px;
+}
+
+.rail-berth-pill.lower,
+.rail-berth-mini.lower {
+    color: #bbf7d0;
+    background: rgba(52, 211, 153, .12);
+    border-color: rgba(52, 211, 153, .30);
+}
+
+.rail-berth-pill.middle,
+.rail-berth-mini.middle {
+    color: #fde68a;
+    background: rgba(245, 158, 11, .12);
+    border-color: rgba(245, 158, 11, .30);
+}
+
+.rail-berth-pill.upper,
+.rail-berth-mini.upper {
+    color: #bfdbfe;
+    background: rgba(96, 165, 250, .12);
+    border-color: rgba(96, 165, 250, .30);
+}
