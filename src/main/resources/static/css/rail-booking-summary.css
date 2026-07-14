@@ -1413,116 +1413,6 @@
     }
 }
 
-/* =========================================================
-   Group discount dropdown - booking confirmation
-   ========================================================= */
-
-.rail-discount-panel {
-    display: grid;
-    gap: 14px;
-    padding: 16px;
-    border-radius: 18px;
-    background:
-            radial-gradient(circle at top left, rgba(56, 189, 248, .18), transparent 36%),
-            rgba(13, 28, 45, .78);
-    border: 1px solid rgba(142, 213, 255, .22);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04);
-}
-
-.rail-discount-panel-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.rail-discount-panel-icon {
-    width: 42px;
-    height: 42px;
-    flex: 0 0 42px;
-    border-radius: 15px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: #001e2c;
-    background: linear-gradient(135deg, #7dd3fc, #38bdf8);
-    box-shadow: 0 12px 26px rgba(56, 189, 248, .24);
-}
-
-.rail-discount-panel-copy {
-    min-width: 0;
-}
-
-.rail-discount-panel-copy strong {
-    display: block;
-    color: #ffffff;
-    font-size: 15px;
-    font-weight: 900;
-    line-height: 1.25;
-}
-
-.rail-discount-panel-copy small {
-    display: block;
-    margin-top: 3px;
-    color: var(--rj-muted, #bdc8d1);
-    font-size: 12px;
-    line-height: 1.35;
-    font-weight: 700;
-}
-
-
-
-select.rail-discount-select {
-    width: 100%;
-    min-height: 48px;
-    padding: 0 46px 0 15px;
-    border-radius: 14px;
-    border: 1px solid rgba(142, 213, 255, .32);
-    color: #ffffff !important;
-    background:
-            linear-gradient(180deg, rgba(18, 33, 49, .98), rgba(5, 20, 36, .98)) !important;
-    outline: none;
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    font-size: 14px;
-    font-weight: 850;
-    cursor: pointer;
-    box-shadow:
-            inset 0 1px 0 rgba(255, 255, 255, .06),
-            0 12px 26px rgba(0, 0, 0, .18);
-}
-
-select.rail-discount-select:hover {
-    border-color: rgba(142, 213, 255, .58);
-}
-
-select.rail-discount-select:focus {
-    border-color: rgba(56, 189, 248, .90);
-    box-shadow:
-            0 0 0 4px rgba(56, 189, 248, .14),
-            inset 0 1px 0 rgba(255, 255, 255, .06);
-}
-
-select.rail-discount-select option {
-    color: #0f172a;
-    background: #ffffff;
-    font-weight: 700;
-}
-
-
-
-.rail-discount-current {
-    display: block;
-    color: var(--rj-muted, #bdc8d1);
-    font-size: 12px;
-    line-height: 1.4;
-    font-weight: 700;
-}
-
-.rail-discount-current strong {
-    color: var(--rj-primary-soft, #8ed5ff);
-    font-weight: 900;
-}
 
 /* =========================================================
    Group discount custom dropdown - booking confirmation
@@ -1626,7 +1516,7 @@ select.rail-discount-select option {
     left: 0;
     right: 0;
     top: calc(100% + 8px);
-    z-index: 30;
+    z-index: 9999;
     display: none;
     max-height: 240px;
     overflow-y: auto;
@@ -1637,6 +1527,19 @@ select.rail-discount-select option {
             linear-gradient(180deg, rgba(15, 30, 48, .98), rgba(5, 20, 36, .98));
     box-shadow: 0 22px 60px rgba(0, 0, 0, .42);
     backdrop-filter: blur(16px);
+}
+
+.rail-discount-panel {
+    position: relative;
+}
+
+.rail-custom-dropdown {
+    position: relative;
+    z-index: 20;
+}
+
+.rail-custom-dropdown.open {
+    z-index: 9999;
 }
 
 .rail-custom-dropdown.open .rail-custom-dropdown-menu {

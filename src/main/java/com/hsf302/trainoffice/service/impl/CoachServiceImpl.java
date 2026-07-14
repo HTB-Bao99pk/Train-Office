@@ -28,7 +28,7 @@ public class CoachServiceImpl implements CoachService {
     private final SeatRepository seatRepository;
     private final CompartmentRepository compartmentRepository;
     private static final int COACHES_PER_PAGE = 8;
-    private final TicketRepository ticketRepository;;
+    private final TicketRepository ticketRepository;
 
     public CoachServiceImpl(CoachRepository coachRepository,
                             SeatRepository seatRepository,
@@ -224,6 +224,7 @@ public class CoachServiceImpl implements CoachService {
                     .extraPrice(extraPrice)
                     .active(true)
                     .build();
+            seatRepository.save(seat);
         }
     }
 
