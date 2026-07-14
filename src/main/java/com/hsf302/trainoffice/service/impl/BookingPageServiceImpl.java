@@ -155,7 +155,15 @@ public class BookingPageServiceImpl implements BookingPageService {
         }
 
         try {
+            BookingSession previousSession = getBookingSession(session);
+
             BookingSession bookingSession = bookingFlowService.buildBookingSession(form);
+
+            if (canReusePassengerInfo(previousSession, bookingSession)) {
+                bookingSession.setPassengerInfo(previousSession.getPassengerInfo());
+                bookingSession.setSelectedGroupDiscountPolicyId(previousSession.getSelectedGroupDiscountPolicyId());
+            }
+
             session.setAttribute(BOOKING_SESSION_KEY, bookingSession);
 
             return "redirect:/booking/passenger-info";
@@ -578,5 +586,29 @@ public class BookingPageServiceImpl implements BookingPageService {
                 + "?departureStationId=" + form.getDepartureStationId()
                 + "&arrivalStationId=" + form.getArrivalStationId()
                 + "&passengerCount=" + form.getPassengerCount();
+    }
+
+    private boolean canReusePassengerInfo(BookingSession oldSession, BookingSession newSession) {
+        if (oldSession == null || newSession == null) {
+            return false;
+        }
+
+        if (oldSession.getPassengerInfo() == null) {
+            return false;
+        }
+
+        if (oldSession.getPassengerCount() != newSession.getPassengerCount()) {
+            return false;
+        }
+
+        if (!oldSession.getTrainTripId().equals(newSession.getTrainTripId())) {
+            return false;
+        }
+
+        if (!oldSession.getDepartureStationId().equals(newSession.getDepartureStationId())) {
+            return false;
+        }
+
+        return oldSession.getArrivalStationId().equals(newSession.getArrivalStationId());
     }
 }

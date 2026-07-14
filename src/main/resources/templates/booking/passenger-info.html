@@ -45,7 +45,10 @@
                      th:text="${errorMessage}">
                 </div>
 
-                <form th:action="@{/booking/passenger-info}" method="post">
+                <form th:action="@{/booking/passenger-info}"
+                      method="post"
+                      class="rail-passenger-info-form"
+                      th:attr="data-draft-key=|railPassengerDraft:${bookingSession.trainTripId}:${bookingSession.departureStationId}:${bookingSession.arrivalStationId}:${bookingSession.passengerCount}|">
                     <input type="hidden"
                            name="contactName"
                            th:value="${passengerInfoForm != null ? passengerInfoForm.contactName : ''}">
@@ -189,9 +192,15 @@
                     </button>
 
                     <div class="rail-form-actions">
-                        <a class="rail-back-link" th:href="@{/booking/search}">
+                        <a class="rail-back-link"
+                           th:href="@{/booking/{tripId}/seats(
+        tripId=${bookingSession.trainTripId},
+        departureStationId=${bookingSession.departureStationId},
+        arrivalStationId=${bookingSession.arrivalStationId},
+        passengerCount=${bookingSession.passengerCount}
+   )}">
                             <i class="bi bi-arrow-left"></i>
-                            Back to Search
+                            Back to Seat Selection
                         </a>
 
                         <button class="rail-primary-btn" type="submit">
@@ -256,7 +265,80 @@
             </aside>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('.rail-passenger-info-form');
 
+            if (!form) {
+                return;
+            }
+
+            const draftKey = form.dataset.draftKey;
+
+            if (!draftKey) {
+                return;
+            }
+
+            function fields() {
+                return Array.from(form.querySelectorAll('input[name], select[name], textarea[name]'));
+            }
+
+            function readDraft() {
+                try {
+                    const raw = localStorage.getItem(draftKey);
+                    return raw ? JSON.parse(raw) : null;
+                } catch (error) {
+                    return null;
+                }
+            }
+
+            function writeDraft() {
+                const data = {};
+
+                fields().forEach(function (field) {
+                    if (field.type === 'hidden') {
+                        return;
+                    }
+
+                    data[field.name] = field.value;
+                });
+
+                localStorage.setItem(draftKey, JSON.stringify(data));
+            }
+
+            function restoreDraft() {
+                const data = readDraft();
+
+                if (!data) {
+                    return;
+                }
+
+                fields().forEach(function (field) {
+                    if (field.type === 'hidden') {
+                        return;
+                    }
+
+                    if (!Object.prototype.hasOwnProperty.call(data, field.name)) {
+                        return;
+                    }
+
+                    const serverHasValue = field.value !== null && field.value !== '';
+
+                    if (!serverHasValue) {
+                        field.value = data[field.name];
+                        field.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                });
+            }
+
+            restoreDraft();
+
+            fields().forEach(function (field) {
+                field.addEventListener('input', writeDraft);
+                field.addEventListener('change', writeDraft);
+            });
+        });
+    </script>
     <script th:src="@{/js/rail-booking-flow.js}"></script>
 </section>
 </html>

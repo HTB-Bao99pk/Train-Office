@@ -597,3 +597,220 @@ a:hover{color:var(--rail-primary)}
         width: 100%;
     }
 }
+
+/* =========================================================
+   Rail toast - global customer UI
+   ========================================================= */
+
+.rail-toast-container {
+    top: 88px !important;
+    right: 22px !important;
+    z-index: 1085;
+}
+
+.toast.rail-toast {
+    width: min(420px, calc(100vw - 28px));
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 18px;
+    border: 1px solid rgba(142, 213, 255, .24);
+    color: var(--rj-text, #d4e4fa);
+    background:
+            linear-gradient(135deg, rgba(18, 33, 49, .96), rgba(5, 20, 36, .96));
+    backdrop-filter: blur(18px);
+    box-shadow: 0 22px 60px rgba(0, 0, 0, .38);
+}
+
+.rail-toast-icon {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #022c22;
+    background: #34d399;
+    box-shadow: 0 10px 24px rgba(52, 211, 153, .22);
+}
+
+.rail-toast-icon.error {
+    color: #450a0a;
+    background: #fca5a5;
+    box-shadow: 0 10px 24px rgba(252, 165, 165, .22);
+}
+
+.rail-toast-content {
+    min-width: 0;
+    flex: 1;
+}
+
+.rail-toast-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.rail-toast-title-row strong {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 900;
+}
+
+.rail-toast-title-row small {
+    color: var(--rj-muted, #bdc8d1);
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.rail-toast-message {
+    margin-top: 4px;
+    color: var(--rj-muted, #bdc8d1);
+    font-size: 13px;
+    line-height: 1.45;
+    font-weight: 700;
+}
+
+.rail-toast-close {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    border: 0;
+    border-radius: 10px;
+    color: var(--rj-muted, #bdc8d1);
+    background: rgba(255, 255, 255, .06);
+}
+
+.rail-toast-close:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, .12);
+}
+
+@media (max-width: 768px) {
+    .rail-toast-container {
+        top: 76px !important;
+        right: 14px !important;
+        left: 14px !important;
+    }
+
+    .toast.rail-toast {
+        width: 100%;
+    }
+}
+
+/* =========================================================
+   Global customer flash message
+   ========================================================= */
+
+.rail-flash-container {
+    position: fixed;
+    top: 88px;
+    right: 22px;
+    z-index: 2000;
+    width: min(420px, calc(100vw - 28px));
+}
+
+.rail-flash {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 18px;
+    border: 1px solid rgba(142, 213, 255, .24);
+    color: var(--rj-text, #d4e4fa);
+    background:
+            linear-gradient(135deg, rgba(18, 33, 49, .97), rgba(5, 20, 36, .97));
+    backdrop-filter: blur(18px);
+    box-shadow: 0 22px 60px rgba(0, 0, 0, .38);
+    animation: railFlashIn .22s ease-out;
+}
+
+.rail-flash-icon {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #022c22;
+    background: #34d399;
+    box-shadow: 0 10px 24px rgba(52, 211, 153, .22);
+}
+
+.rail-flash.danger .rail-flash-icon {
+    color: #450a0a;
+    background: #fca5a5;
+    box-shadow: 0 10px 24px rgba(252, 165, 165, .22);
+}
+
+.rail-flash-content {
+    min-width: 0;
+    flex: 1;
+}
+
+.rail-flash-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.rail-flash-title-row strong {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 900;
+}
+
+.rail-flash-title-row small {
+    color: var(--rj-muted, #bdc8d1);
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.rail-flash-message {
+    margin-top: 4px;
+    color: var(--rj-muted, #bdc8d1);
+    font-size: 13px;
+    line-height: 1.45;
+    font-weight: 700;
+}
+
+.rail-flash-close {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    border: 0;
+    border-radius: 10px;
+    color: var(--rj-muted, #bdc8d1);
+    background: rgba(255, 255, 255, .06);
+}
+
+.rail-flash-close:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, .12);
+}
+
+@keyframes railFlashIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .rail-flash-container {
+        top: 76px;
+        left: 14px;
+        right: 14px;
+        width: auto;
+    }
+}

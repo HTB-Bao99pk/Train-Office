@@ -49,7 +49,6 @@
 
                         <div class="rail-duration">
                             <i class="bi bi-arrow-right"></i>
-
                             <span>Direct</span>
                         </div>
 
@@ -104,43 +103,43 @@
                                     <i class="bi bi-seat-recline-normal"></i>
 
                                     <span>
-            <span>Coach </span>
+                                        <span>Coach </span>
 
-            <span th:text="${seat.coach != null ? seat.coach.coachNumber : '-'}">
-                C01
-            </span>
+                                        <span th:text="${seat.coach != null ? seat.coach.coachNumber : '-'}">
+                                            C01
+                                        </span>
 
-            <span th:if="${seat.compartment != null}">
-                , Compartment
-            </span>
+                                        <span th:if="${seat.compartment != null}">
+                                            , Compartment
+                                        </span>
 
-            <span th:if="${seat.compartment != null}"
-                  th:text="${seat.compartment.compartmentNumber}">
-                K01
-            </span>
+                                        <span th:if="${seat.compartment != null}"
+                                              th:text="${seat.compartment.compartmentNumber}">
+                                            K01
+                                        </span>
 
-            <span> - </span>
+                                        <span> - </span>
 
-            <span th:text="${seat.seatNumber}">
-                A3
-            </span>
-        </span>
+                                        <span th:text="${seat.seatNumber}">
+                                            A3
+                                        </span>
+                                    </span>
                                 </div>
 
                                 <span>
-        <span th:text="${seat.seatType}">
-            First Class
-        </span>
+                                    <span th:text="${seat.seatType}">
+                                        First Class
+                                    </span>
 
-        <span th:if="${seat.berthLevel != null}">
-            •
-        </span>
+                                    <span th:if="${seat.berthLevel != null}">
+                                        •
+                                    </span>
 
-        <span th:if="${seat.berthLevel != null}"
-              th:text="${seat.berthLevel}">
-            LOWER
-        </span>
-    </span>
+                                    <span th:if="${seat.berthLevel != null}"
+                                          th:text="${seat.berthLevel}">
+                                        LOWER
+                                    </span>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -169,87 +168,149 @@
                 <div class="rail-fare-lines">
                     <form th:action="@{/booking/group-discount}"
                           method="post"
-                          class="rail-group-discount-form">
+                          class="rail-discount-panel"
+                          id="groupDiscountForm">
 
-                        <div class="rail-discount-copy">
-        <span class="rail-discount-icon">
-            <i class="bi bi-tags-fill"></i>
-        </span>
+                        <div class="rail-discount-panel-header">
+                            <div class="rail-discount-panel-icon">
+                                <i class="bi bi-tags-fill"></i>
+                            </div>
 
-                            <span>
-            <strong>Group Discount</strong>
-            <small>Select a group/combo policy to apply</small>
-        </span>
+                            <div class="rail-discount-panel-copy">
+                                <strong>Group Discount</strong>
+                                <small>Select one combo policy for this booking</small>
+                            </div>
                         </div>
 
-                        <div class="rail-discount-select-wrap">
-                            <select class="rail-discount-select"
-                                    name="groupDiscountPolicyId"
-                                    onchange="this.form.submit()">
-                                <option value="">No group discount</option>
+                        <input type="hidden"
+                               id="groupDiscountPolicyInput"
+                               name="groupDiscountPolicyId"
+                               th:value="${selectedGroupDiscountPolicyId}">
 
-                                <option th:each="policy : ${availableGroupDiscountPolicies}"
-                                        th:value="${policy.policyId}"
-                                        th:selected="${selectedGroupDiscountPolicyId != null and selectedGroupDiscountPolicyId == policy.policyId}"
-                                        th:text="${policy.policyName + ' - ' + policy.discountPercent + '%'}">
-                                    Group Policy
-                                </option>
-                            </select>
+                        <div class="rail-custom-dropdown" data-rail-dropdown>
+                            <button type="button"
+                                    class="rail-custom-dropdown-toggle"
+                                    data-rail-dropdown-toggle>
+            <span th:if="${priceSummary.groupDiscountPolicyId == null}">
+                No group discount
+            </span>
 
-                            <i class="bi bi-chevron-down"></i>
+                                <span th:if="${priceSummary.groupDiscountPolicyId != null}"
+                                      th:text="${priceSummary.groupDiscountPolicyName + ' - ' + priceSummary.groupDiscountPercent + '%'}">
+                Family Combo - 10%
+            </span>
+
+                                <i class="bi bi-chevron-down"></i>
+                            </button>
+
+                            <div class="rail-custom-dropdown-menu" data-rail-dropdown-menu>
+                                <button type="submit"
+                                        class="rail-custom-dropdown-item"
+                                        th:classappend="${selectedGroupDiscountPolicyId == null} ? ' active'"
+                                        onclick="document.getElementById('groupDiscountPolicyInput').value = ''">
+                <span>
+                    <strong>No group discount</strong>
+                    <small>Continue without combo discount</small>
+                </span>
+
+                                    <i class="bi bi-check-circle-fill"
+                                       th:if="${selectedGroupDiscountPolicyId == null}"></i>
+                                </button>
+
+                                <button type="submit"
+                                        class="rail-custom-dropdown-item"
+                                        th:each="policy : ${availableGroupDiscountPolicies}"
+                                        th:classappend="${selectedGroupDiscountPolicyId != null and selectedGroupDiscountPolicyId == policy.policyId} ? ' active'"
+                                        th:onclick="|document.getElementById('groupDiscountPolicyInput').value='${policy.policyId}'|">
+
+                <span>
+                    <strong th:text="${policy.policyName + ' - ' + policy.discountPercent + '%'}">
+                        Family Combo - 10%
+                    </strong>
+
+                    <small>
+                        <span th:if="${policy.maxPassengers != null}"
+                              th:text="${policy.minPassengers + ' - ' + policy.maxPassengers + ' passengers'}">
+                            3 - 10 passengers
+                        </span>
+
+                        <span th:if="${policy.maxPassengers == null}"
+                              th:text="${policy.minPassengers + '+ passengers'}">
+                            10+ passengers
+                        </span>
+                    </small>
+                </span>
+
+                                    <i class="bi bi-check-circle-fill"
+                                       th:if="${selectedGroupDiscountPolicyId != null and selectedGroupDiscountPolicyId == policy.policyId}"></i>
+                                </button>
+                            </div>
                         </div>
+
+                        <small class="rail-discount-current"
+                               th:if="${priceSummary.groupDiscountPolicyId != null}">
+                            Applied:
+                            <strong th:text="${priceSummary.groupDiscountPolicyName}">
+                                Family Combo
+                            </strong>
+                        </small>
+
+                        <small class="rail-discount-current"
+                               th:if="${priceSummary.groupDiscountPolicyId == null}">
+                            No combo discount is currently applied.
+                        </small>
                     </form>
 
                     <div class="rail-fare-line"
                          th:each="item : ${fareBreakdownItems}">
-        <span>
-            <strong th:text="${item.passengerName}">
-                Passenger
-            </strong>
+                        <span>
+                            <strong th:text="${item.passengerName}">
+                                Passenger
+                            </strong>
 
-            <br>
+                            <br>
 
-            <small>
-                <span th:text="${item.passengerPolicyName}">
-                    Passenger Policy
-                </span>
+                            <small>
+                                <span th:text="${item.passengerPolicyName}">
+                                    Passenger Policy
+                                </span>
 
-                <span> • </span>
+                                <span> • </span>
 
-                <span th:text="${item.passengerDiscountPercent + '%'}">
-                    0%
-                </span>
+                                <span th:text="${item.passengerDiscountPercent + '%'}">
+                                    0%
+                                </span>
 
-                <span> discount</span>
-            </small>
+                                <span> discount</span>
+                            </small>
 
-            <br>
+                            <br>
 
-            <small>
-                <span th:text="${item.coachNumber + ' - ' + item.seatNumber}">
-                    C01 - 01A
-                </span>
+                            <small>
+                                <span th:text="${item.coachNumber + ' - ' + item.seatNumber}">
+                                    C01 - 01A
+                                </span>
 
-                <span> • </span>
+                                <span> • </span>
 
-                <span th:text="${item.seatType}">
-                    Seat Type
-                </span>
-            </small>
-        </span>
+                                <span th:text="${item.seatType}">
+                                    Seat Type
+                                </span>
+                            </small>
+                        </span>
 
                         <strong>
-            <span th:if="${item.passengerDiscountAmount != null and item.passengerDiscountAmount > 0}">
-                <span style="text-decoration: line-through; opacity: .65;"
-                      th:text="${#numbers.formatDecimal(item.originalPrice, 0, 'COMMA', 0, 'POINT') + ' VND'}">
-                    0 VND
-                </span>
-                <br>
-            </span>
+                            <span th:if="${item.passengerDiscountAmount != null and item.passengerDiscountAmount > 0}">
+                                <span style="text-decoration: line-through; opacity: .65;"
+                                      th:text="${#numbers.formatDecimal(item.originalPrice, 0, 'COMMA', 0, 'POINT') + ' VND'}">
+                                    0 VND
+                                </span>
+                                <br>
+                            </span>
 
                             <span th:text="${#numbers.formatDecimal(item.finalPrice, 0, 'COMMA', 0, 'POINT') + ' VND'}">
-                0 VND
-            </span>
+                                0 VND
+                            </span>
                         </strong>
                     </div>
 
@@ -263,17 +324,17 @@
 
                     <div class="rail-fare-line"
                          th:if="${priceSummary.groupDiscountPolicyId != null}">
-        <span>
-            <strong th:text="${priceSummary.groupDiscountPolicyName}">
-                Group Discount
-            </strong>
+                        <span>
+                            <strong th:text="${priceSummary.groupDiscountPolicyName}">
+                                Group Discount
+                            </strong>
 
-            <br>
+                            <br>
 
-            <small th:text="${priceSummary.groupDiscountPercent + '% group discount applied'}">
-                0% group discount applied
-            </small>
-        </span>
+                            <small th:text="${priceSummary.groupDiscountPercent + '% group discount applied'}">
+                                0% group discount applied
+                            </small>
+                        </span>
 
                         <strong th:text="'- ' + ${#numbers.formatDecimal(priceSummary.groupDiscountAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">
                             - 0 VND
@@ -324,5 +385,50 @@
             </aside>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const dropdowns = document.querySelectorAll('[data-rail-dropdown]');
+
+            dropdowns.forEach(function (dropdown) {
+                const toggle = dropdown.querySelector('[data-rail-dropdown-toggle]');
+                const menu = dropdown.querySelector('[data-rail-dropdown-menu]');
+
+                if (!toggle || !menu) {
+                    return;
+                }
+
+                toggle.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    dropdowns.forEach(function (otherDropdown) {
+                        if (otherDropdown !== dropdown) {
+                            otherDropdown.classList.remove('open');
+                        }
+                    });
+
+                    dropdown.classList.toggle('open');
+                });
+
+                menu.addEventListener('click', function (event) {
+                    event.stopPropagation();
+                });
+            });
+
+            document.addEventListener('click', function () {
+                dropdowns.forEach(function (dropdown) {
+                    dropdown.classList.remove('open');
+                });
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') {
+                    dropdowns.forEach(function (dropdown) {
+                        dropdown.classList.remove('open');
+                    });
+                }
+            });
+        });
+    </script>
 </section>
 </html>
