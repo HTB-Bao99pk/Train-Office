@@ -20,6 +20,7 @@ import java.util.Set;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.TreeMap;
 
 @Service
 public class CoachServiceImpl implements CoachService {
@@ -56,6 +57,11 @@ public class CoachServiceImpl implements CoachService {
         validateCoach(coach);
         normalizeCoach(coach);
 
+        getAvailableCoachTypes().stream()
+                .filter(existingType -> existingType.equalsIgnoreCase(coach.getCoachType()))
+                .findFirst()
+                .ifPresent(coach::setCoachType);
+
         Long trainId = coach.getTrain().getTrainId();
         String coachNumber = coach.getCoachNumber();
 
@@ -88,6 +94,24 @@ public class CoachServiceImpl implements CoachService {
         }
 
         return savedCoach;
+    }
+
+    @Override
+    public List<String> getAvailableCoachTypes() {
+        TreeMap<String, String> canonicalTypes = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        List<String> storedTypes = coachRepository.findDistinctCoachTypes();
+        if (storedTypes == null) {
+            return List.of();
+        }
+
+        storedTypes.stream()
+                .filter(type -> type != null && !type.isBlank())
+                .map(String::trim)
+                .forEach(type -> canonicalTypes.putIfAbsent(type, type));
+
+        return canonicalTypes.values().stream()
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .toList();
     }
 
     @Override

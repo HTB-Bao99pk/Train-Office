@@ -15,5 +15,7 @@ public interface CoachService {
 
     Coach saveCoach(Coach coach);
 
+    List<String> getAvailableCoachTypes();
+
     void deleteCoach(Long id);
 }

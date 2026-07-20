@@ -7,9 +7,14 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface CoachRepository extends JpaRepository<Coach, Long> {
 
     boolean existsByTrain_TrainIdAndCoachNumber(Long trainId, String coachNumber);
+
+    @Query("select distinct c.coachType from Coach c where c.coachType is not null")
+    List<String> findDistinctCoachTypes();
 
     @EntityGraph(attributePaths = {"train"})
     @Query("""

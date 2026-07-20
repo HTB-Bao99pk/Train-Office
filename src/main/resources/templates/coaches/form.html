@@ -49,7 +49,7 @@
             <small>Coach number should be unique inside the selected train.</small>
         </div>
 
-        <form th:action="@{/admin/coaches/save}" method="post">
+        <form th:action="@{/admin/coaches/save}" th:object="${coach}" method="post">
             <input type="hidden"
                    name="coachId"
                    th:value="${coach != null ? coach.coachId : ''}">
@@ -94,7 +94,7 @@
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label class="form-label" for="coachType">Coach Type</label>
+                        <label class="form-label" for="selectedCoachType">Coach Type</label>
 
                         <div class="input-group">
                             <div class="input-group-prepend">
@@ -103,42 +103,32 @@
                                 </span>
                             </div>
 
-                            <select id="coachType"
-                                    name="coachType"
+                            <select id="selectedCoachType"
+                                    name="selectedCoachType"
                                     class="form-control"
+                                    th:attr="data-other-value=${otherCoachTypeValue}"
                                     required>
                                 <option value="">Select coach type</option>
-
-                                <option value="Economy Class"
-                                        th:selected="${coach != null and coach.coachType == 'Economy Class'}">
-                                    Economy Class
-                                </option>
-
-                                <option value="Standard Class"
-                                        th:selected="${coach != null and coach.coachType == 'Standard Class'}">
-                                    Standard Class
-                                </option>
-
-                                <option value="Soft Seat"
-                                        th:selected="${coach != null and coach.coachType == 'Soft Seat'}">
-                                    Soft Seat
-                                </option>
-
-                                <option value="First Class"
-                                        th:selected="${coach != null and coach.coachType == 'First Class'}">
-                                    First Class
-                                </option>
-
-                                <option value="Soft Sleeper"
-                                        th:selected="${coach != null and coach.coachType == 'Soft Sleeper'}">
-                                    Soft Sleeper
-                                </option>
-
-                                <option value="VIP Sleeper"
-                                        th:selected="${coach != null and coach.coachType == 'VIP Sleeper'}">
-                                    VIP Sleeper
-                                </option>
+                                <option th:each="type : ${availableCoachTypes}"
+                                        th:value="${type}"
+                                        th:text="${type}"
+                                        th:selected="${selectedCoachType == type}">Soft Seat</option>
+                                <option th:value="${otherCoachTypeValue}"
+                                        th:selected="${selectedCoachType == otherCoachTypeValue}">Other...</option>
                             </select>
+                        </div>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('coachType')}" th:errors="*{coachType}"></div>
+                    </div>
+
+                    <div class="col-md-6 mb-3" id="newCoachTypeGroup"
+                         th:style="${selectedCoachType == otherCoachTypeValue ? '' : 'display:none;'}">
+                        <label class="form-label" for="newCoachType">New Coach Type</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-plus"></i></span>
+                            </div>
+                            <input id="newCoachType" name="newCoachType" class="form-control"
+                                   th:value="${newCoachType}">
                         </div>
                     </div>
 
@@ -278,6 +268,19 @@
             const compartmentCount = document.getElementById('compartmentCount');
             const berthsPerCompartment = document.getElementById('berthsPerCompartment');
             const sleeperFields = document.querySelectorAll('.sleeper-field');
+            const typeSelect = document.getElementById('selectedCoachType');
+            const newTypeGroup = document.getElementById('newCoachTypeGroup');
+            const newTypeInput = document.getElementById('newCoachType');
+            const otherValue = typeSelect ? typeSelect.dataset.otherValue : '';
+
+            function updateNewTypeVisibility() {
+                if (!typeSelect || !newTypeGroup || !newTypeInput) {
+                    return;
+                }
+                const isOther = typeSelect.value === otherValue;
+                newTypeGroup.style.display = isOther ? '' : 'none';
+                newTypeInput.required = isOther;
+            }
 
             function updateCapacityFromSleeperFields() {
                 if (!sleeperSwitch.checked) {
@@ -324,7 +327,12 @@
             compartmentCount.addEventListener('input', updateCapacityFromSleeperFields);
             berthsPerCompartment.addEventListener('change', updateCapacityFromSleeperFields);
 
+            if (typeSelect) {
+                typeSelect.addEventListener('change', updateNewTypeVisibility);
+            }
+
             setSleeperMode(sleeperSwitch.checked);
+            updateNewTypeVisibility();
         });
     </script>
 </section>

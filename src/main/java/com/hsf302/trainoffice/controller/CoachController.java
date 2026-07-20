@@ -19,6 +19,8 @@ import java.util.Optional;
 @RequestMapping("/admin/coaches")
 public class CoachController {
 
+    private static final String OTHER_COACH_TYPE = "__OTHER__";
+
     private final CoachService coachService;
     private final TrainService trainService;
 
@@ -69,6 +71,22 @@ public class CoachController {
         } else {
             model.addAttribute("allTrains", trainService.getAllTrains());
         }
+
+        List<String> availableCoachTypes = coachService.getAvailableCoachTypes();
+        model.addAttribute("availableCoachTypes", availableCoachTypes);
+        model.addAttribute("otherCoachTypeValue", OTHER_COACH_TYPE);
+
+        if (!model.containsAttribute("selectedCoachType")) {
+            Coach coach = (Coach) model.getAttribute("coach");
+            String currentType = coach == null ? null : coach.getCoachType();
+            String canonicalType = currentType == null ? null : availableCoachTypes.stream()
+                    .filter(type -> type.equalsIgnoreCase(currentType.trim()))
+                    .findFirst()
+                    .orElse(null);
+            model.addAttribute("selectedCoachType", canonicalType != null ? canonicalType
+                    : currentType == null || currentType.isBlank() ? "" : OTHER_COACH_TYPE);
+            model.addAttribute("newCoachType", canonicalType != null || currentType == null ? "" : currentType.trim());
+        }
     }
 
     @GetMapping("/new")
@@ -108,10 +126,24 @@ public class CoachController {
     public String saveCoach(
             @Valid @ModelAttribute("coach") Coach coach,
             BindingResult result,
+            @RequestParam(value = "selectedCoachType", required = false) String selectedCoachType,
+            @RequestParam(value = "newCoachType", required = false) String newCoachType,
             Model model,
             RedirectAttributes redirectAttributes
     ) {
         Long trainId = coach.getTrain() != null ? coach.getTrain().getTrainId() : null;
+
+        String submittedType = OTHER_COACH_TYPE.equals(selectedCoachType)
+                ? newCoachType
+                : selectedCoachType;
+        coach.setCoachType(submittedType == null ? null : submittedType.trim());
+
+        model.addAttribute("selectedCoachType", selectedCoachType == null ? "" : selectedCoachType);
+        model.addAttribute("newCoachType", newCoachType == null ? "" : newCoachType);
+
+        if (coach.getCoachType() == null || coach.getCoachType().isBlank()) {
+            result.rejectValue("coachType", "coachType.required", "Coach type is required.");
+        }
 
         if (result.hasErrors()) {
             addCommonAttributes(model, trainId);
