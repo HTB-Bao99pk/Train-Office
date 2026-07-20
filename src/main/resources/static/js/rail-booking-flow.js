@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function setupPassengerValidation() {
     const passengerCards = document.querySelectorAll('.rail-passenger-card');
+    const form = document.querySelector('.rail-passenger-info-form');
 
     if (!passengerCards.length) {
         return;
@@ -16,7 +17,8 @@ function setupPassengerValidation() {
         }
 
         const today = new Date();
-        const birthDate = new Date(dobString);
+        const parts = dobString.split('-').map(Number);
+        const birthDate = new Date(parts[0], parts[1] - 1, parts[2]);
 
         let age = today.getFullYear() - birthDate.getFullYear();
         const monthDiff = today.getMonth() - birthDate.getMonth();
@@ -30,7 +32,8 @@ function setupPassengerValidation() {
 
     function validateCard(card) {
         const dobInput = card.querySelector('.dob-input');
-        const typeSelect = card.querySelector('.passenger-type-select');
+        const typeDisplay = card.querySelector('.passenger-type-display');
+        const typeHidden = card.querySelector('.passenger-type-hidden');
         const errorMsg = card.querySelector('.age-validation-msg');
 
         const identityWrapper = card.querySelector('.identity-wrapper');
@@ -39,45 +42,42 @@ function setupPassengerValidation() {
         const relationshipWrapper = card.querySelector('.relationship-wrapper');
         const relationshipInput = card.querySelector('.relationship-input');
 
-        if (!dobInput || !typeSelect) {
-            return;
+        if (!dobInput || !typeDisplay || !typeHidden) {
+            return true;
         }
 
         const age = getAge(dobInput.value);
-        const type = typeSelect.value;
+        const valid = !dobInput.value || age >= 0;
 
-        let valid = true;
-
-        if (age >= 0) {
-            const selectedOption = typeSelect.options[typeSelect.selectedIndex];
-
-            if (selectedOption) {
-                const minAgeRaw = selectedOption.dataset.minAge;
-                const maxAgeRaw = selectedOption.dataset.maxAge;
-
-                const minAge = minAgeRaw !== undefined && minAgeRaw !== ''
-                    ? Number(minAgeRaw)
-                    : null;
-
-                const maxAge = maxAgeRaw !== undefined && maxAgeRaw !== ''
-                    ? Number(maxAgeRaw)
-                    : null;
-
-                if (minAge !== null && age < minAge) {
-                    valid = false;
+        let matchingOption = null;
+        if (valid && dobInput.value) {
+            matchingOption = Array.from(typeDisplay.options).find(function (option) {
+                if (!option.dataset.minAge && !option.dataset.maxAge) {
+                    return false;
                 }
+                const minAge = option.dataset.minAge === '' ? null : Number(option.dataset.minAge);
+                const maxAge = option.dataset.maxAge === '' ? null : Number(option.dataset.maxAge);
+                return (minAge === null || age >= minAge) && (maxAge === null || age <= maxAge);
+            }) || null;
+        }
 
-                if (maxAge !== null && age > maxAge) {
-                    valid = false;
-                }
-            }
+        if (!dobInput.value) {
+            typeDisplay.options[0].textContent = 'Enter date of birth';
+            typeDisplay.value = 'DEFAULT';
+            typeHidden.value = 'DEFAULT';
+        } else if (matchingOption) {
+            typeDisplay.value = matchingOption.value;
+            typeHidden.value = matchingOption.value;
+        } else {
+            typeDisplay.options[0].textContent = 'Default - 0%';
+            typeDisplay.value = 'DEFAULT';
+            typeHidden.value = 'DEFAULT';
         }
 
         if (errorMsg) {
             errorMsg.classList.toggle('show', !valid);
         }
 
-        typeSelect.classList.toggle('is-invalid', !valid);
         dobInput.classList.toggle('is-invalid', !valid);
 
         if (identityWrapper && identityInput) {
@@ -101,11 +101,12 @@ function setupPassengerValidation() {
                 relationshipInput.value = '';
             }
         }
+
+        return valid;
     }
 
     passengerCards.forEach(function (card) {
         const dobInput = card.querySelector('.dob-input');
-        const typeSelect = card.querySelector('.passenger-type-select');
 
         if (dobInput) {
             dobInput.addEventListener('change', function () {
@@ -113,14 +114,22 @@ function setupPassengerValidation() {
             });
         }
 
-        if (typeSelect) {
-            typeSelect.addEventListener('change', function () {
-                validateCard(card);
-            });
-        }
-
         validateCard(card);
     });
+
+    if (form) {
+        form.addEventListener('submit', function (event) {
+            let valid = true;
+            passengerCards.forEach(function (card) {
+                if (!validateCard(card)) {
+                    valid = false;
+                }
+            });
+            if (!valid) {
+                event.preventDefault();
+            }
+        });
+    }
 }
 
 function setupSeatSelection() {

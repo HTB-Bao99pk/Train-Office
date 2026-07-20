@@ -124,7 +124,7 @@ public class BookingPricingServiceImpl implements BookingPricingService {
 
             String passengerPolicyName = passengerPolicy != null
                     ? passengerPolicy.getPolicyName()
-                    : "No passenger policy";
+                    : "Default";
 
             String coachNumber = seat.getCoach() != null
                     ? seat.getCoach().getCoachNumber()

@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDate;
+import java.time.Period;
 
 @Service
 public class DiscountPolicyServiceImpl implements DiscountPolicyService {
@@ -40,6 +42,35 @@ public class DiscountPolicyServiceImpl implements DiscountPolicyService {
         }
 
         return discountPolicyRepository.findByPolicyCodeIgnoreCaseAndActiveTrue(policyCode.trim());
+    }
+
+    @Override
+    public Optional<DiscountPolicy> findMatchingActivePolicy(LocalDate dateOfBirth) {
+        if (dateOfBirth == null) {
+            throw new IllegalArgumentException("Passenger date of birth is required");
+        }
+        LocalDate today = LocalDate.now();
+        if (dateOfBirth.isAfter(today)) {
+            throw new IllegalArgumentException("Passenger date of birth cannot be in the future");
+        }
+        return findMatchingActivePolicyByAge(Period.between(dateOfBirth, today).getYears());
+    }
+
+    @Override
+    public Optional<DiscountPolicy> findMatchingActivePolicyByAge(int age) {
+        if (age < 0) {
+            throw new IllegalArgumentException("Passenger age cannot be negative");
+        }
+        return getActivePolicies().stream()
+                .filter(policy -> matchesAge(policy, age))
+                .findFirst();
+    }
+
+    @Override
+    public String resolvePassengerType(LocalDate dateOfBirth) {
+        return findMatchingActivePolicy(dateOfBirth)
+                .map(DiscountPolicy::getPolicyCode)
+                .orElse("DEFAULT");
     }
 
     @Override

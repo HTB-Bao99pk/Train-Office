@@ -17,6 +17,7 @@ import com.hsf302.trainoffice.service.BookingPricingService;
 import com.hsf302.trainoffice.service.BookingService;
 import com.hsf302.trainoffice.service.TicketService;
 import com.hsf302.trainoffice.service.TrainTripService;
+import com.hsf302.trainoffice.service.DiscountPolicyService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.hsf302.trainoffice.dto.BookingPriceSummary;
@@ -38,17 +39,20 @@ public class BookingFlowServiceImpl implements BookingFlowService {
     private final BookingPricingService bookingPricingService;
     private static final int PAYMENT_HOLD_MINUTES = 15;
     private final GroupDiscountPolicyService groupDiscountPolicyService;
+    private final DiscountPolicyService discountPolicyService;
 
     public BookingFlowServiceImpl(TrainTripService trainTripService,
                                   TicketService ticketService,
                                   BookingService bookingService,
                                   BookingPricingService bookingPricingService,
-                                  GroupDiscountPolicyService groupDiscountPolicyService) {
+                                  GroupDiscountPolicyService groupDiscountPolicyService,
+                                  DiscountPolicyService discountPolicyService) {
         this.trainTripService = trainTripService;
         this.ticketService = ticketService;
         this.bookingService = bookingService;
         this.bookingPricingService = bookingPricingService;
         this.groupDiscountPolicyService = groupDiscountPolicyService;
+        this.discountPolicyService = discountPolicyService;
     }
 
     @Override
@@ -128,6 +132,9 @@ public class BookingFlowServiceImpl implements BookingFlowService {
         if (form.getPassengers().size() != bookingSession.getPassengerCount()) {
             throw new IllegalArgumentException("Passenger count must match selected seat count");
         }
+        form.getPassengers().forEach(passenger -> passenger.setPassengerType(
+                discountPolicyService.resolvePassengerType(passenger.getDateOfBirth())
+        ));
         bookingSession.setPassengerInfo(form);
     }
 

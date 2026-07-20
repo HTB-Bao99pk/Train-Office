@@ -126,24 +126,26 @@
                                         Passenger Type
                                     </label>
 
-                                    <select class="rail-select passenger-type-select"
-                                            th:name="|passengers[${stat.index}].passengerType|"
-                                            required>
-                                        <option value="">Select passenger type</option>
+                                    <select class="rail-select passenger-type-display" disabled>
+                                        <option value="DEFAULT">Enter date of birth</option>
 
                                         <option th:each="policy : ${discountPolicies}"
                                                 th:value="${policy.policyCode}"
-                                                th:selected="${passenger.passengerType != null and passenger.passengerType == policy.policyCode}"
                                                 th:attr="data-min-age=${policy.minAge},
                      data-max-age=${policy.maxAge},
                      data-discount=${policy.discountPercent}"
-                                                th:text="${policy.policyName + ' - ' + policy.discountPercent + '% discount'}">
-                                            Adult - 0% discount
+                                                th:text="${policy.policyName + ' - ' + policy.discountPercent + '%'}">
+                                            Child - 25%
                                         </option>
                                     </select>
 
+                                    <input type="hidden"
+                                           class="passenger-type-hidden"
+                                           th:name="|passengers[${stat.index}].passengerType|"
+                                           value="DEFAULT">
+
                                     <div class="rail-field-error age-validation-msg">
-                                        Passenger type does not match the date of birth.
+                                        Date of birth cannot be in the future.
                                     </div>
                                 </div>
 

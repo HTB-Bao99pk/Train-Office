@@ -25,7 +25,7 @@ public class PassengerBookingRequest {
 
     private Gender gender;
 
-    private String passengerType = "ADULT";
+    private String passengerType = "DEFAULT";
 
     private String relationshipToBooker;
 }

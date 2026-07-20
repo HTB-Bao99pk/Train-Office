@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.Set;
-import com.hsf302.trainoffice.entity.DiscountPolicy;
 import com.hsf302.trainoffice.service.DiscountPolicyService;
 
 
@@ -294,8 +293,6 @@ public class BookingServiceImpl implements com.hsf302.trainoffice.service.Bookin
 
             validatePassengerAgeAndRelationship(passenger);
 
-            String passengerType = passenger.getPassengerType();
-
             if (passenger.getDateOfBirth() != null) {
                 int age = Period.between(passenger.getDateOfBirth(), LocalDate.now()).getYears();
 
@@ -350,37 +347,13 @@ public class BookingServiceImpl implements com.hsf302.trainoffice.service.Bookin
             throw new IllegalArgumentException("Passenger date of birth is required");
         }
 
-        String passengerType = passenger.getPassengerType();
-
-        if (passengerType == null || passengerType.isBlank()) {
-            passengerType = "ADULT";
-            passenger.setPassengerType(passengerType);
+        LocalDate today = LocalDate.now();
+        if (passenger.getDateOfBirth().isAfter(today)) {
+            throw new IllegalArgumentException("Passenger date of birth cannot be in the future");
         }
 
-        String finalPassengerType = passengerType;
-
-        int age = Period.between(passenger.getDateOfBirth(), LocalDate.now()).getYears();
-
-        DiscountPolicy policy = discountPolicyService
-                .getActivePolicyByCode(finalPassengerType)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Invalid or inactive passenger discount policy: " + finalPassengerType
-                ));
-
-        if (!discountPolicyService.matchesAge(policy, age)) {
-            String ageRange = policy.getMaxAge() == null
-                    ? policy.getMinAge() + "+"
-                    : policy.getMinAge() + " - " + policy.getMaxAge();
-
-            throw new IllegalArgumentException(
-                    "Passenger age does not match policy "
-                            + policy.getPolicyName()
-                            + ". Required age: "
-                            + ageRange
-                            + ". Current age: "
-                            + age
-            );
-        }
+        int age = Period.between(passenger.getDateOfBirth(), today).getYears();
+        passenger.setPassengerType(discountPolicyService.resolvePassengerType(passenger.getDateOfBirth()));
 
         if (age >= 16) {
             if (passenger.getIdentityNumber() == null || passenger.getIdentityNumber().isBlank()) {
