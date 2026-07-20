@@ -15,5 +15,7 @@ public interface TrainService {
 
     Train saveTrain(Train train);
 
+    List<String> getAvailableTrainTypes();
+
     void deleteTrain(Long id);
 }

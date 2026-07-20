@@ -14,10 +14,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Optional;
+import java.util.List;
 
 @Controller
 @RequestMapping("/admin/trains")
 public class TrainController {
+
+    private static final String OTHER_TRAIN_TYPE = "__OTHER__";
 
     private final TrainService trainService;
 
@@ -28,6 +31,21 @@ public class TrainController {
 
     private void addCommonAttributes(Model model) {
         model.addAttribute("allTrainStatus", TrainStatus.values());
+        List<String> availableTrainTypes = trainService.getAvailableTrainTypes();
+        model.addAttribute("availableTrainTypes", availableTrainTypes);
+        model.addAttribute("otherTrainTypeValue", OTHER_TRAIN_TYPE);
+
+        if (!model.containsAttribute("selectedTrainType")) {
+            Train train = (Train) model.getAttribute("train");
+            String currentType = train == null ? null : train.getTrainType();
+            String canonicalType = currentType == null ? null : availableTrainTypes.stream()
+                    .filter(type -> type.equalsIgnoreCase(currentType.trim()))
+                    .findFirst()
+                    .orElse(null);
+            model.addAttribute("selectedTrainType", canonicalType != null ? canonicalType
+                    : currentType == null || currentType.isBlank() ? "" : OTHER_TRAIN_TYPE);
+            model.addAttribute("newTrainType", canonicalType != null || currentType == null ? "" : currentType.trim());
+        }
     }
 
     @GetMapping
@@ -83,8 +101,22 @@ public class TrainController {
     @PostMapping("/save")
     public String saveTrain(@Valid @ModelAttribute("train") Train train,
                             BindingResult result,
+                            @RequestParam(value = "selectedTrainType", required = false) String selectedTrainType,
+                            @RequestParam(value = "newTrainType", required = false) String newTrainType,
                             Model model,
                             RedirectAttributes redirectAttributes) {
+
+        String submittedType = OTHER_TRAIN_TYPE.equals(selectedTrainType)
+                ? newTrainType
+                : selectedTrainType;
+        train.setTrainType(submittedType == null ? null : submittedType.trim());
+
+        model.addAttribute("selectedTrainType", selectedTrainType == null ? "" : selectedTrainType);
+        model.addAttribute("newTrainType", newTrainType == null ? "" : newTrainType);
+
+        if (train.getTrainType() == null || train.getTrainType().isBlank()) {
+            result.rejectValue("trainType", "trainType.required", "Train type is required.");
+        }
 
         if (result.hasErrors()) {
             addCommonAttributes(model);

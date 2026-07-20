@@ -41,12 +41,30 @@
                         <div class="text-danger small" th:if="${#fields.hasErrors('trainName')}" th:errors="*{trainName}"></div>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <label class="form-label" for="trainType">Train Type</label>
+                        <label class="form-label" for="selectedTrainType">Train Type</label>
                         <div class="input-group">
                             <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-tags"></i></span></div>
-                            <input class="form-control" type="text" th:field="*{trainType}" id="trainType" required>
+                            <select class="form-control" id="selectedTrainType" name="selectedTrainType" required
+                                    th:attr="data-other-value=${otherTrainTypeValue}">
+                                <option value="">Select train type</option>
+                                <option th:each="type : ${availableTrainTypes}"
+                                        th:value="${type}"
+                                        th:text="${type}"
+                                        th:selected="${selectedTrainType == type}">Express</option>
+                                <option th:value="${otherTrainTypeValue}"
+                                        th:selected="${selectedTrainType == otherTrainTypeValue}">Other...</option>
+                            </select>
                         </div>
                         <div class="text-danger small" th:if="${#fields.hasErrors('trainType')}" th:errors="*{trainType}"></div>
+                    </div>
+                    <div class="col-md-4 mb-3" id="newTrainTypeGroup"
+                         th:style="${selectedTrainType == otherTrainTypeValue ? '' : 'display:none;'}">
+                        <label class="form-label" for="newTrainType">New Train Type</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-plus"></i></span></div>
+                            <input class="form-control" type="text" id="newTrainType" name="newTrainType"
+                                   th:value="${newTrainType}">
+                        </div>
                     </div>
                     <div class="col-md-4 mb-3">
                         <label class="form-label" for="status">Status</label>
@@ -64,5 +82,26 @@
             </div>
         </form>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const typeSelect = document.getElementById('selectedTrainType');
+            const newTypeGroup = document.getElementById('newTrainTypeGroup');
+            const newTypeInput = document.getElementById('newTrainType');
+            const otherValue = typeSelect ? typeSelect.dataset.otherValue : '';
+
+            if (!typeSelect || !newTypeGroup || !newTypeInput) {
+                return;
+            }
+
+            function updateNewTypeVisibility() {
+                const isOther = typeSelect.value === otherValue;
+                newTypeGroup.style.display = isOther ? '' : 'none';
+                newTypeInput.required = isOther;
+            }
+
+            typeSelect.addEventListener('change', updateNewTypeVisibility);
+            updateNewTypeVisibility();
+        });
+    </script>
 </section>
 </html>

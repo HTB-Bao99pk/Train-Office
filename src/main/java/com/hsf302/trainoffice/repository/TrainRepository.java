@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.List;
 
 @Repository
 public interface TrainRepository extends JpaRepository<Train, Long> {
@@ -15,6 +16,9 @@ public interface TrainRepository extends JpaRepository<Train, Long> {
     Optional<Train> findByTrainCode(String trainCode);
 
     boolean existsByTrainCode(String trainCode);
+
+    @Query("select distinct t.trainType from Train t where t.trainType is not null")
+    List<String> findDistinctTrainTypes();
 
     @Query("""
             select t

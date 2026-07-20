@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.TreeMap;
 
 @Service
 public class TrainServiceImpl implements TrainService {
@@ -54,6 +55,15 @@ public class TrainServiceImpl implements TrainService {
     public Train saveTrain(Train train) {
         normalizeTrain(train);
 
+        if (train.getTrainType() == null || train.getTrainType().isBlank()) {
+            throw new IllegalStateException("Train type is required.");
+        }
+
+        getAvailableTrainTypes().stream()
+                .filter(existingType -> existingType.equalsIgnoreCase(train.getTrainType()))
+                .findFirst()
+                .ifPresent(train::setTrainType);
+
         if (train.getTrainId() == null) {
             if (trainRepository.existsByTrainCode(train.getTrainCode())) {
                 throw new IllegalStateException(
@@ -73,6 +83,24 @@ public class TrainServiceImpl implements TrainService {
         }
 
         return trainRepository.save(train);
+    }
+
+    @Override
+    public List<String> getAvailableTrainTypes() {
+        TreeMap<String, String> canonicalTypes = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        List<String> storedTypes = trainRepository.findDistinctTrainTypes();
+        if (storedTypes == null) {
+            return List.of();
+        }
+
+        storedTypes.stream()
+                .filter(type -> type != null && !type.isBlank())
+                .map(String::trim)
+                .forEach(type -> canonicalTypes.putIfAbsent(type, type));
+
+        return canonicalTypes.values().stream()
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .toList();
     }
 
     @Override
