@@ -115,7 +115,7 @@
                 </small>
             </div>
 
-            <span class="badge badge-info">Read only</span>
+            <span class="badge badge-info">Seat Management</span>
         </div>
 
         <div class="card-body table-responsive p-0">
@@ -131,6 +131,7 @@
                     <th>Status</th>
                     <th>Type</th>
                     <th class="text-right">Extra Price</th>
+                    <th class="text-right">Actions</th>
                 </tr>
                 </thead>
 
@@ -225,10 +226,23 @@
                         th:text="${seat.extraPrice != null ? #numbers.formatDecimal(seat.extraPrice, 0, 'COMMA', 0, 'POINT') + ' VND' : '0 VND'}">
                         0 VND
                     </td>
+                    <td class="text-right">
+                        <form th:action="@{/admin/seats/{seatId}/delete(seatId=${seat.seatId})}"
+                              method="post"
+                              onsubmit="return confirm('Are you sure you want to delete seat ' + this.dataset.seatNumber + '? This action is only allowed when the seat has not been used by any ticket.');"
+                              th:attr="data-seat-number=${seat.seatNumber}"
+                              class="d-inline">
+                            <input type="hidden" name="trainId" th:value="${selectedTrainId}">
+                            <input type="hidden" name="coachId" th:value="${selectedCoachId}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
                 </tr>
 
                 <tr th:if="${#lists.isEmpty(seats)}">
-                    <td colspan="9">
+                    <td colspan="10">
                         <div class="admin-empty-state">
                             <i class="fas fa-chair"></i>
                             <strong>No seats found</strong>
