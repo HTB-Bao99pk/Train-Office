@@ -127,10 +127,13 @@
                                     </label>
 
                                     <select class="rail-select passenger-type-display" disabled>
-                                        <option value="DEFAULT">Enter date of birth</option>
+                                        <option value="DEFAULT"
+                                                th:selected="${passenger.passengerType == null or passenger.passengerType == 'DEFAULT'}"
+                                                th:text="${passenger.dateOfBirth == null ? 'Enter date of birth' : 'Default - 0%'}">Enter date of birth</option>
 
                                         <option th:each="policy : ${discountPolicies}"
                                                 th:value="${policy.policyCode}"
+                                                th:selected="${passenger.passengerType != null and passenger.passengerType == policy.policyCode}"
                                                 th:attr="data-min-age=${policy.minAge},
                      data-max-age=${policy.maxAge},
                      data-discount=${policy.discountPercent}"
@@ -142,7 +145,7 @@
                                     <input type="hidden"
                                            class="passenger-type-hidden"
                                            th:name="|passengers[${stat.index}].passengerType|"
-                                           value="DEFAULT">
+                                           th:value="${passenger.passengerType != null ? passenger.passengerType : 'DEFAULT'}">
 
                                     <div class="rail-field-error age-validation-msg">
                                         Date of birth cannot be in the future.
@@ -298,7 +301,7 @@
                 const data = {};
 
                 fields().forEach(function (field) {
-                    if (field.type === 'hidden') {
+                    if (field.type === 'hidden' || field.disabled || field.classList.contains('passenger-type-display')) {
                         return;
                     }
 
@@ -316,7 +319,7 @@
                 }
 
                 fields().forEach(function (field) {
-                    if (field.type === 'hidden') {
+                    if (field.type === 'hidden' || field.disabled || field.classList.contains('passenger-type-display')) {
                         return;
                     }
 
@@ -338,6 +341,14 @@
             fields().forEach(function (field) {
                 field.addEventListener('input', writeDraft);
                 field.addEventListener('change', writeDraft);
+            });
+
+            form.addEventListener('submit', function (event) {
+                setTimeout(function () {
+                    if (!event.defaultPrevented) {
+                        localStorage.removeItem(draftKey);
+                    }
+                }, 0);
             });
         });
     </script>

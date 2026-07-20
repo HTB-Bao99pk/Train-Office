@@ -23,6 +23,12 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.hsf302.trainoffice.service.DiscountPolicyService;
+import com.hsf302.trainoffice.service.GroupDiscountPolicyService;
+import com.hsf302.trainoffice.entity.Seat;
+import java.time.LocalDate;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.List;
 import java.util.Locale;
 
@@ -37,6 +43,7 @@ public class BookingPageServiceImpl implements BookingPageService {
     private final BookingFlowService bookingFlowService;
     private final TicketService ticketService;
     private final DiscountPolicyService discountPolicyService;
+    private final GroupDiscountPolicyService groupDiscountPolicyService;
 
 
     public BookingPageServiceImpl(TrainTripService trainTripService,
@@ -44,6 +51,7 @@ public class BookingPageServiceImpl implements BookingPageService {
                                   BookingService bookingService,
                                   BookingFlowService bookingFlowService,
                                   DiscountPolicyService discountPolicyService,
+                                  GroupDiscountPolicyService groupDiscountPolicyService,
                                   TicketService ticketService) {
         this.trainTripService = trainTripService;
         this.stationService = stationService;
@@ -51,6 +59,7 @@ public class BookingPageServiceImpl implements BookingPageService {
         this.bookingFlowService = bookingFlowService;
         this.ticketService = ticketService;
         this.discountPolicyService = discountPolicyService;
+        this.groupDiscountPolicyService = groupDiscountPolicyService;
     }
 
     @Override
@@ -195,8 +204,9 @@ public class BookingPageServiceImpl implements BookingPageService {
             return "redirect:/booking/search";
         }
 
+        PassengerInfoForm form;
         if (!model.containsAttribute("passengerInfoForm")) {
-            PassengerInfoForm form = bookingSession.getPassengerInfo() == null
+            form = bookingSession.getPassengerInfo() == null
                     ? bookingFlowService.createPassengerInfoForm(
                     bookingSession.getPassengerCount(),
                     user
@@ -204,11 +214,12 @@ public class BookingPageServiceImpl implements BookingPageService {
                     : bookingSession.getPassengerInfo();
 
             model.addAttribute("passengerInfoForm", form);
+        } else {
+            form = (PassengerInfoForm) model.getAttribute("passengerInfoForm");
         }
 
-        model.addAttribute("genders", Gender.values());
-        model.addAttribute("bookingSession", bookingSession);
-        model.addAttribute("discountPolicies", discountPolicyService.getActivePolicies());
+        normalizePassengerTypesForDisplay(form);
+        addPassengerInfoModel(model, bookingSession, form, user);
         return "booking/passenger-info";
     }
 
@@ -232,9 +243,8 @@ public class BookingPageServiceImpl implements BookingPageService {
         if (bindingResult.hasErrors()
                 || form.getPassengers() == null
                 || form.getPassengers().size() != bookingSession.getPassengerCount()) {
-            model.addAttribute("genders", Gender.values());
-            model.addAttribute("bookingSession", bookingSession);
-            model.addAttribute("discountPolicies", discountPolicyService.getActivePolicies());
+            normalizePassengerTypesForDisplay(form);
+            addPassengerInfoModel(model, bookingSession, form, currentUser(session));
             return "booking/passenger-info";
         }
 
@@ -246,11 +256,54 @@ public class BookingPageServiceImpl implements BookingPageService {
 
         } catch (IllegalArgumentException ex) {
             model.addAttribute("error", ex.getMessage());
-            model.addAttribute("genders", Gender.values());
-            model.addAttribute("bookingSession", bookingSession);
-            model.addAttribute("discountPolicies", discountPolicyService.getActivePolicies());
+            normalizePassengerTypesForDisplay(form);
+            addPassengerInfoModel(model, bookingSession, form, currentUser(session));
             return "booking/passenger-info";
         }
+    }
+
+    private void normalizePassengerTypesForDisplay(PassengerInfoForm form) {
+        if (form == null || form.getPassengers() == null) {
+            return;
+        }
+        form.getPassengers().forEach(passenger -> {
+            LocalDate dateOfBirth = passenger.getDateOfBirth();
+            if (dateOfBirth == null || dateOfBirth.isAfter(LocalDate.now())) {
+                passenger.setPassengerType("DEFAULT");
+                return;
+            }
+            passenger.setPassengerType(discountPolicyService.resolvePassengerType(dateOfBirth));
+        });
+    }
+
+    private void addPassengerInfoModel(Model model,
+                                       BookingSession bookingSession,
+                                       PassengerInfoForm form,
+                                       User user) {
+        model.addAttribute("passengerInfoForm", form);
+        model.addAttribute("passengers", form == null || form.getPassengers() == null
+                ? List.of() : form.getPassengers());
+        model.addAttribute("genders", Gender.values());
+        model.addAttribute("bookingSession", bookingSession);
+        model.addAttribute("discountPolicies", discountPolicyService.getActivePolicies());
+        model.addAttribute("groupDiscountPolicies", groupDiscountPolicyService.getActivePolicies());
+        model.addAttribute("selectedGroupDiscountPolicyId", bookingSession.getSelectedGroupDiscountPolicyId());
+        model.addAttribute("booker", user);
+
+        model.addAttribute("trip", trainTripService.getTripById(bookingSession.getTrainTripId())
+                .orElseThrow(() -> new IllegalArgumentException("Train trip does not exist")));
+        model.addAttribute("segment", trainTripService.getValidSegment(
+                bookingSession.getTrainTripId(),
+                bookingSession.getDepartureStationId(),
+                bookingSession.getArrivalStationId()));
+
+        Map<Long, Seat> seatsById = ticketService.getSeatsForTrip(bookingSession.getTrainTripId()).stream()
+                .collect(Collectors.toMap(Seat::getSeatId, Function.identity()));
+        List<Seat> selectedSeats = bookingSession.getSeatIds().stream()
+                .map(seatsById::get)
+                .filter(java.util.Objects::nonNull)
+                .toList();
+        model.addAttribute("selectedSeats", selectedSeats);
     }
 
     @Override

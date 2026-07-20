@@ -87,7 +87,6 @@ function setupPassengerValidation() {
             } else {
                 identityWrapper.style.display = 'none';
                 identityInput.required = false;
-                identityInput.value = '';
             }
         }
 
@@ -98,7 +97,6 @@ function setupPassengerValidation() {
             } else {
                 relationshipWrapper.style.display = 'none';
                 relationshipInput.required = false;
-                relationshipInput.value = '';
             }
         }
 
