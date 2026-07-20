@@ -30,10 +30,10 @@ public class Station {
     @Column(name = "station_code", unique = true, nullable = false, length = 30)
     private String stationCode;
 
-    @Column(name = "station_name", nullable = false, length = 120)
+    @Column(name = "station_name", nullable = false, length = 120, columnDefinition = "NVARCHAR(120)")
     private String stationName;
 
-    @Column(name = "city", nullable = false, length = 80)
+    @Column(name = "city", nullable = false, length = 80, columnDefinition = "NVARCHAR(80)")
     private String city;
 
     @Builder.Default

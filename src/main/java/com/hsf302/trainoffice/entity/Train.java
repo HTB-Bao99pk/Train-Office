@@ -28,10 +28,10 @@ public class Train {
     @Column(name = "train_code", unique = true, nullable = false, length = 30)
     private String trainCode;
 
-    @Column(name = "train_name", nullable = false, length = 100)
+    @Column(name = "train_name", nullable = false, length = 100, columnDefinition = "NVARCHAR(100)")
     private String trainName;
 
-    @Column(name = "train_type", nullable = false, length = 50)
+    @Column(name = "train_type", nullable = false, length = 50, columnDefinition = "NVARCHAR(50)")
     private String trainType;
 
     @Builder.Default

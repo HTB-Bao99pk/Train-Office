@@ -115,7 +115,7 @@ public class DataInitializer implements CommandLineRunner {
                 data.code(),
                 findOrCreateStation(
                         data.code(),
-                        data.name() + " Station",
+                        data.name(),
                         data.name()
                 )
         ));

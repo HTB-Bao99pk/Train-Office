@@ -27,7 +27,7 @@ public class Route {
     @Column(name = "route_code", unique = true, nullable = false, length = 30)
     private String routeCode;
 
-    @Column(name = "route_name", nullable = false, length = 120)
+    @Column(name = "route_name", nullable = false, length = 120, columnDefinition = "NVARCHAR(120)")
     private String routeName;
 
     @Column(name = "distance_km", nullable = false)
