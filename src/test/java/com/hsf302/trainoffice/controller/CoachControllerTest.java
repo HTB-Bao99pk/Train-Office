@@ -4,6 +4,7 @@ import com.hsf302.trainoffice.entity.Coach;
 import com.hsf302.trainoffice.entity.Train;
 import com.hsf302.trainoffice.service.CoachService;
 import com.hsf302.trainoffice.service.TrainService;
+import com.hsf302.trainoffice.exception.ResourceInUseException;
 import org.junit.jupiter.api.Test;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -64,6 +65,28 @@ class CoachControllerTest {
         assertTrue(result.hasFieldErrors("coachType"));
         assertEquals("__OTHER__", model.get("selectedCoachType"));
         verify(coachService, never()).saveCoach(any());
+    }
+
+    @Test
+    void blockedDeleteRedirectsWithFriendlyErrorFlash() {
+        doThrow(new ResourceInUseException(
+                "Cannot delete this coach because it still contains 40 seats."))
+                .when(coachService).deleteCoach(8L);
+        RedirectAttributesModelMap redirect = new RedirectAttributesModelMap();
+
+        assertEquals("redirect:/admin/coaches?trainId=1", controller.deleteCoach(8L, 1L, redirect));
+        assertEquals("Cannot delete this coach because it still contains 40 seats.",
+                redirect.getFlashAttributes().get("errorMessage"));
+    }
+
+    @Test
+    void successfulDeleteRedirectsWithSuccessFlash() {
+        RedirectAttributesModelMap redirect = new RedirectAttributesModelMap();
+
+        assertEquals("redirect:/admin/coaches", controller.deleteCoach(9L, null, redirect));
+        assertEquals("Coach with ID 9 has been deleted.",
+                redirect.getFlashAttributes().get("successMessage"));
+        verify(coachService).deleteCoach(9L);
     }
 
     private Coach coach(String type) {

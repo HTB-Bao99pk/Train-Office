@@ -4,6 +4,7 @@ import com.hsf302.trainoffice.entity.Coach;
 import com.hsf302.trainoffice.entity.Train;
 import com.hsf302.trainoffice.service.CoachService;
 import com.hsf302.trainoffice.service.TrainService;
+import com.hsf302.trainoffice.exception.ResourceInUseException;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -168,7 +169,7 @@ public class CoachController {
         }
     }
 
-    @GetMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     public String deleteCoach(
             @PathVariable("id") Long id,
             @RequestParam(value = "trainId", required = false) Long trainId,
@@ -180,6 +181,8 @@ public class CoachController {
                     "successMessage",
                     "Coach with ID " + id + " has been deleted."
             );
+        } catch (ResourceInUseException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute(
                     "errorMessage",

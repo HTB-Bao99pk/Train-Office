@@ -3,7 +3,9 @@ package com.hsf302.trainoffice.service.impl;
 import com.hsf302.trainoffice.entity.Coach;
 import com.hsf302.trainoffice.entity.Train;
 import com.hsf302.trainoffice.repository.*;
+import com.hsf302.trainoffice.exception.ResourceInUseException;
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -63,6 +65,58 @@ class CoachServiceImplTest {
         assertEquals("Coach type is required.",
                 assertThrows(IllegalStateException.class, () -> service.saveCoach(coach)).getMessage());
         verify(coachRepository, never()).save(any());
+    }
+
+    @Test
+    void coachWithSeatsCannotBeDeleted() {
+        Coach coach = new Coach();
+        coach.setCoachId(10L);
+        when(coachRepository.findById(10L)).thenReturn(java.util.Optional.of(coach));
+        when(seatRepository.countByCoach_CoachId(10L)).thenReturn(40L);
+
+        ResourceInUseException error = assertThrows(ResourceInUseException.class,
+                () -> service.deleteCoach(10L));
+
+        assertEquals("Cannot delete this coach because it still contains 40 seats.", error.getMessage());
+        verify(coachRepository, never()).delete(any());
+        verify(coachRepository, never()).flush();
+    }
+
+    @Test
+    void coachWithoutSeatsOrCompartmentsIsDeleted() {
+        Coach coach = new Coach();
+        coach.setCoachId(11L);
+        when(coachRepository.findById(11L)).thenReturn(java.util.Optional.of(coach));
+
+        service.deleteCoach(11L);
+
+        verify(coachRepository).delete(coach);
+        verify(coachRepository).flush();
+    }
+
+    @Test
+    void missingCoachDoesNotCauseNullPointerException() {
+        when(coachRepository.findById(404L)).thenReturn(java.util.Optional.empty());
+
+        RuntimeException error = assertThrows(RuntimeException.class, () -> service.deleteCoach(404L));
+        assertEquals("Coach not found with ID: 404", error.getMessage());
+        verifyNoInteractions(seatRepository);
+        verify(coachRepository, never()).delete(any());
+    }
+
+    @Test
+    void databaseRaceConditionIsConvertedToFriendlyBusinessException() {
+        Coach coach = new Coach();
+        coach.setCoachId(12L);
+        when(coachRepository.findById(12L)).thenReturn(java.util.Optional.of(coach));
+        doThrow(new DataIntegrityViolationException("FK_seats_coach raw constraint"))
+                .when(coachRepository).flush();
+
+        ResourceInUseException error = assertThrows(ResourceInUseException.class,
+                () -> service.deleteCoach(12L));
+
+        assertEquals("Cannot delete this coach because it is still in use.", error.getMessage());
+        assertFalse(error.getMessage().contains("FK_"));
     }
 
     private Coach normalCoach(String number, String type) {

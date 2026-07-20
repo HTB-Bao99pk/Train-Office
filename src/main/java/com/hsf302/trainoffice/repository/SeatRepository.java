@@ -18,6 +18,8 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
 
     List<Seat> findByCoach_CoachIdOrderBySeatNumberAsc(Long coachId);
 
+    long countByCoach_CoachId(Long coachId);
+
     @EntityGraph(attributePaths = {"coach", "coach.train", "compartment"})
     @Query("""
         select s

@@ -172,12 +172,16 @@
                             <span>Edit</span>
                         </a>
 
-                        <a class="btn btn-sm btn-outline-danger"
-                           th:href="@{/admin/coaches/delete/{id}(id=${coach.coachId},trainId=${selectedTrainId})}"
-                           onclick="return confirm('Delete this coach?')">
-                            <i class="fas fa-trash"></i>
-                            <span>Delete</span>
-                        </a>
+                        <form class="d-inline"
+                              th:action="@{/admin/coaches/delete/{id}(id=${coach.coachId})}"
+                              method="post"
+                              onsubmit="return confirm('Delete this coach? This coach can only be deleted when it has no seats.');">
+                            <input type="hidden" name="trainId" th:value="${selectedTrainId}">
+                            <button class="btn btn-sm btn-outline-danger" type="submit">
+                                <i class="fas fa-trash"></i>
+                                <span>Delete</span>
+                            </button>
+                        </form>
                     </td>
                 </tr>
 

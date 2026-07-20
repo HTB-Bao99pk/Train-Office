@@ -11,4 +11,6 @@ public interface CompartmentRepository extends JpaRepository<Compartment, Long> 
     Optional<Compartment> findByCoach_CoachIdAndCompartmentNumber(Long coachId, String compartmentNumber);
 
     List<Compartment> findByCoach_CoachIdOrderByCompartmentNumberAsc(Long coachId);
+
+    boolean existsByCoach_CoachId(Long coachId);
 }

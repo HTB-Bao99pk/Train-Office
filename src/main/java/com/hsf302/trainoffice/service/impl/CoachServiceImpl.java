@@ -8,6 +8,10 @@ import com.hsf302.trainoffice.repository.CompartmentRepository;
 import com.hsf302.trainoffice.repository.SeatRepository;
 import com.hsf302.trainoffice.repository.TicketRepository;
 import com.hsf302.trainoffice.service.CoachService;
+import com.hsf302.trainoffice.exception.ResourceInUseException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +28,8 @@ import java.util.TreeMap;
 
 @Service
 public class CoachServiceImpl implements CoachService {
+
+    private static final Logger log = LoggerFactory.getLogger(CoachServiceImpl.class);
 
     private final CoachRepository coachRepository;
     private final SeatRepository seatRepository;
@@ -115,12 +121,34 @@ public class CoachServiceImpl implements CoachService {
     }
 
     @Override
+    @Transactional
     public void deleteCoach(Long id) {
-        if (!coachRepository.existsById(id)) {
-            throw new RuntimeException("Coach not found with ID: " + id);
+        Coach coach = coachRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Coach not found with ID: " + id));
+
+        long seatCount = seatRepository.countByCoach_CoachId(id);
+        if (seatCount > 0) {
+            throw new ResourceInUseException(
+                    "Cannot delete this coach because it still contains " + seatCount + " seats."
+            );
         }
 
-        coachRepository.deleteById(id);
+        if (compartmentRepository.existsByCoach_CoachId(id)) {
+            throw new ResourceInUseException(
+                    "Cannot delete this coach because it still contains compartments."
+            );
+        }
+
+        try {
+            coachRepository.delete(coach);
+            coachRepository.flush();
+        } catch (DataIntegrityViolationException ex) {
+            log.warn("Coach {} could not be deleted because a dependent record was added or still exists.", id, ex);
+            throw new ResourceInUseException(
+                    "Cannot delete this coach because it is still in use.",
+                    ex
+            );
+        }
     }
 
     private void validateCoach(Coach coach) {
