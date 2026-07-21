@@ -1,6 +1,7 @@
 package com.hsf302.trainoffice.controller;
 
 import com.hsf302.trainoffice.common.enums.UserRole;
+import com.hsf302.trainoffice.entity.Refund;
 import com.hsf302.trainoffice.entity.User;
 import com.hsf302.trainoffice.service.AdminWalletService;
 import com.hsf302.trainoffice.service.RefundService;
@@ -89,5 +90,26 @@ public class AdminRefundController {
 
     private boolean isAdmin(User user) {
         return user != null && user.getRole() == UserRole.ADMIN;
+    }
+
+    @GetMapping("/{refundId}")
+    public String detail(@PathVariable Long refundId,
+                         Model model,
+                         HttpSession session,
+                         RedirectAttributes redirectAttributes) {
+        User admin = currentUser(session);
+
+        if (!isAdmin(admin)) {
+            redirectAttributes.addFlashAttribute("error", "Admin access required.");
+            return "redirect:/login";
+        }
+
+        Refund refund = refundService.getRefundById(refundId)
+                .orElseThrow(() -> new IllegalArgumentException("Refund request does not exist."));
+
+        model.addAttribute("refund", refund);
+        model.addAttribute("walletBalance", adminWalletService.getBalance());
+
+        return "refunds/admin-detail";
     }
 }

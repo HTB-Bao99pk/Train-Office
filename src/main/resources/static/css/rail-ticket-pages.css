@@ -1092,3 +1092,206 @@
         font-size: 28px;
     }
 }
+
+/* =========================================================
+   Refund request form
+   ========================================================= */
+
+.rail-refund-page .rail-ticket-container {
+    max-width: 1280px;
+}
+
+.rail-refund-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+    gap: 34px;
+    padding: 40px;
+    border-radius: 24px;
+    background:
+            radial-gradient(circle at top left, rgba(56, 189, 248, .12), transparent 38%),
+            rgba(18, 33, 49, .90);
+    border: 1px solid rgba(142, 213, 255, .20);
+    box-shadow: 0 30px 90px rgba(0, 0, 0, .38);
+}
+
+.rail-refund-section {
+    min-width: 0;
+    padding: 26px;
+    border-radius: 20px;
+    background: rgba(5, 20, 36, .38);
+    border: 1px solid rgba(255, 255, 255, .075);
+}
+
+.rail-refund-section-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 26px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+.rail-refund-icon {
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    color: #001e2c;
+    background: linear-gradient(135deg, #7dd3fc, #38bdf8);
+    box-shadow: 0 14px 30px rgba(56, 189, 248, .22);
+    font-size: 22px;
+}
+
+.rail-refund-section-head h2 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: -.035em;
+    line-height: 1.1;
+}
+
+.rail-refund-section-head p {
+    max-width: 420px;
+    margin: 8px 0 0;
+    color: var(--rj-muted, #bdc8d1);
+    font-size: 14px;
+    line-height: 1.55;
+    font-weight: 700;
+}
+
+.rail-refund-form .rail-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 28px;
+}
+
+.rail-refund-form .rail-form-field.full {
+    grid-column: 1 / -1;
+}
+
+.rail-refund-form .rail-form-label {
+    margin-bottom: 9px;
+    color: rgba(212, 228, 250, .82);
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+
+.rail-refund-form .rail-input,
+.rail-refund-form textarea.rail-input {
+    width: 100%;
+    min-height: 54px;
+    padding: 0 17px;
+    border-radius: 12px;
+    border: 1px solid rgba(142, 213, 255, .16);
+    color: #ffffff;
+    background: rgba(3, 9, 25, .82);
+    outline: none;
+    font-size: 14px;
+    font-weight: 800;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .035);
+}
+
+.rail-refund-form .rail-input::placeholder {
+    color: rgba(189, 200, 209, .62);
+    font-weight: 700;
+}
+
+.rail-refund-form .rail-input:focus,
+.rail-refund-form textarea.rail-input:focus {
+    border-color: rgba(56, 189, 248, .82);
+    box-shadow:
+            0 0 0 4px rgba(56, 189, 248, .12),
+            inset 0 1px 0 rgba(255, 255, 255, .04);
+}
+
+.rail-refund-textarea {
+    min-height: 132px !important;
+    padding-top: 15px !important;
+    line-height: 1.5;
+    resize: vertical;
+}
+
+.rail-refund-form .rail-field-error {
+    margin-top: 8px;
+    color: #ffb4ab;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.rail-refund-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 16px;
+    margin-top: 4px;
+    padding-top: 26px;
+    border-top: 1px solid rgba(255, 255, 255, .08);
+}
+
+.rail-refund-actions .rail-primary-btn,
+.rail-refund-actions .rail-secondary-btn {
+    min-height: 50px;
+    padding: 0 24px;
+    white-space: nowrap;
+}
+
+@media (max-width: 1050px) {
+    .rail-refund-form {
+        grid-template-columns: 1fr;
+        padding: 30px;
+    }
+
+    .rail-refund-section {
+        padding: 24px;
+    }
+}
+
+@media (max-width: 640px) {
+    .rail-refund-form {
+        padding: 22px;
+    }
+
+    .rail-refund-section {
+        padding: 20px;
+    }
+
+    .rail-refund-form .rail-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .rail-refund-section-head {
+        align-items: flex-start;
+    }
+
+    .rail-refund-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .rail-refund-actions .rail-primary-btn,
+    .rail-refund-actions .rail-secondary-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    .rail-refund-form .rail-field-error {
+        display: block;
+        margin-top: 8px;
+        color: #ffb4ab;
+        font-size: 12px;
+        font-weight: 900;
+        line-height: 1.35;
+    }
+
+    .rail-refund-form .rail-input.input-validation-error,
+    .rail-refund-form .rail-input.is-invalid {
+        border-color: rgba(255, 180, 171, .85);
+        box-shadow: 0 0 0 4px rgba(255, 180, 171, .12);
+    }
+}

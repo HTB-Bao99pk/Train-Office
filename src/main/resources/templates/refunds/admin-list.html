@@ -21,8 +21,15 @@
         </div>
 
         <div class="card-body">
-            <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
-            <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+            <div class="alert alert-success"
+                 th:if="${successMessage}"
+                 th:text="${successMessage}">
+            </div>
+
+            <div class="alert alert-danger"
+                 th:if="${errorMessage}"
+                 th:text="${errorMessage}">
+            </div>
 
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
@@ -34,7 +41,6 @@
                         <th>Train</th>
                         <th>Seat</th>
                         <th>Amount</th>
-                        <th>Reason</th>
                         <th>Status</th>
                         <th class="text-right">Actions</th>
                     </tr>
@@ -42,12 +48,15 @@
 
                     <tbody>
                     <tr th:each="refund : ${refunds}">
-                        <td class="font-weight-bold" th:text="${refund.refundCode}">RF001</td>
+                        <td class="font-weight-bold">
+                            <span th:text="${refund.refundCode}">RF001</span>
+                        </td>
 
                         <td>
                             <span th:text="${refund.ticket != null ? refund.ticket.ticketCode : '-'}">
                                 T001
                             </span>
+
                             <small class="d-block text-muted"
                                    th:text="${refund.ticket != null ? refund.ticket.ticketStatus : '-'}">
                                 CONFIRMED
@@ -55,11 +64,12 @@
                         </td>
 
                         <td>
-                            <span th:text="${refund.ticket != null and refund.ticket.booking != null ? refund.ticket.booking.bookerName : '-'}">
+                            <strong th:text="${refund.customerName != null and !#strings.isEmpty(refund.customerName) ? refund.customerName : (refund.ticket != null and refund.ticket.booking != null ? refund.ticket.booking.bookerName : '-')}">
                                 Customer
-                            </span>
+                            </strong>
+
                             <small class="d-block text-muted"
-                                   th:text="${refund.ticket != null and refund.ticket.booking != null ? refund.ticket.booking.bookerEmail : ''}">
+                                   th:text="${refund.customerEmail != null and !#strings.isEmpty(refund.customerEmail) ? refund.customerEmail : (refund.ticket != null and refund.ticket.booking != null ? refund.ticket.booking.bookerEmail : '')}">
                                 customer@email.com
                             </small>
                         </td>
@@ -68,9 +78,10 @@
                             <span th:text="${refund.ticket != null and refund.ticket.trainTrip != null and refund.ticket.trainTrip.train != null ? refund.ticket.trainTrip.train.trainName : '-'}">
                                 SE1
                             </span>
+
                             <small class="d-block text-muted"
-                                   th:text="${refund.ticket != null and refund.ticket.trainTrip != null ? refund.ticket.trainTrip.departureTime : ''}">
-                                2026-06-30
+                                   th:text="${refund.ticket != null and refund.ticket.trainTrip != null ? #temporals.format(refund.ticket.trainTrip.departureTime, 'yyyy-MM-dd HH:mm') : ''}">
+                                2026-06-30 08:00
                             </small>
                         </td>
 
@@ -78,6 +89,7 @@
                             <span th:text="${refund.ticket != null and refund.ticket.seat != null ? refund.ticket.seat.seatNumber : '-'}">
                                 A1
                             </span>
+
                             <small class="d-block text-muted"
                                    th:text="${refund.ticket != null and refund.ticket.seat != null and refund.ticket.seat.coach != null ? 'Coach ' + refund.ticket.seat.coach.coachNumber : ''}">
                                 Coach 1
@@ -88,30 +100,56 @@
                             0 VND
                         </td>
 
-                        <td th:text="${refund.refundReason}">Reason</td>
-
                         <td>
-                            <span class="badge badge-warning" th:text="${refund.refundStatus}">
+                            <span class="badge badge-warning"
+                                  th:if="${refund.refundStatus != null and refund.refundStatus.name() == 'PENDING'}"
+                                  th:text="${refund.refundStatus}">
                                 PENDING
+                            </span>
+
+                            <span class="badge badge-success"
+                                  th:if="${refund.refundStatus != null and refund.refundStatus.name() == 'APPROVED'}"
+                                  th:text="${refund.refundStatus}">
+                                APPROVED
+                            </span>
+
+                            <span class="badge badge-danger"
+                                  th:if="${refund.refundStatus != null and refund.refundStatus.name() == 'REJECTED'}"
+                                  th:text="${refund.refundStatus}">
+                                REJECTED
+                            </span>
+
+                            <span class="badge badge-info"
+                                  th:if="${refund.refundStatus != null and refund.refundStatus.name() == 'COMPLETED'}"
+                                  th:text="${refund.refundStatus}">
+                                COMPLETED
                             </span>
                         </td>
 
                         <td class="text-right">
-                            <form th:action="@{/admin/refunds/{id}/approve(id=${refund.refundId})}"
+                            <a class="btn btn-sm btn-info mb-1"
+                               th:href="@{/admin/refunds/{id}(id=${refund.refundId})}">
+                                <i class="fas fa-eye mr-1"></i>
+                                Detail
+                            </a>
+
+                            <form th:if="${refund.refundStatus != null and refund.refundStatus.name() == 'PENDING'}"
+                                  th:action="@{/admin/refunds/{id}/approve(id=${refund.refundId})}"
                                   method="post"
                                   class="d-inline"
                                   onsubmit="return confirm('Approve this refund? Admin wallet will be deducted.')">
-                                <button type="submit" class="btn btn-sm btn-success">
+                                <button type="submit" class="btn btn-sm btn-success mb-1">
                                     <i class="fas fa-check mr-1"></i>
                                     Approve
                                 </button>
                             </form>
 
-                            <form th:action="@{/admin/refunds/{id}/reject(id=${refund.refundId})}"
+                            <form th:if="${refund.refundStatus != null and refund.refundStatus.name() == 'PENDING'}"
+                                  th:action="@{/admin/refunds/{id}/reject(id=${refund.refundId})}"
                                   method="post"
                                   class="d-inline"
                                   onsubmit="return confirm('Reject this refund request?')">
-                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <button type="submit" class="btn btn-sm btn-outline-danger mb-1">
                                     <i class="fas fa-times mr-1"></i>
                                     Reject
                                 </button>
@@ -120,7 +158,7 @@
                     </tr>
 
                     <tr th:if="${refunds == null or #lists.isEmpty(refunds)}">
-                        <td colspan="9" class="text-center text-muted py-4">
+                        <td colspan="8" class="text-center text-muted py-4">
                             No pending refund requests.
                         </td>
                     </tr>

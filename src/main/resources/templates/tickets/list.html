@@ -108,16 +108,11 @@
                 </div>
 
                 <div class="rail-ticket-list-actions">
-                    <form th:if="${ticket.ticketStatus != null and ticket.ticketStatus.name() == 'CONFIRMED'}"
-                          th:action="@{/tickets/{id}/refund(id=${ticket.ticketId})}"
-                          method="post"
-                          onsubmit="return confirm('Send refund request for this ticket?')">
-                        <input type="hidden" name="reason" value="Customer requested refund">
-
-                        <button type="submit" class="rail-danger-btn">
-                            Refund
-                        </button>
-                    </form>
+                    <a class="rail-danger-btn"
+                       th:if="${ticket.ticketStatus != null and ticket.ticketStatus.name() == 'CONFIRMED'}"
+                       th:href="@{/tickets/{id}/refund(id=${ticket.ticketId})}">
+                        Refund
+                    </a>
 
                     <a class="rail-icon-btn"
                        th:if="${ticket.ticketStatus != null and ticket.ticketStatus.name() != 'REFUNDED'}"

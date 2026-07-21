@@ -50,6 +50,25 @@ public class Refund {
     @Column(name = "refunded_at")
     private LocalDateTime refundedAt;
 
+
+    @Column(name = "customer_name", length = 100, columnDefinition = "NVARCHAR(100)")
+    private String customerName;
+
+    @Column(name = "customer_email", length = 120)
+    private String customerEmail;
+
+    @Column(name = "customer_phone", length = 30)
+    private String customerPhone;
+
+    @Column(name = "bank_name", length = 100)
+    private String bankName;
+
+    @Column(name = "bank_account_number", length = 50)
+    private String bankAccountNumber;
+
+    @Column(name = "bank_account_holder", length = 100, columnDefinition = "NVARCHAR(100)")
+    private String bankAccountHolder;
+
     @PrePersist
     void onCreate() {
         if (refundStatus == null) {

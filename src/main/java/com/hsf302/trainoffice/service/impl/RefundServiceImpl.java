@@ -15,10 +15,11 @@ import com.hsf302.trainoffice.service.AdminWalletService;
 import com.hsf302.trainoffice.service.RefundService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.hsf302.trainoffice.dto.RefundRequestForm;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class RefundServiceImpl implements RefundService {
@@ -40,9 +41,13 @@ public class RefundServiceImpl implements RefundService {
 
     @Override
     @Transactional
-    public Refund createRefundRequest(Long ticketId, User user, String reason) {
+    public Refund createRefundRequest(Long ticketId, User user, RefundRequestForm form) {
         if (user == null || user.getUserId() == null) {
             throw new IllegalArgumentException("Please log in to request refund.");
+        }
+
+        if (form == null) {
+            throw new IllegalArgumentException("Refund information is required.");
         }
 
         Ticket ticket = ticketRepository.findWithDetailsByTicketId(ticketId)
@@ -88,18 +93,30 @@ public class RefundServiceImpl implements RefundService {
             throw new IllegalStateException("Refund request already exists for this ticket.");
         }
 
-        String finalReason = reason == null || reason.isBlank()
-                ? "Customer requested refund"
-                : reason.trim();
-
         Refund refund = new Refund();
         refund.setRefundCode(generateRefundCode());
         refund.setTicket(ticket);
         refund.setRefundAmount(ticket.getTicketPrice());
-        refund.setRefundReason(finalReason);
+        refund.setRefundReason(form.getReason().trim());
+        refund.setCustomerName(form.getCustomerName().trim());
+        refund.setCustomerEmail(form.getCustomerEmail());
+        refund.setCustomerPhone(form.getCustomerPhone().trim());
+        refund.setBankName(form.getBankName().trim());
+        refund.setBankAccountNumber(form.getBankAccountNumber().trim());
+        refund.setBankAccountHolder(form.getBankAccountHolder().trim());
         refund.setRefundStatus(RefundStatus.PENDING);
 
         return refundRepository.save(refund);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Refund> getRefundById(Long refundId) {
+        if (refundId == null) {
+            return Optional.empty();
+        }
+
+        return refundRepository.findById(refundId);
     }
 
     @Override
